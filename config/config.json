@@ -1,0 +1,69 @@
+{
+
+    "database": {
+        "host": "workdatabase.cuyqkwdewraf.eu-west-2.rds.amazonaws.com",
+        "username": "ironman",
+        "password": "pNV44xH!N=Jv2%Bu5EWn86Msu7-wX^",
+        "database": "superstore_database"
+    },
+
+    "env": "dev",
+
+    "asda": {
+        "run": true,
+        "promotions": true,
+        "groceries": true
+    },
+
+    "endpoints": {
+
+        "asda": {
+            "groceries": "https://groceries.asda.com/cmscontent/json/getFullTaxonomy",
+            "shelves": "https://groceries.asda.com/cmscontent/json/pages/browse/aisle?requestorigin=gi&Nrpp=10000000&storeId=4676&N=",
+            "products": "https://groceries.asda.com/api/items/catalog",
+            "reviews": "https://groceries.asda.com/review/reviews.json?requestorigin=gi&apiversion=5.4&passkey=92ffdz3h647mtzgbmu5vedbq&Filter=ProductId%3A9",
+            "promotions": "https://groceries.asda.com/cmscontent/json/pages/overlays/linksave?requestorigin=gi&Nrpp=10000000&storeId=4977&promoid="
+        }
+
+    },
+
+    "retry_request": {
+        "attempts": 10,
+        "wait": 60
+    },
+    
+    "exceptions": {
+
+        "categories": [
+            "Wine",
+            "Alcohol",
+            "Champagne",
+            "Spirits",
+            "Beer",
+            "Cider",
+            "Liquers",
+            "Ales"
+        ],
+    
+        "product_halal_check": [
+            "meat (?!alternatives)",
+            "poultry",
+            "meal",
+            "pizza",
+            "party",
+            "world foods",
+            "counters",
+            "soup",
+            "pies",
+            "frozen"
+        ],
+    
+        "group": [
+            "Event",
+            "Summer",
+            "Trending"
+        ]
+
+    }
+
+}
