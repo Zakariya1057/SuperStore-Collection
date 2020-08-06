@@ -1,0 +1,14 @@
+{
+    "require": {
+        "monolog/monolog": "^2.1",
+        "symfony/http-client": "^5.1",
+        "symfony/dom-crawler": "^5.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shared\\": "Shared/",
+            "Models\\": "Models/",
+            "Stores\\": "Stores/"
+        }
+    }
+}
