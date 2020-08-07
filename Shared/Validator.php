@@ -10,11 +10,19 @@ class Validator extends Sanitize {
         // Use field type to see if its valid.
         // For product price, check if valid price and if not null
 
+        $validator_rules = array(
+            "int" => "/^\w+$/"
+        );
+        
         foreach($validation as $field_name => $validate){
 
-            $nullable = $validate['nullable'];
-            $regex = $validate['regex'] ?? null;
+            $nullable = $validate['nullable'] ?? false;
+            $type = $validate['type'] ?? null;
 
+            if($type){
+                $regex = $validator_rules[$type] ?? null;
+            }
+            
             if(!key_exists($field_name,$data)){
                 throw new Exception("Field $field_name Not Found");
             }
@@ -25,7 +33,7 @@ class Validator extends Sanitize {
                 throw new Exception("$field_name Cannot Be Null");
             }
 
-            if($regex){
+            if(isset($regex)){
                 preg_match($regex,$field,$matches);
 
                 if(!$matches){
