@@ -3,7 +3,7 @@
 namespace Stores\Asda;
 
 use Shared\Requests;
-use Model\ReviewModel;
+use Models\ReviewModel;
 use Models\ProductModel;
 
 class AsdaRequests extends Requests {
@@ -24,10 +24,8 @@ class AsdaRequests extends Requests {
         $groceries_endpoint = $this->endpoints->asda->groceries;
 
         if($this->env == "dev"){
-            $this->logger->debug("Running In Dev Environment. Using File");
             $groceries_response = file_get_contents(__DIR__."/../../Data/Groceries.json");
         } else {
-            $this->logger->debug("Running In Prod Environment. Requesting Groceries From Site");
             $groceries_response = $this->request($groceries_endpoint);
         }
         
@@ -43,10 +41,8 @@ class AsdaRequests extends Requests {
         $this->logger->debug("Shelf: $site_shelf_id");
 
         if($this->env == "dev"){
-            $this->logger->debug("Running In Dev Environment. Using Products File");
             $shelf_results = file_get_contents(__DIR__."/../../Data/Shelf.json");
         } else {
-            $this->logger->debug("Running In Prod Environment. Requesting Shelf Products From Site");
             $shelf_results = $this->request($shelf_endpoint);
         }
         
@@ -63,7 +59,7 @@ class AsdaRequests extends Requests {
 
                         foreach($records as $record){
                             $attributes =  $record->{'attributes'};
-                            $product_id = $attributes->{'product.repositoryId'}[0];
+                            $product_id = $attributes->{'sku.repositoryId'}[0];
                             $name = $attributes->{'sku.displayName'}[0];
 
                             // $this->logger->debug("Name: $name \tProduct ID: $product_id");
@@ -87,20 +83,29 @@ class AsdaRequests extends Requests {
 
     public function product($product_id){
 
-        $product = new ProductModel();
-
-        $shelf_endpoint = $this->endpoints->asda->products . $product_id;
+        $shelf_endpoint = $this->endpoints->asda->products;
         $this->logger->debug("Product Details ID: $product_id");
 
         if($this->env == "dev"){
-            $this->logger->debug("Running In Dev Environment. Using Products File");
-            $shelf_results = file_get_contents(__DIR__."/../../Data/Shelf.json");
+            $product_response = file_get_contents(__DIR__."/../../Data/Product.json");
         } else {
-            $this->logger->debug("Running In Prod Environment. Requesting Shelf Products From Site");
-            $shelf_results = $this->request($shelf_endpoint);
+            $product_response = $this->request($shelf_endpoint,"POST",[
+                "item_ids" => [$product_id], 
+                "consumer_contract" => "webapp_pdp",
+                "store_id" => "4676",
+                "request_origin" => "gi"
+            ]);
         }
         
-        $shelf_data = $this->parse_json($shelf_results);
+        //Get all product details and set them accordingly
+        $product_results = $this->parse_json($product_response);
+        $product_details = $product_results->data->uber_item->items[0];
+
+        //Design and build product table, ingredients table,
+        $product = new ProductModel();
+        $product->name = $product_details->item->name;
+
+        $this->logger->debug('Product Name: '.$product->name);
 
         return $product;
     }
@@ -108,29 +113,67 @@ class AsdaRequests extends Requests {
     public function reviews($product_id){
 
         $reviews_endpoint = $this->endpoints->asda->reviews . $product_id;
-        $this->logger->debug("Review Product ID: $product_id");
+
+        $this->logger->debug("Reviews Products ID: $product_id");
+
+        $reviews = [];
 
         if($this->env == "dev"){
-            $this->logger->debug("Running In Dev Environment. Using Reviews File");
-            $reviews_results = file_get_contents(__DIR__."/../../Data/Reviews.json");
+            $reviews_response = file_get_contents(__DIR__."/../../Data/Reviews.json");
+            $reviews_results = $this->parse_json($reviews_response);
+            $reviews = array_merge($reviews, $this->process_reviews($reviews_results->Results));
         } else {
-            $this->logger->debug("Running In Prod Environment. Requesting Reviews Products From Site");
-            $reviews_results = $this->request($reviews_endpoint);
+            $reviews_response = $this->request($reviews_endpoint);
+            $reviews_results = $this->parse_json($reviews_response);
+
+            $total_reviews = $reviews_results->TotalResults;
+            $this->logger->notice($total_reviews . ' Reviews Found');
+
+            for($review_index = 0;$review_index < $total_reviews;$review_index++){
+
+                $this->logger->debug("Reviews Page $review_index");
+
+                $reviews_response = $this->request($reviews_endpoint . '&Limit=100&Offset=' . $review_index * 100);
+                $reviews_results = $this->parse_json($reviews_response);
+
+                $reviews = array_merge($reviews, $this->process_reviews($reviews_results->Results));
+
+                $this->logger->debug(count($reviews) . "/$total_reviews");
+            }
+            
         }
-        
-        // $reviews = $this->parse_json($reviews_results);
 
-        // return $reviews;
-        $product = new ProductModel();
-        $product->name = "Name";
-
-        // Later call product->save();
-        // This will check if new or insert into database
-        
-        return $product;
+        return $reviews;
 
     }
 
+    public function process_reviews($reviews_data){
+        
+        $reviews = [];
+
+        foreach($reviews_data as $review_item){
+            $review = new ReviewModel();
+            $review->rating = $review_item->Rating;
+            $review->review_text = $review_item->ReviewText;
+            $review->title = $review_item->Title;
+            $review->username = $review_item->UserNickname;
+            $review->positive_feedback = $review_item->TotalPositiveFeedbackCount;
+            $review->negative_feedback = $review_item->TotalNegativeFeedbackCount;
+
+            $created_date = new \DateTime( $review_item->LastModificationTime );
+            $review->created_at = $created_date->format('Y-m-d H:i:s');
+
+            $this->logger->debug("Review Details: $review->title \t $review->rating/5 \t $review->created_at");
+
+            $reviews[] = $review;
+        }
+
+        return $reviews;
+    }
+
+    public function recommended($product_id){
+
+    }
 }
 
 ?>
