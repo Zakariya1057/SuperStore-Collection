@@ -4,12 +4,12 @@ namespace Shared;
 
 class Sanitize {
 
-    public function sanitizeFields($data){
+    public function sanitizeAllFields($data){
         $data = (array)$data;
 
         foreach($data as $key => $value){
             if(is_array($value)){
-                $data[$key] = $this->sanitizeFields($value);
+                $data[$key] = $this->sanitizeAllFields($value);
             } else {
                 $data[$key] = $this->sanitizeField($value);
             }
