@@ -17,7 +17,7 @@ class Requests {
         $this->validator = new Validator();
     }
 
-    public function request($url, $method="GET",$headers=[],$data=[],$timeout=300){
+    public function request($url, $method="GET",$data=[],$headers=[],$timeout=300){
 
         $client = HttpClient::create(['verify_peer' => false]);
         
@@ -28,7 +28,14 @@ class Requests {
         if(count($data) == 0){
             $request_data = [ 'headers' => $headers,'timeout' => $timeout];
         } else {
-            $request_data = [ 'headers' => $headers,'json' => $data, 'timeout' => $timeout];
+
+            if($method == "GET"){
+
+                $request_data = [ 'headers' => $headers,'timeout' => $timeout, 'query' => $data];
+            } else {
+                $request_data = [ 'headers' => $headers,'json' => $data, 'timeout' => $timeout];
+            }
+           
         }
 
         $request_send_success = false;
@@ -45,7 +52,7 @@ class Requests {
 
                 $response = $client->request($method, $url,$request_data);
 
-                $this->logger->debug("Sending $method Request: $url");
+                $this->logger->debug("$method REQUEST: $url");
 
                 $statusCode = $response->getStatusCode();
                 
