@@ -18,7 +18,7 @@ class AsdaShelves {
 
     public function details($shelf){
         // Get list of all product sold on shelf. Insert new products
-        $products = $this->request->shelf_products($shelf->store_category_id);
+        $products = $this->request->shelf_products($shelf->site_category_id);
 
         $this->logger->notice('Found '.count($products).' Products For Category: '.$shelf->name);
 
