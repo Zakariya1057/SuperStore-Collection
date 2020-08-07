@@ -47,26 +47,31 @@ class Database {
     public function query($query){
         $conn = $this->connection;
 
-        $query = $this->sanitizer->sanitizeField($query);
-
         try {
 
             if(is_null($query)){
                 throw new Exception("No Query Specified");
             }
 
+            $this->logger->notice("Query: $query");
+
             $results = $conn->query($query);
             
-            if(!$results){
-                //No results returned
+            if(is_bool($results)){
+
+                if(!$results){
+                    throw new Exception($conn->error);
+                }
+
                 return null;
             } else {
-                return $results->fetch_assoc();
+                return $results->fetch_object();
             }
-            
 
         } catch(Exception $e){
             $error = $e->getMessage();
+            $this->logger->error("Query Error: ". $error);
+            throw new Exception($error);
         }
     }
 
