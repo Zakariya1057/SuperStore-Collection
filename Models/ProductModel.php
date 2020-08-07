@@ -8,12 +8,17 @@ use Shared\Database;
 use Shared\Loggers;
 use Models\Model;
 
+// ID, Name, details...., Parent_Id,Store_Id
+
 class ProductModel extends Model {
 
     public $database, $logger,$product;
     
-    function __construct(){
-        $this->database = new Database();
+    function __construct($database=null){
+
+        if($database){
+            $this->database = $database;
+        }
 
         $log = new Loggers();
         $this->logger = $log->logger_handler;
@@ -21,10 +26,12 @@ class ProductModel extends Model {
         $this->table("products");
 
         $fields = [
-            "price" => [
-                "regex" => "price",
-                "nullable" => false,
-            ]
+            "name" => [],
+            "parent_id" => [],
+            "site_id" => [],
+            "site_category_id" => [
+                "type" => "int"
+            ],
         ];
 
         $this->fields($fields);
@@ -32,28 +39,5 @@ class ProductModel extends Model {
     }
 
 }
-
-$product = new ProductModel();
-
-// echo $product->create([
-//     'name' => 's',
-//     'quantity' => 5
-// ]);
-
-$query = $product->whereRaw(['url > 50'])->limit(10)->update(['age' => '2']);
-// $query = $product->selectRaw('NOW() as Da')->like(['age' => 'S%','g'=>'%we'])->limit(10)->get();
-// echo $product->whereRaw('DATE(t) > 50')->delete();
-// $query = $product->where(['store' => 1])->get();
-
-echo $query;
-
-// $product->create(["name" => "Apples", "quantity" => 5]);
-// $item = $product->select(["url" => "Some URL"]);
-
-// if($item){
-//     echo "Product Found";
-// } else {
-//     echo "Product Not Found";
-// }
 
 ?>
