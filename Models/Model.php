@@ -25,17 +25,16 @@ class Model {
         $table_fields_list = [];
         $insert_fields_list = [];
 
+        $sanitize = new Sanitize();
+        $validator = new Validator();
+
+        $data = $sanitize->sanitizeAllFields($data);
+
         foreach($data as $key => $value){
             $table_fields_list[] = "`$key`";
             $insert_fields_list[] = "'$value'";
             $values_list[] = $value;
         }
-
-        //Sanitize And Validate Data,
-        $sanitize = new Sanitize();
-        $validator = new Validator();
-
-        $data = $sanitize->sanitizeFields($data);
 
         try {
             $validator->validate_fields($this->table_fields,$data);
@@ -199,11 +198,8 @@ class Model {
 
         }
 
-
-        // $results = $this->database->query($query);
-
-        $results = $query;
-
+        $results = $this->database->query($query);
+        
         if(!is_null($create)){
             return $this->database->insert_id();
         } else {
