@@ -30,6 +30,10 @@ class Sanitize {
         
         return $string;
     }
+    
+    public function removeCurrency($price){
+        return str_replace('£','',$price);
+    }
 }
 
 ?>
