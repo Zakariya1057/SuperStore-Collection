@@ -7,14 +7,17 @@
         "database": "superstore_database"
     },
 
-    "env": "dev",
+    "env": "env",
 
     "asda": {
         "run": true,
-        "promotions": true,
-        "groceries": true,
+        "groceries": false,
+        "promotions": false,
+        "recommended": false,
+        "stores": true,
 
-        "site_id": 1
+        "site_id": 1,
+        "user_id": 1
     },
 
     "endpoints": {
@@ -25,7 +28,7 @@
             "products": "https://groceries.asda.com/api/items/catalog",
             "reviews": "https://groceries.asda.com/review/reviews.json?requestorigin=gi&apiversion=5.4&passkey=92ffdz3h647mtzgbmu5vedbq&Filter=ProductId%3A",
             "promotions": "https://groceries.asda.com/cmscontent/json/pages/overlays/linksave?requestorigin=gi&Nrpp=10000000&storeId=4977&promoid=",
-            "recommended": "https://groceries.asda.com/hooklogic/delivery/v2/api/page?key=175&page-id=PDPDesktop&viewed-sku="
+            "recommended": "https://groceries.asda.com/p13nservice/recommendations?storeId=4565&placement=item_page.pdp1&skuId="
         }
 
     },
