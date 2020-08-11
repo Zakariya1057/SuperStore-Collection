@@ -14,9 +14,7 @@ class Model {
 
     private $select, $create, $delete, $where,$update, $limit, $like, $table,$table_fields;
 
-    function __construct(){
-
-    }
+    public $database, $logger,$product;
 
     public function create($data){
         $data = $this->convert_string_to_array($data);
@@ -32,7 +30,13 @@ class Model {
 
         foreach($data as $key => $value){
             $table_fields_list[] = "`$key`";
-            $insert_fields_list[] = "'$value'";
+
+            if($value){
+                $insert_fields_list[] = "'$value'";
+            } else {
+                $insert_fields_list[] = "NULL";
+            }
+            
             $values_list[] = $value;
         }
 
@@ -190,6 +194,10 @@ class Model {
                 }
     
                 $query .= "WHERE $where_fields ";
+            } else {
+                if(!is_null($like)){
+                    $query .= "WHERE $like";
+                }
             }
     
             if(!is_null($limit)){
@@ -225,6 +233,21 @@ class Model {
         return $this;
 
     }
+
+    public function save(){
+
+        $data = [];
+
+        foreach($this->table_fields as $name => $validation){
+            $data[$name] = $this->{$name};
+        }
+
+        $this->create($data);
+
+        return $this->database->insert_id();
+
+    }
+
 
     public function delete(){
         $this->delete = true;
