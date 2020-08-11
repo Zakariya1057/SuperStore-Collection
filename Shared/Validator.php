@@ -7,37 +7,57 @@ use Exception;
 class Validator extends Sanitize {
 
     public function validate_fields($validation,$data){
-        // Use field type to see if its valid.
-        // For product price, check if valid price and if not null
 
         $validator_rules = array(
-            "int" => "/^\w+$/"
+            'int'=> '/^\w+$/',
+            'price' => '/^\d{0,8}(\.\d{1,4})?$/',
+            'gram_weight' => '/^\d+g$/',
+            'rating' => '/^\d{0,8}(\.\d{1,4})?$/',
         );
-        
+
         foreach($validation as $field_name => $validate){
-
-            $nullable = $validate['nullable'] ?? false;
-            $type = $validate['type'] ?? null;
-
-            if($type){
-                $regex = $validator_rules[$type] ?? null;
-            }
-            
-            if(!key_exists($field_name,$data)){
-                throw new Exception("Field $field_name Not Found");
-            }
 
             $field = $data[$field_name];
 
-            if(!$nullable && is_null($field)){
-                throw new Exception("$field_name Cannot Be Null");
+
+            $nullable = $validate['nullable'] ?? false;
+            $type = $validate['type'] ?? null;
+            $regex = null;
+
+            $max_length = $validate['max_length'] ?? null;
+
+            $range = $validate['range'] ?? null;
+
+            if(!is_null($range)){
+                $min = $range['min'];
+                $max = $range['max'];
+
+                if($field < $min || $field > $max){
+                    throw new Exception("Field($field) $field_name Exceedes Ranges");
+                }
             }
 
-            if(isset($regex)){
+            if(!is_null($max_length) && strlen($field) > $max_length){
+                throw new Exception("Field $field_name Too Long. Value: $field. Length: $max_length");
+            }
+
+            if(!key_exists($field_name,$data)){
+                throw new Exception("Field($field) $field_name Not Found");
+            }
+
+            if(!$nullable && is_null($field)){
+                throw new Exception("$field_name($field) Cannot Be Null");
+            }
+
+            if(!is_null($type)){
+                $regex = $validator_rules[$type] ?? null;
+            }
+            
+            if(!is_null($regex)){
                 preg_match($regex,$field,$matches);
 
                 if(!$matches){
-                    throw new Exception("$field_name Failed Regex Validation: $regex");
+                    throw new Exception("$field_name($field) Failed Regex Validation: $regex");
                 }
             }
 
@@ -45,13 +65,12 @@ class Validator extends Sanitize {
         
     }
 
-    public function validate_url($url){
-        preg_match('/^([a-z][a-z0-9\*\-\.]*):\/\/(?:(?:(?:[\w\.\-\+!$&\'\(\)*\+,;=]|%[0-9a-f]{2})+:)*(?:[\w\.\-\+%!$&\'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:(?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?](?:[\w#!:\.\?\+=&@!$\'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/',$url,$matches);
-        if($matches){
-            return true;
-        } else {
-            return false;
-        }
+    public function field_length(){
+        
+    }
+
+    public function field_regex(){
+
     }
 
 }
