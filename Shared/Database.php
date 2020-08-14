@@ -53,7 +53,7 @@ class Database {
                 throw new Exception("No Query Specified");
             }
 
-            $this->logger->notice("Query: $query");
+            $this->logger->debug("Query: $query");
 
             $results = $conn->query($query);
             
@@ -88,10 +88,5 @@ class Database {
     }
 
 }
-
-// $db = new Database();
-// $results = $db->query("SELECT * from s");
-
-// print_r($results);
 
 ?>
