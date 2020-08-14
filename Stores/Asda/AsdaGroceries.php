@@ -2,33 +2,39 @@
 
 namespace Stores\Asda;
 
-use Shared\Request;
+use Exception;
 
-class AsdaGroceries {
+class AsdaGroceries extends Asda {
 
-    private $logger,$request,$config;
-
-    function __construct($config,$logger,$database){
-        $this->request = new AsdaRequests($config,$logger);
-        $this->logger  = $logger;
-        $this->config  = $config;
-        $this->database = $database;
+    function __construct($config,$logger,$database)
+    {
+        parent::__construct($config,$logger,$database);
     }
 
     public function groceries(){
         // Go to asda page get all categories and pass to categories
-        $logger = $this->logger;
-        $config = $this->config;
-        $request = $this->request;
-
-        $logger->notice("------- Asda Groceries Start --------");
+        $this->logger->notice("------- Asda Groceries Start --------");
         
-        $groceries = $this->request->groceries();
+        $groceries = $this->groceries_details();
 
-        $category = new AsdaCategories($config,$logger,$this->database);
+        $category = new AsdaCategories($this->config,$this->logger,$this->database);
         $category->categories($groceries);
         
-        $logger->notice("------- Asda Groceries Complete --------");
+        $this->logger->notice("------- Asda Groceries Complete --------");
+    }
+
+    public function groceries_details(){
+
+        $groceries_endpoint = $this->endpoints->groceries;
+
+        if($this->env == "dev"){
+            $groceries_response = file_get_contents(__DIR__."/../../Data/Asda/Groceries.json");
+        } else {
+            $groceries_response = $this->request->request($groceries_endpoint);
+        }
+        
+        return $this->request->parse_json($groceries_response);
+
     }
 
 }

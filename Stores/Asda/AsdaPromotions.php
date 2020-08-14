@@ -3,22 +3,21 @@
 namespace Stores\Asda;
 
 use Shared\Request;
+use Shared\Requests;
+use Exception;
 
-class AsdaPromotions {
+class AsdaPromotions extends Asda {
 
-    private $logger,$request,$config;
-
-    function __construct($config,$logger){
-        $this->request = new AsdaRequests($config,$logger);
-        $this->logger  = $logger;
-        $this->config  = $config;
+    function __construct($config,$logger,$database)
+    {
+        parent::__construct($config,$logger,$database);
     }
 
-    public function details(){
+    public function promotion_details(){
         // Get details about promotion, like expire and start date. Get all products involved.
     }
 
-    public function new_promotions(){
+    public function promotions(){
         //Search for new offers not in database.
     }
 

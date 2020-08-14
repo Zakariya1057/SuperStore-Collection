@@ -3,23 +3,17 @@
 namespace Stores\Asda;
 
 use Exception;
-use Shared\Database;
-use Shared\Request;
-use Models\CategoryModel;
-use Models\ChildCategoryModel;
-use Models\GrandParentCategoryModel;
-use Models\ParentCategoryModel;
 
-class AsdaCategories {
+use Models\Category\CategoryModel;
+use Models\Category\ChildCategoryModel;
+use Models\Category\GrandParentCategoryModel;
+use Models\Category\ParentCategoryModel;
 
-    private $logger,$request,$config,$database,$site_id;
+class AsdaCategories  extends Asda {
 
-    function __construct($config,$logger,$database){
-        $this->request  = new AsdaRequests($config,$logger);
-        $this->database = $database;
-        $this->logger   = $logger;
-        $this->config   = $config;
-        $this->site_id  = $config->get('asda')->site_id;
+    function __construct($config,$logger,$database)
+    {
+        parent::__construct($config,$logger,$database);
     }
 
     public function categories($categories){
@@ -63,8 +57,8 @@ class AsdaCategories {
         $aisle_details = $this->select_category($aisle,"child");
         $this->logger->debug("--- Aisle: $aisle_details->name");
 
-        $shelf = new AsdaShelves($this->config,$this->logger,$this->database);
-        $shelf->details($aisle_details);
+        // $shelf = new AsdaShelves($this->config,$this->logger,$this->database);
+        // $shelf->details($aisle_details);
 
     }
 
@@ -77,7 +71,7 @@ class AsdaCategories {
             'name' => $category_name,
             'site_category_id' => $category_store_id,
             'parent_id' => $parent_id,
-            'site_id' => $this->site_id 
+            'site_type_id' => $this->site_type_id 
         ];
 
         if($type == "grand_parent"){
