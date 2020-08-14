@@ -4,7 +4,7 @@ require_once __DIR__.'/vendor/autoload.php';
 
 // DONE - Reviews Table
 // DONE - Related Products
-// TODO - Main, Locations Stores Table
+// DONE - Main, Locations Stores Table
 // TODO - Ingredients Table
 // TODO - Promotions Table
 
@@ -24,6 +24,12 @@ $logger->notice("---------------------------- Script Starting ------------------
 
 $asda_conf = $config->get('asda');
 
+if($config->get('env') == 'dev'){
+    $logger->notice('Running In Development Environment.');
+} else {
+    $logger->notice('Running In Live Environment.');
+}
+
 if($asda_conf->run){
     $logger->notice("Asda Scraping Start");
     $asda = new Asda($config,$logger,$database);
@@ -31,6 +37,11 @@ if($asda_conf->run){
     // Scrape all categories, including promotions. Ignore duplicates products.
     // This continues where it left off, remembring where it was last time it ran. It keeps its own run history. 
     // Last category it was on and last product.
+
+    if($asda_conf->stores){
+        //Get all stores in given city
+        $asda->stores();
+    }
 
     if($asda_conf->groceries){
         //Get all product sold on site
