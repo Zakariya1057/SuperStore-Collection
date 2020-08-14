@@ -20,7 +20,7 @@ class Sanitize {
 
     public function sanitizeField($string){
         
-        if(!$string){
+        if(is_null($string)){
             return;
         }
 
