@@ -13,8 +13,10 @@ class Validator extends Sanitize {
             'price' => '/^\d{0,8}(\.\d{1,4})?$/',
             'gram_weight' => '/^\d+g$/',
             'rating' => '/^\d{0,8}(\.\d{1,4})?$/',
+            'lat_long' => '/^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/',
+            'time' => '/^\d{2}:\d{2}:\d{2}$/'
         );
-
+        
         foreach($validation as $field_name => $validate){
 
             $field = $data[$field_name];
@@ -42,11 +44,11 @@ class Validator extends Sanitize {
             }
 
             if(!key_exists($field_name,$data)){
-                throw new Exception("Field($field) $field_name Not Found");
+                throw new Exception("Field: $field_name Not Found");
             }
 
             if(!$nullable && is_null($field)){
-                throw new Exception("$field_name($field) Cannot Be Null");
+                throw new Exception("Field: $field_name Cannot Be Null");
             }
 
             if(!is_null($type)){
