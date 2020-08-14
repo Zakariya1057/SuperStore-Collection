@@ -57,8 +57,8 @@ class AsdaCategories  extends Asda {
         $aisle_details = $this->select_category($aisle,"child");
         $this->logger->debug("--- Aisle: $aisle_details->name");
 
-        // $shelf = new AsdaShelves($this->config,$this->logger,$this->database);
-        // $shelf->details($aisle_details);
+        $shelf = new AsdaShelves($this->config,$this->logger,$this->database);
+        $shelf->details($aisle_details);
 
     }
 
