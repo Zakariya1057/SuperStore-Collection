@@ -2,10 +2,6 @@
 // Create Model Class. Use For Inserting Into Databas. Searching And Deleting.
 namespace Models\Product;
 
-require_once __DIR__.'/../vendor/autoload.php';
-
-use Shared\Database;
-use Shared\Loggers;
 use Models\Model;
 
 class ProductModel extends Model {

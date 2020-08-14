@@ -2,11 +2,6 @@
 // Create Model Class. Use For Inserting Into Databas. Searching And Deleting.
 namespace Models\Category;
 
-require_once __DIR__.'/../vendor/autoload.php';
-
-use Shared\Loggers;
-use Models\Model;
-
 class GrandParentCategoryModel extends CategoryModel {
 
     public $database, $logger,$product;
