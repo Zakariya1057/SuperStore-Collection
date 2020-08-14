@@ -1,0 +1,50 @@
+<?php
+// Create Model Class. Use For Inserting Into Databas. Searching And Deleting.
+namespace Models\Store;
+
+require_once __DIR__.'/../vendor/autoload.php';
+
+use Models\Model;
+
+//Each store location.
+class StoreTypeModel extends Model {
+    
+    public $name, $description, $logo_large, $logo_medium;
+    
+    // Name, Logo Small, Logo Big
+    function __construct($database=null){
+
+        parent::__construct($database);
+
+        $this->table("storetypes");
+
+        $fields = [
+            'name' => [],
+            'description' => [
+                'nullable' => true,
+                'limit' => [
+                    'min' => 0,
+                    'max' => 1000
+                ]
+                ],
+            'logo_large' => [
+                'limit' => [
+                    'min' => 0,
+                    'max' => 500
+                ]
+            ],
+            'logo_medium' => [
+                'limit' => [
+                    'min' => 0,
+                    'max' => 500
+                ]
+            ]
+        ];
+
+        $this->fields($fields);
+
+    }
+
+}
+
+?>
