@@ -1,30 +1,25 @@
 <?php
 // Create Model Class. Use For Inserting Into Databas. Searching And Deleting.
-namespace Models;
+namespace Models\Category;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Shared\Loggers;
-use Models\Model;
 
-class GrandParentCategoryModel extends CategoryModel {
+class ParentCategoryModel extends CategoryModel {
 
     public $database, $logger,$product;
 
     function __construct($database=null){
 
-        if($database){
-            $this->database = $database;
-        }
+        parent::__construct($database);
 
-        $log = new Loggers();
-        $this->logger = $log->logger_handler;
-
-        $this->table("grand_parent_categories");
+        $this->table("parent_categories");
 
         $fields = [
             "name" => [],
-            "site_id" => [],
+            "parent_id" => [],
+            "site_type_id" => [],
             "site_category_id" => [
                 "type" => "int"
             ],
