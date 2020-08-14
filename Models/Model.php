@@ -16,6 +16,15 @@ class Model {
 
     public $database, $logger,$product;
 
+    function __construct($database=null){
+        if($database){
+            $this->database = $database;
+        }
+
+        $log = new Loggers();
+        $this->logger = $log->logger_handler;
+    }
+    
     public function create($data){
         $data = $this->convert_string_to_array($data);
         //Insert into table() values();
@@ -31,7 +40,7 @@ class Model {
         foreach($data as $key => $value){
             $table_fields_list[] = "`$key`";
 
-            if($value){
+            if(!is_null($value)){
                 $insert_fields_list[] = "'$value'";
             } else {
                 $insert_fields_list[] = "NULL";
