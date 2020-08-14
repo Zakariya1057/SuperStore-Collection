@@ -2,8 +2,6 @@
 // Create Model Class. Use For Inserting Into Databas. Searching And Deleting.
 namespace Models\Store;
 
-require_once __DIR__.'/../vendor/autoload.php';
-
 use Models\Model;
 
 //Each store location.
@@ -16,7 +14,7 @@ class StoreTypeModel extends Model {
 
         parent::__construct($database);
 
-        $this->table("storetypes");
+        $this->table("store_types");
 
         $fields = [
             'name' => [],
