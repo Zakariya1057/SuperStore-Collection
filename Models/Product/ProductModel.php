@@ -19,7 +19,6 @@ class ProductModel extends Model {
         $brand,
         $dietary_info,
         $allergen_info,
-        $ingredients,
         $storage, 
         $promotion_id,
         
@@ -52,10 +51,7 @@ class ProductModel extends Model {
                 'nullable' => true
             ],
 
-            'weight' => [
-                //Convert from kg to g
-                // 'type' => 'gram_weight'
-            ],
+            'weight' => [],
 
             'brand' => [],
 
@@ -64,9 +60,6 @@ class ProductModel extends Model {
             ],
             'allergen_info' => [
                 'nullable' => true
-            ],
-            'ingredients' => [
-                'nullable'=> true
             ],
 
             'storage' => [
