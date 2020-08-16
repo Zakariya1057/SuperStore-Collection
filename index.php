@@ -5,7 +5,7 @@ require_once __DIR__.'/vendor/autoload.php';
 // DONE - Reviews Table
 // DONE - Related Products
 // DONE - Main, Locations Stores Table
-// TODO - Ingredients Table
+// DONE - Ingredients Table
 // TODO - Promotions Table
 
 use Shared\Config;
@@ -14,13 +14,14 @@ use Shared\Database;
 
 use Stores\Asda\Asda;
 
+
 $config = new Config();
 $log = new Loggers();
 $database = new Database();
 
 $logger = $log->logger_handler;
 
-$logger->notice("---------------------------- Script Starting ----------------------------");
+$logger->notice("---------------------------- Script Start ----------------------------");
 
 $asda_conf = $config->get('asda');
 
@@ -55,7 +56,7 @@ if($asda_conf->run){
     }
 
     if($asda_conf->recommended){
-        //For each product in database. Get all similar Products.
+        //Get all similar Products.
         $asda->recommended();
     }
 
