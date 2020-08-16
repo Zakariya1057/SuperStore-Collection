@@ -22,7 +22,7 @@ class Database {
         $logger = new Loggers();
         $this->logger = $logger->logger_handler;
         
-        $this->logger->debug("Connecting To Database");
+        $this->logger->notice("Connecting To Database");
 
         $this->database_config = $conf->get('database');
 
@@ -36,7 +36,7 @@ class Database {
         if(!$this->connection){
             throw new Exception("Failed to connect to MySQL Database: " . $this->connect_error);
         } else {
-            $this->logger->debug("Successfully Connect To Database");
+            $this->logger->notice("Successfully Connect To Database");
         }
     }
 
