@@ -6,8 +6,6 @@ use Models\Model;
 
 class ProductModel extends Model {
 
-    public $database, $logger,$product;
-
     public 
         $name,
         $description,
@@ -15,13 +13,14 @@ class ProductModel extends Model {
         $small_image, 
         $price,
         $old_price,
+        $is_on_sale,
         $weight,
         $brand,
         $dietary_info,
         $allergen_info,
         $storage, 
         $promotion_id,
-        
+        $url,
         $total_reviews_count,
         $avg_rating,
 
@@ -51,6 +50,10 @@ class ProductModel extends Model {
                 'nullable' => true
             ],
 
+            'is_on_sale' => [
+                'nullable' => true
+            ],
+
             'weight' => [],
 
             'brand' => [],
@@ -61,6 +64,8 @@ class ProductModel extends Model {
             'allergen_info' => [
                 'nullable' => true
             ],
+
+            'url' => [],
 
             'storage' => [
                 'nullable'=> true
