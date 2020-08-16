@@ -18,12 +18,12 @@ class ReviewModel extends Model {
         $fields = [
             'text' => [
                 'nullable' => true,
-                'max_length' => 2000
+                'max_length' => 5000
             ],
 
             'title' => [
                 'nullable' => true,
-                'max_length' => 50
+                'max_length' => 100
             ],
 
             'site_review_id' => [],
