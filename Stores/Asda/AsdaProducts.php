@@ -5,9 +5,12 @@ namespace Stores\Asda;
 use Models\Category\ChildCategoryModel;
 use Models\Product\ProductModel;
 use Models\Product\ReviewModel;
+use Models\Product\IngredientModel;
 use Exception;
 
 class AsdaProducts extends Asda {
+
+    public $product_details;
 
     function __construct($config,$logger,$database)
     {
@@ -50,7 +53,9 @@ class AsdaProducts extends Asda {
             $product_details->database = $this->database;
             $product_id = $product_details->save();
 
-            $product_reviews  = $this->reviews($product_id,$product_site_id);
+            $this->reviews($product_id,$product_site_id);
+            $this->ingredients($product_id,$this->product_details);
+
 
             return $product_id;
 
@@ -102,7 +107,7 @@ class AsdaProducts extends Asda {
         $product->brand = $item->brand;
         $product->dietary_info = $item_enrichment->dietary_info;
         $product->allergen_info = $item_enrichment->allergy_info_formatted_web;
-        $product->ingredients = $item_enrichment->ingredients_formatted;
+
         $product->storage = $item_enrichment->storage;
 
         if($promotion_info->rollback && $promotion_info->rollback->was_price){
@@ -122,6 +127,8 @@ class AsdaProducts extends Asda {
         }
 
         $this->logger->debug('Product Name: '.$product->name);
+
+        $this->product_details = $product_details;
 
         return $product;
     }
@@ -190,6 +197,27 @@ class AsdaProducts extends Asda {
                 $review->product_id = $product_id;
                 $review->database = $this->database;
                 $review->save();
+            }
+
+        }
+
+    }
+
+    public function ingredients($product_id, $product_data){
+        //Store Product Ingredients
+        $ingredients_response = $product_data->item_enrichment->enrichment_info->ingredients_formatted;
+        $ingredients_list = explode(' , ',$ingredients_response);
+
+        print_r($ingredients_list);
+
+        foreach($ingredients_list as $ingredient_item){
+            $ingredient_name = preg_replace('/\s*\.?\s*$/','',$ingredient_item);
+            if($ingredient_name != ''){
+                $ingredient = new IngredientModel($this->database);
+                $ingredient->name = $ingredient_name;
+                $ingredient->product_id = $product_id;
+    
+                $ingredient->save();
             }
 
         }
