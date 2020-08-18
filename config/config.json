@@ -11,12 +11,17 @@
 
     "env": "dev",
 
+    "mock_data": {
+        "reviews": true,
+        "products": true
+    },
+
     "asda": {
         "run": true,
-        "groceries": false,
+        "groceries": true,
         "promotions": false,
         "recommended": false,
-        "stores": true,
+        "stores": false,
 
         "site_type_id": 1,
         "user_id": 1
@@ -41,37 +46,49 @@
         "wait": 60
     },
     
-    "exceptions": {
+    "exclusions": {
 
-        "categories": [
-            "Wine",
-            "Alcohol",
-            "Champagne",
-            "Spirits",
-            "Beer",
-            "Cider",
-            "Liquers",
-            "Ales"
-        ],
+        "categories": {
+            "exclude": [
+                "Wine",
+                "Alcohol",
+                "Champagne",
+                "Spirits",
+                "Beer",
+                "Cider",
+                "Liquers",
+                "Ales"
+            ]
+        },
     
-        "product_halal_check": [
-            "meat (?!alternatives)",
-            "poultry",
-            "meal",
-            "pizza",
-            "party",
-            "world foods",
-            "counters",
-            "soup",
-            "pies",
-            "frozen"
-        ],
-    
-        "group": [
-            "Event",
-            "Summer",
-            "Trending"
-        ]
+        "products": {
+            "check": [
+                "meat (?!alternatives)",
+                "poultry",
+                "meal",
+                "pizza",
+                "party",
+                "world foods",
+                "counters",
+                "soup",
+                "pies",
+                "frozen",
+                "lamb",
+                "mutton",
+                "burger",
+                "sausages",
+                "chicken"
+            ],
+            "exclude": [
+                "pork",
+                "bacon"
+            ]
+        },
+
+        "ingredients": {
+            "check": [],
+            "exclude": ["pork","gelatine"]
+        }
 
     }
 
