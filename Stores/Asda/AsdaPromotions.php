@@ -42,7 +42,7 @@ class AsdaPromotions extends Asda {
             $this->product_rollback($promotion_info,$price_details);
         } elseif(!is_null($promotion_info->linksave)){
             //2 For £10.
-            $this->logger->debug('Product Is Promotion Group. 3 for £10');
+            $this->logger->debug('Product Is Promotion Group');
             $this->product_promotion($promotion_info,$price_details);
         } else {
             //No Product Promotion
@@ -97,18 +97,18 @@ class AsdaPromotions extends Asda {
             $promotion_site_id = $promotion_details->promo_id;
 
             if(!$promotion_results){
-                $this->logger->notice('New Promotion Found: '. $promotion_site_id);
+                $this->logger->notice("New Promotion Found: $promotion_name($promotion_site_id)");
                 $promotion->name = $promotion_name;
                 $promotion->site_promotion_id = $promotion_site_id;
                 $promotion->url = "https://groceries.asda.com/promotion/$promotion_name/$promotion_site_id";
                 $promotion_insert_id = $promotion->save();
             } else {
-                $this->logger->notice('Promotion Found In Database: '. $promotion_site_id);
+                $this->logger->notice("Promotion Found In Database: $promotion_name($promotion_site_id)");
                 $promotion_insert_id = $promotion_results->id;
             }
             
         } else {
-            throw new Exception('Product Not Part Of Promotion. 2 for £10');
+            throw new Exception('Product Not Part Of Promotion.');
         }
 
 
