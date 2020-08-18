@@ -2,11 +2,6 @@
 
 namespace Stores\Asda;
 
-use Exception;
-use Models\Product\ProductModel;
-use Shared\Request;
-use Shared\Requests;
-
 class AsdaShelves extends Asda {
 
     function __construct($config,$logger,$database)
@@ -55,12 +50,9 @@ class AsdaShelves extends Asda {
                             $attributes =  $record->{'attributes'};
                             $product_id = $attributes->{'sku.repositoryId'}[0];
                             $name = $attributes->{'sku.displayName'}[0];
-
-                            // $this->logger->debug("Name: $name \tProduct ID: $product_id");
-                            // $product = $this->product($product_id);
-
-                            $products[] = $product_id;
                             
+                            $products[] = $product_id;
+
                         }
 
                     }
@@ -75,6 +67,8 @@ class AsdaShelves extends Asda {
         return $products;
 
     }
+
+
 
 }
 
