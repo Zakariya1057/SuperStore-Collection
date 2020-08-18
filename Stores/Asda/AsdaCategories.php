@@ -9,7 +9,7 @@ use Models\Category\ChildCategoryModel;
 use Models\Category\GrandParentCategoryModel;
 use Models\Category\ParentCategoryModel;
 
-class AsdaCategories  extends Asda {
+class AsdaCategories extends Asda {
 
     function __construct($config,$logger,$database)
     {
@@ -30,11 +30,19 @@ class AsdaCategories  extends Asda {
 
     public function create_category($category_item){
         //Insert or select category item.
-        $category_details = $this->select_category($category_item,"grand_parent");
-        $this->logger->debug("- Category: $category_details->name");
 
-        foreach($category_item->subcategories as $department){
-            $this->create_department($department,$category_details->id);
+        if(!$this->exclude_category($category_item->displayName)){
+            $this->logger->notice('Category Not Excluded: '. $category_item->displayName);
+
+            $category_details = $this->select_category($category_item,"grand_parent");
+            $this->logger->debug("- Category: $category_details->name");
+    
+            foreach($category_item->subcategories as $department){
+                $this->create_department($department,$category_details->id);
+            }
+
+        } else {
+            $this->logger->notice('Category Excluded: '. $category_item->displayName );
         }
 
     }
