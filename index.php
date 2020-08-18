@@ -6,6 +6,9 @@ require_once __DIR__.'/vendor/autoload.php';
 // DONE - Related Products
 // DONE - Main, Locations Stores Table
 // DONE - Ingredients Table
+// DONE - Exclude Haram Products
+// TODO - Resume Scraping
+
 // TODO - Promotions Table
 
 use Shared\Config;
