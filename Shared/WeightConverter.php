@@ -6,7 +6,7 @@ class WeightConverter {
 
     public function grams($weight){
         //Convert kilograms to grams
-        preg_match('/kg/i',$weight,$matches);
+        preg_match('/\dkg/i',$weight,$matches);
 
         if($matches){
             $weight = str_replace('kg','',$weight);
