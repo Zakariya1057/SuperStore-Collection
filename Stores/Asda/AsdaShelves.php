@@ -4,9 +4,9 @@ namespace Stores\Asda;
 
 class AsdaShelves extends Asda {
 
-    function __construct($config,$logger,$database)
+    function __construct($config,$logger,$database,$remember)
     {
-        parent::__construct($config,$logger,$database);
+        parent::__construct($config,$logger,$database,$remember);
     }
 
     public function details($shelf){
@@ -15,11 +15,24 @@ class AsdaShelves extends Asda {
 
         $this->logger->notice('Found '.count($products).' Products For Category: '.$shelf->name);
 
+        $last_product_index = $this->remember->get('product_index') ?? 0;
+        
+        $products = array_slice($products,$last_product_index);
+
+        $first_product = $products[0];
+
+        $this->logger->notice("Starting With Product: [$last_product_index] $first_product");
+
         //Loop through and insert into database
-        foreach($products as $product_item){
-            $product = new AsdaProducts($this->config,$this->logger,$this->database);
+        foreach($products as $index => $product_item){
+
+            $this->remember->set('product_index', $index + $last_product_index);
+
+            $product = new AsdaProducts($this->config,$this->logger,$this->database,$this->remember);
             $product->product($product_item,$shelf->id);
         }
+
+        $this->remember->set('product_index',0);
     }
 
     public function shelf_products($site_shelf_id){

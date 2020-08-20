@@ -11,19 +11,29 @@ use Models\Category\ParentCategoryModel;
 
 class AsdaCategories extends Asda {
 
-    function __construct($config,$logger,$database)
+    function __construct($config,$logger,$database,$remember)
     {
-        parent::__construct($config,$logger,$database);
+        parent::__construct($config,$logger,$database,$remember);
     }
 
     public function categories($categories){
-        // Go to asda page get all categories and pass to categories
-        $database = $this->database;
 
-        foreach($categories->categories as $category_item){
-            $database->start_transaction();
-            $this->create_category($category_item);
-            $database->end_transaction();
+        $last_category_index = $this->remember->get('grand_parent_category_index') ?? 0;
+        
+        $categories_list = array_slice($categories->categories,$last_category_index);
+
+        if(count($categories_list) != 0){
+
+            $first_category = $categories_list[0];
+            $this->logger->notice("Starting With Grand Parent Category: [$last_category_index] " . $first_category->displayName);
+    
+            foreach($categories_list as $index => $category_item){
+                $this->remember->set('grand_parent_category_index',$index + $last_category_index);
+                $this->create_category($category_item);
+            }
+
+        } else {
+            $this->remember->set('grand_parent_category_index',0);
         }
 
     }
@@ -36,10 +46,23 @@ class AsdaCategories extends Asda {
 
             $category_details = $this->select_category($category_item,"grand_parent");
             $this->logger->debug("- Category: $category_details->name");
+            
+            $last_category_index = $this->remember->get('parent_category_index') ?? 0;
+
+            $categories_list = array_slice($category_item->subcategories,$last_category_index);
+
+            if(count($categories_list) != 0){
+                $first_category = $categories_list[0];
+                $this->logger->notice("Starting With Parent Category: [$last_category_index] " . $first_category->displayName);
     
-            foreach($category_item->subcategories as $department){
-                $this->create_department($department,$category_details->id);
+                foreach($categories_list as $index => $department){
+                    $this->remember->set('parent_category_index',$index + $last_category_index);
+                    $this->create_department($department,$category_details->id);
+                }
+            } else {
+                $this->remember->set('parent_category_index',0);
             }
+
 
         } else {
             $this->logger->notice('Category Excluded: '. $category_item->displayName );
@@ -53,8 +76,22 @@ class AsdaCategories extends Asda {
         $department_details = $this->select_category($department_item,"parent");
         $this->logger->debug("-- Department: $department_details->name");
 
-        foreach($department_item->subcategories as $aisle){
-            $this->create_aisle($aisle,$department_details->id);
+        $last_category_index = $this->remember->get('child_category_index') ?? 0;
+
+        $categories_list = array_slice($department_item->subcategories,$last_category_index);
+
+        if(count($categories_list) != 0){
+
+            $first_category = $categories_list[0];
+            $this->logger->notice("Starting With Child Category: [$last_category_index] " . $first_category->displayName);
+    
+            foreach($categories_list as $index => $aisle){
+                $this->remember->set('child_category_index',$index + $last_category_index);
+                $this->create_aisle($aisle,$department_details->id);
+            }
+
+        } else {
+            $this->remember->set('child_category_index',0);
         }
 
     }
@@ -65,7 +102,7 @@ class AsdaCategories extends Asda {
         $aisle_details = $this->select_category($aisle,"child");
         $this->logger->debug("--- Aisle: $aisle_details->name");
 
-        $shelf = new AsdaShelves($this->config,$this->logger,$this->database);
+        $shelf = new AsdaShelves($this->config,$this->logger,$this->database,$this->remember);
         $shelf->details($aisle_details);
 
     }

@@ -12,10 +12,10 @@ class AsdaProducts extends Asda {
 
     public $product_details,$promotions;
 
-    function __construct($config,$logger,$database)
+    function __construct($config,$logger,$database,$remember)
     {
-        parent::__construct($config,$logger,$database);
-        $this->promotions = new AsdaPromotions($this->config,$this->logger,$this->database);
+        parent::__construct($config,$logger,$database,$remember);
+        $this->promotions = new AsdaPromotions($this->config,$this->logger,$this->database,$this->remember);
     }
 
     public function product($product_site_id,$parent_category_id=null,$parent_site_category_name=null){
@@ -50,6 +50,11 @@ class AsdaProducts extends Asda {
             }
 
             if($product_details){
+
+                $this->logger->notice("Adding New Product: ".$product_details->name);
+
+                $this->database->start_transaction();
+                
                 //Product Added
                 $product_details->parent_category_id = $parent_category_id;
                 $product_details->database = $this->database;
@@ -58,7 +63,9 @@ class AsdaProducts extends Asda {
                 $this->reviews($product_id,$product_site_id);
                 $this->ingredients($product_id,$this->product_details);
 
-                $this->logger->debug('Complete Product Added');
+                $this->logger->notice("Complete Product Added: " . $product_details->name);
+
+                $this->database->end_transaction();
 
                 return $product_id;
             } else {
@@ -263,7 +270,7 @@ class AsdaProducts extends Asda {
 
         $ingredients_list = $this->ingredients_list($product_data);
 
-        print_r($ingredients_list);
+        // print_r($ingredients_list);
 
         foreach($ingredients_list as $ingredient_name){
             $ingredient = new IngredientModel($this->database);
@@ -289,7 +296,7 @@ class AsdaProducts extends Asda {
 
         }
 
-        return $list;
+        return array_unique($list);
     }
 
 }

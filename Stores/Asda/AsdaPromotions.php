@@ -10,9 +10,9 @@ use Models\Product\PromotionModel;
 
 class AsdaPromotions extends Asda {
 
-    function __construct($config,$logger,$database)
+    function __construct($config,$logger,$database,$remember)
     {
-        parent::__construct($config,$logger,$database);
+        parent::__construct($config,$logger,$database,$remember);
     }
 
     // public function promotion_details(){

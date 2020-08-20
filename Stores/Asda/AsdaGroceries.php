@@ -6,9 +6,9 @@ use Exception;
 
 class AsdaGroceries extends Asda {
 
-    function __construct($config,$logger,$database)
+    function __construct($config,$logger,$database,$remember)
     {
-        parent::__construct($config,$logger,$database);
+        parent::__construct($config,$logger,$database,$remember);
     }
 
     public function groceries(){
@@ -17,7 +17,7 @@ class AsdaGroceries extends Asda {
         
         $groceries = $this->groceries_details();
 
-        $category = new AsdaCategories($this->config,$this->logger,$this->database);
+        $category = new AsdaCategories($this->config,$this->logger,$this->database,$this->remember);
         $category->categories($groceries);
         
         $this->logger->notice("------- Asda Groceries Complete --------");

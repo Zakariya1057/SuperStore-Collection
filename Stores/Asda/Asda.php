@@ -10,9 +10,22 @@ use Shared\WeightConverter;
 
 class Asda {
 
-    public $logger,$request,$config,$database,$endpoints,$env,$sanitize,$weight_converter,$site_type_id,$user_id,$city,$exclusions;
-
-    function __construct($config,$logger,$database){
+    public 
+        $logger,
+        $request,
+        $config,
+        $database,
+        $endpoints,
+        $env,
+        $sanitize,
+        $weight_converter,
+        $site_type_id,
+        $user_id,
+        $city,
+        $exclusions,
+        $remember;
+    
+    function __construct($config,$logger,$database,$remember){
         $this->request = new Requests($config,$logger);
         $this->logger  = $logger;
         $this->config  = $config;
@@ -32,27 +45,31 @@ class Asda {
 
         $this->exclusions = $config->get('exclusions');
 
+        $this->remember = $remember;
+
     }
 
+
     public function recommended(){
-        $recommended = new AsdaRecommended($this->config,$this->logger,$this->database);
+        $recommended = new AsdaRecommended($this->config,$this->logger,$this->database,$this->remember);
         $recommended->all_recommended_products();
     }
 
     public function groceries(){
-        $groceries = new AsdaGroceries($this->config,$this->logger,$this->database);
+        $groceries = new AsdaGroceries($this->config,$this->logger,$this->database,$this->remember);
         $groceries->groceries();
     }
 
     public function promotions(){
-        $promotions = new AsdaPromotions($this->config,$this->logger,$this->database);
+        $promotions = new AsdaPromotions($this->config,$this->logger,$this->database,$this->remember);
         $promotions->promotions();
     }
 
     public function stores(){
-        $stores = new AsdaStores($this->config,$this->logger,$this->database);
+        $stores = new AsdaStores($this->config,$this->logger,$this->database,$this->remember);
         $stores->stores();
     }
+
 
 
     //Shared Functionality

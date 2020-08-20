@@ -8,9 +8,9 @@ use Models\Product\RecommendedModel;
 
 class AsdaRecommended extends Asda {
 
-    function __construct($config,$logger,$database)
+    function __construct($config,$logger,$database,$remember)
     {
-        parent::__construct($config,$logger,$database);
+        parent::__construct($config,$logger,$database,$remember);
     }
 
     public function all_recommended_products(){
@@ -55,7 +55,7 @@ class AsdaRecommended extends Asda {
             } else {
                 $this->logger->warning('Similar Product Not Found In Database');
 
-                $new_product = new AsdaProducts($this->config,$this->logger,$this->database);
+                $new_product = new AsdaProducts($this->config,$this->logger,$this->database,$this->remember);
                 
                 $new_product_id = $new_product->product($item->id,null,$this->sanitize->sanitizeField($item->aisleName));
 
