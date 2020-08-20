@@ -2,29 +2,19 @@
 
 namespace Shared;
 
-require_once __DIR__.'/../vendor/autoload.php';
-
-use Shared\Sanitize;
-use Shared\Config;
-use Shared\Loggers;
-
 use Exception;
 
 class Database {
 
-    private $logger, $connection, $database_config,$sanitizer;
+    private $logger, $connection, $database_config,$log_query;
 
-    function __construct() {
-        $conf = new Config();
-        
-        $this->sanitizer = new Sanitize();
+    function __construct($config,$logger) {
 
-        $logger = new Loggers();
-        $this->logger = $logger->logger_handler;
+        $this->logger = $logger;
         
         $this->logger->notice("Connecting To Database");
 
-        $this->database_config = $conf->get('database');
+        $this->database_config = $config->get('database');
 
         $host     = $this->database_config->host;
         $username = $this->database_config->username;
@@ -38,6 +28,8 @@ class Database {
         } else {
             $this->logger->notice("Successfully Connect To Database");
         }
+
+        $this->log_query = $config->get('log_query');
     }
 
     public function connect(){
@@ -53,8 +45,10 @@ class Database {
                 throw new Exception("No Query Specified");
             }
 
-            $this->logger->debug("Query: $query");
-
+            if($this->log_query){
+                $this->logger->debug("Query: $query");
+            }
+            
             $results = $conn->query($query);
             
             if(is_bool($results)){
@@ -81,10 +75,12 @@ class Database {
 
     public function start_transaction(){
         $this->logger->notice("--- Transaction Begin ---");
+        $this->query('START TRANSACTION;');
     }
 
     public function end_transaction(){
         $this->logger->notice("--- Transaction Complete ---");
+        $this->query('COMMIT');
     }
 
 }
