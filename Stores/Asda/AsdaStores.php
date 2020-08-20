@@ -10,9 +10,9 @@ use Models\Store\StoreModel;
 
 class AsdaStores extends Asda {
 
-    function __construct($config,$logger,$database)
+    function __construct($config,$logger,$database,$remember)
     {
-        parent::__construct($config,$logger,$database);
+        parent::__construct($config,$logger,$database,$remember);
     }
 
     public function stores(){
@@ -23,13 +23,19 @@ class AsdaStores extends Asda {
         if($this->env == "dev"){
             $stores_response = file_get_contents(__DIR__."/../../Data/Asda/Stores.json");
         } else {
-            $stores_response = $this->request->request($stores_endpoint);
+            $stores_response = $this->request->request($stores_endpoint,'GET',[],['accept' => 'application/json']);
         }
 
         $stores_results = $this->request->parse_json($stores_response);
+        
+        $stores_list = $stores_results->response->entities;
 
-        foreach($stores_results->response->entities as $item){
+        $this->logger->notice('Found ' . count($stores_list) . ' Stores In ' . $this->city);
+
+        foreach($stores_list as $item){
+            $this->database->start_transaction();
             $this->store($item);
+            $this->database->end_transaction();
         }
 
     }
