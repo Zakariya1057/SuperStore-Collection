@@ -59,7 +59,20 @@ class Database {
 
                 return null;
             } else {
-                return $results->fetch_object();
+                
+                if($results->num_rows > 1){
+
+                    $results_list = [];
+
+                    for($i =0; $i < $results->num_rows; $i++){
+                        $results_list[] = $results->fetch_object();
+                    }
+
+                    return $results_list;
+                } else {
+                    return $results->fetch_object();
+                }
+                
             }
 
         } catch(Exception $e){
@@ -75,12 +88,18 @@ class Database {
 
     public function start_transaction(){
         $this->logger->notice("--- Transaction Begin ---");
-        $this->query('START TRANSACTION;');
+        // $this->query('START TRANSACTION;');
+        $this->connection->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
     }
 
     public function end_transaction(){
         $this->logger->notice("--- Transaction Complete ---");
-        $this->query('COMMIT');
+        $this->connection->commit();
+    }
+
+    public function transaction_rollback(){
+        $this->logger->notice("--- Transaction Rollback ---");
+        $this->connection->rollback();
     }
 
 }
