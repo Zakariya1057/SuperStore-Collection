@@ -11,19 +11,25 @@
     
     "city": "London",
 
-    "env": "dev",
+    "env": "prod",
 
     "mock_data": {
         "reviews": true,
         "products": true
     },
 
+    "continue": true,
+
     "asda": {
         "run": true,
-        "groceries": false,
+
+        "stores": false,
+
+        "groceries": true,
         "promotions": false,
+        "reviews": false,
         "recommended": false,
-        "stores": true,
+        
 
         "site_type_id": 1,
         "user_id": 1
@@ -79,7 +85,10 @@
                 "mutton",
                 "burger",
                 "sausages",
-                "chicken"
+                "chicken",
+                "wings",
+                "beef",
+                "steak"
             ],
             "exclude": [
                 "pork",

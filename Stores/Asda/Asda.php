@@ -70,6 +70,11 @@ class Asda {
         $stores->stores();
     }
 
+    public function reviews(){
+        $reviews = new AsdaReviews($this->config,$this->logger,$this->database,$this->remember);
+        $reviews->reviews();
+    }
+
 
 
     //Shared Functionality

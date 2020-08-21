@@ -41,6 +41,13 @@ class AsdaProducts extends Asda {
                 $category = new ChildCategoryModel($this->database);
                 $category_details = $category->like(['name'=> "$parent_site_category_name%"])->get();
 
+                if(is_array($category_details)){
+                    //Multiple Category Match
+                    $this->logger->debug('Multiple Possible Category Match With Name: ' . $parent_site_category_name);
+                    $this->logger->debug('Select First Product In List');
+                    $category_details = $category_details[0];
+                }
+
                 if(!$category_details){
                     throw new Exception('Failed To Find Matching Parent Category');
                 } else {
@@ -60,7 +67,9 @@ class AsdaProducts extends Asda {
                 $product_details->database = $this->database;
                 $product_id = $product_details->save();
 
-                $this->reviews($product_id,$product_site_id);
+                // $this->reviews($product_id,$product_site_id);
+                // Product Reviews, Product Recommended Scraped Seperately
+
                 $this->ingredients($product_id,$this->product_details);
 
                 $this->logger->notice("Complete Product Added: " . $product_details->name);
@@ -109,7 +118,7 @@ class AsdaProducts extends Asda {
 
         $product = new ProductModel();
         $product->name = $name;
-        $product->dietary_info = $item_enrichment->dietary_info ?? NULL;
+        $product->dietary_info = $item_enrichment->dietary_info_formatted ?? NULL;
 
         if(!$this->exclude_product($name)){
             $this->logger->debug('Stage 1. Product Not Exluded: '. $name);
@@ -199,71 +208,71 @@ class AsdaProducts extends Asda {
         return "https://ui.assets-asda.com/dm/asdagroceries/{$image_id}?defaultImage=asdagroceries/noImage&resMode=sharp2&layer=comp&fit=constrain,1&wid={$size}&hei={$size}fmt=jpg";
     }
 
-    public function reviews($product_id,$product_site_id){
+    // public function reviews($product_id,$product_site_id){
 
-        $reviews_endpoint = $this->endpoints->reviews . $product_site_id;
+    //     $reviews_endpoint = $this->endpoints->reviews . $product_site_id;
 
-        $this->logger->debug("Reviews Products ID: $product_site_id");
+    //     $this->logger->debug("Reviews Products ID: $product_site_id");
 
-        if($this->env == "dev"){
-            $reviews_response = file_get_contents(__DIR__."/../../Data/Asda/Reviews.json");
-            $reviews_results = $this->request->parse_json($reviews_response);
-            $this->process_reviews($product_id, $reviews_results->Results);
-        } else {
-            $reviews_response = $this->request->request($reviews_endpoint);
-            $reviews_results = $this->request->parse_json($reviews_response);
+    //     if($this->env == "dev"){
+    //         $reviews_response = file_get_contents(__DIR__."/../../Data/Asda/Reviews.json");
+    //         $reviews_results = $this->request->parse_json($reviews_response);
+    //         $this->process_reviews($product_id, $reviews_results->Results);
+    //     } else {
+    //         $reviews_response = $this->request->request($reviews_endpoint);
+    //         $reviews_results = $this->request->parse_json($reviews_response);
 
-            $total_reviews = $reviews_results->TotalResults;
-            $this->logger->notice($total_reviews . ' Reviews Found');
+    //         $total_reviews = $reviews_results->TotalResults;
+    //         $this->logger->notice($total_reviews . ' Reviews Found');
 
-            if($total_reviews > 100){
-                $total_pages = ceil($total_reviews / 100 );
-            } else {
-                $total_pages = 1;
-            }
+    //         if($total_reviews > 100){
+    //             $total_pages = ceil($total_reviews / 100 );
+    //         } else {
+    //             $total_pages = 1;
+    //         }
 
-            $this->logger->notice("Total Review Pages: $total_pages");
+    //         $this->logger->notice("Total Review Pages: $total_pages");
 
-            for($review_page = 0;$review_page < $total_pages;$review_page++){
+    //         for($review_page = 0;$review_page < $total_pages;$review_page++){
 
-                $this->logger->debug("Reviews Page $review_page");
+    //             $this->logger->debug("Reviews Page $review_page");
 
-                $reviews_response = $this->request->request($reviews_endpoint . '&Limit=100&Offset=' . $review_page * 100);
-                $reviews_results = $this->request->parse_json($reviews_response);
+    //             $reviews_response = $this->request->request($reviews_endpoint . '&Limit=100&Offset=' . $review_page * 100);
+    //             $reviews_results = $this->request->parse_json($reviews_response);
 
-                $this->process_reviews($product_id, $reviews_results->Results);
-            }
+    //             $this->process_reviews($product_id, $reviews_results->Results);
+    //         }
             
-        }
+    //     }
 
-    }
+    // }
 
-    public function process_reviews($product_id, $reviews_data){
+    // public function process_reviews($product_id, $reviews_data){
 
-        foreach($reviews_data as $review_item){
-            $review = new ReviewModel($this->database);
-            $review->rating = $review_item->Rating;
-            $review->text = $review_item->ReviewText;
-            $review->title = $review_item->Title ?? '';
-            $review->user_id = $this->user_id;
-            $review->site_review_id = $review_item->Id;
+    //     foreach($reviews_data as $review_item){
+    //         $review = new ReviewModel($this->database);
+    //         $review->rating = $review_item->Rating;
+    //         $review->text = $review_item->ReviewText;
+    //         $review->title = $review_item->Title ?? '';
+    //         $review->user_id = $this->user_id;
+    //         $review->site_review_id = $review_item->Id;
 
-            $created_date = new \DateTime( $review_item->LastModificationTime );
-            $review->created_at = $created_date->format('Y-m-d H:i:s');
+    //         $created_date = new \DateTime( $review_item->LastModificationTime );
+    //         $review->created_at = $created_date->format('Y-m-d H:i:s');
 
-            $this->logger->debug("Review Details: $review->title \t $review->rating/5 \t $review->created_at");
+    //         $this->logger->debug("Review Details: $review->title \t $review->rating/5 \t $review->created_at");
 
-            $select_review = $review->where(['site_review_id' => $review->site_review_id])->get();
+    //         $select_review = $review->where(['site_review_id' => $review->site_review_id])->get();
 
-            if(is_null($select_review)){
-                $review->product_id = $product_id;
-                $review->database = $this->database;
-                $review->save();
-            }
+    //         if(is_null($select_review)){
+    //             $review->product_id = $product_id;
+    //             $review->database = $this->database;
+    //             $review->save();
+    //         }
 
-        }
+    //     }
 
-    }
+    // }
 
     public function ingredients($product_id, $product_data){
         //Store Product Ingredients

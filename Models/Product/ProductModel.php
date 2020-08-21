@@ -24,6 +24,9 @@ class ProductModel extends Model {
         $total_reviews_count,
         $avg_rating,
 
+        $reviews_searched,
+        $recommended_searched,
+
         $parent_category_id,
         $site_type_id,
         $site_product_id;
@@ -74,6 +77,15 @@ class ProductModel extends Model {
             'promotion_id' => [
                 'nullable' => true
             ],
+
+            
+            'reviews_searched' => [
+                'nullable' => true
+            ],
+            'recommended_searched' => [
+                'nullable' => true
+            ],
+
 
             'avg_rating' => [
                 'nullable' => true,

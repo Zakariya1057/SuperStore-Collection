@@ -34,7 +34,6 @@ $remember->site_name = 'asda';
 
 $remember->retrieve_data();
 
-
 if($config->get('env') == 'dev'){
     $logger->notice('Running In Development Environment.');
 } else {
@@ -70,6 +69,10 @@ try {
         if($asda_conf->recommended){
             //Get all similar Products.
             $asda->recommended();
+        }
+
+        if($asda_conf->reviews){
+            $asda->reviews();
         }
     
         $logger->notice("Asda Scraping Complete");
