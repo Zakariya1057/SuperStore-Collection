@@ -26,6 +26,9 @@ class AsdaShelves extends Asda {
         //Loop through and insert into database
         foreach($products as $index => $product_item){
 
+            //Between Each Products. Wait 1 Second
+            sleep(2);
+
             $this->remember->set('product_index', $index + $last_product_index);
 
             $product = new AsdaProducts($this->config,$this->logger,$this->database,$this->remember);
