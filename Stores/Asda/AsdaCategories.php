@@ -32,7 +32,6 @@ class AsdaCategories extends Asda {
                 $this->create_category($category_item);
             }
 
-        } else {
             $this->remember->set('grand_parent_category_index',0);
         }
 
@@ -42,10 +41,10 @@ class AsdaCategories extends Asda {
         //Insert or select category item.
 
         if(!$this->exclude_category($category_item->displayName)){
-            $this->logger->notice('Category Not Excluded: '. $category_item->displayName);
+            $this->logger->debug('Category Not Excluded: '. $category_item->displayName);
 
             $category_details = $this->select_category($category_item,"grand_parent");
-            $this->logger->debug("- Category: $category_details->name");
+            $this->logger->notice("- Category: $category_details->name");
             
             $last_category_index = $this->remember->get('parent_category_index') ?? 0;
 
@@ -59,8 +58,9 @@ class AsdaCategories extends Asda {
                     $this->remember->set('parent_category_index',$index + $last_category_index);
                     $this->create_department($department,$category_details->id);
                 }
-            } else {
+                
                 $this->remember->set('parent_category_index',0);
+
             }
 
 
@@ -74,7 +74,7 @@ class AsdaCategories extends Asda {
         $department_item->parent_id = $parent_id;
 
         $department_details = $this->select_category($department_item,"parent");
-        $this->logger->debug("-- Department: $department_details->name");
+        $this->logger->notice("-- Department: $department_details->name");
 
         $last_category_index = $this->remember->get('child_category_index') ?? 0;
 
@@ -83,15 +83,15 @@ class AsdaCategories extends Asda {
         if(count($categories_list) != 0){
 
             $first_category = $categories_list[0];
-            $this->logger->notice("Starting With Child Category: [$last_category_index] " . $first_category->displayName);
+            $this->logger->debug("Starting With Child Category: [$last_category_index] " . $first_category->displayName);
     
             foreach($categories_list as $index => $aisle){
                 $this->remember->set('child_category_index',$index + $last_category_index);
                 $this->create_aisle($aisle,$department_details->id);
             }
 
-        } else {
             $this->remember->set('child_category_index',0);
+
         }
 
     }
@@ -100,7 +100,7 @@ class AsdaCategories extends Asda {
         $aisle->parent_id = $parent_id;
 
         $aisle_details = $this->select_category($aisle,"child");
-        $this->logger->debug("--- Aisle: $aisle_details->name");
+        $this->logger->notice("--- Aisle: $aisle_details->name");
 
         $shelf = new AsdaShelves($this->config,$this->logger,$this->database,$this->remember);
         $shelf->details($aisle_details);
