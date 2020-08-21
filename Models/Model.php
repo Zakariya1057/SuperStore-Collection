@@ -14,7 +14,7 @@ class Model {
 
     private $select, $create, $delete, $where,$update, $limit, $like, $table,$table_fields;
 
-    public $database, $logger,$product;
+    public $database, $logger,$product, $insert_ignore;
 
     function __construct($database=null){
         if($database){
@@ -67,7 +67,7 @@ class Model {
 
     public function select($fields=null){
         
-        $query = 'SELECT ';
+        $query = '';
 
         $fields = $this->convert_string_to_array($fields);
 
@@ -101,7 +101,12 @@ class Model {
         $wheres = [];
 
         foreach($data as $key => $value){
-            $wheres[] = "$key = '$value' ";
+            if(is_null($value) ){
+                $wheres[] = "$key is NULL ";
+            } else {
+                $wheres[] = "$key = '$value' ";
+            }
+           
         }
 
         $query = implode(" AND ",$wheres);
@@ -174,7 +179,13 @@ class Model {
         
 
         if(!is_null($create)){
-            $query .= "INSERT INTO $table_name $create";
+
+            if(!is_null($this->insert_ignore)){
+                $query .= "INSERT IGNORE INTO $table_name $create";
+            } else {
+                $query .= "INSERT INTO $table_name $create";
+            }
+            
         } else {
 
             if($delete){
