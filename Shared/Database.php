@@ -6,11 +6,12 @@ use Exception;
 
 class Database {
 
-    private $logger, $connection, $database_config,$log_query;
+    private $config, $logger, $connection, $database_config,$log_query;
 
     function __construct($config,$logger) {
 
         $this->logger = $logger;
+        $this->config = $config;
         
         $this->logger->notice("Connecting To Database");
 
@@ -48,38 +49,84 @@ class Database {
             if($this->log_query){
                 $this->logger->debug("Query: $query");
             }
-            
-            $results = $conn->query($query);
-            
-            if(is_bool($results)){
 
-                if(!$results){
-                    throw new Exception($conn->error);
-                }
-
-                return null;
-            } else {
-                
-                if($results->num_rows > 1){
-
-                    $results_list = [];
-
-                    for($i =0; $i < $results->num_rows; $i++){
-                        $results_list[] = $results->fetch_object();
-                    }
-
-                    return $results_list;
-                } else {
-                    return $results->fetch_object();
-                }
-                
-            }
+            $database_results = $conn->query($query);
+            return $this->process_results( $database_results );
 
         } catch(Exception $e){
             $error = $e->getMessage();
             $this->logger->error("Query Error: ". $error);
-            throw new Exception($error);
+
+            if ($conn->ping()) {
+                $this->logger->debug('Connection Is OK');
+                throw new Exception($error);
+            } else {
+                $this->logger->error('Connection To MYSQL Server Has Gone Away');
+                
+                $retry_config = $this->config->get('retry_request');
+
+                $retry_times = $retry_config->attempts;
+                $wait = $retry_config->wait;
+
+                $connection_successfull = false;
+
+                $this->logger->error('Reattempting To Connect To MYSQL Server');
+
+                for($i =0;$i < $retry_times;$i++){
+
+                    $this->logger->debug("Sleeping First For $wait Seconds");
+
+                    sleep($wait);
+
+                    if($conn->ping()) {
+                        $this->logger->debug('Successfully Reconnected To Database');
+                        $connection_successfull = true;
+                        break;
+                    } else {
+                        $this->logger->debug('Failed To Reconnect To Database');
+                    }
+
+                }
+
+                if($connection_successfull){
+                    $this->logger->debug('Reattempting Query After Successfull Connection To Database');
+                    return $this->process_results( $conn->query($query) );
+                } else {
+                    throw new Exception('Failed To Reconnect To MYSQL Server');
+                }
+                
+            }
+            
         }
+
+    }
+
+    private function process_results($results){
+
+        if(is_bool($results)){
+
+            if(!$results){
+                throw new Exception($this->connection->error);
+            }
+
+            return null;
+        } else {
+            
+            if($results->num_rows > 1){
+
+                $results_list = [];
+
+                for($i =0; $i < $results->num_rows; $i++){
+                    $results_list[] = $results->fetch_object();
+                }
+
+                return $results_list;
+            } else {
+                return $results->fetch_object();
+            }
+            
+        }
+
     }
 
     public function insert_id(){
