@@ -9,7 +9,7 @@
 
     "log_query": true,
     
-    "city": "London",
+    "city": "Birmingham",
 
     "env": "prod",
 
@@ -18,7 +18,7 @@
         "products": true
     },
 
-    "continue": true,
+    "continue": false,
 
     "asda": {
         "run": true,
@@ -50,7 +50,7 @@
     },
 
     "retry_request": {
-        "attempts": 10,
+        "attempts": 3,
         "wait": 60
     },
     
@@ -75,12 +75,8 @@
                 "poultry",
                 "meal",
                 "pizza",
-                "party",
-                "world foods",
-                "counters",
                 "soup",
                 "pies",
-                "frozen",
                 "lamb",
                 "mutton",
                 "burger",
