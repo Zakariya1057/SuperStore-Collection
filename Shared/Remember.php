@@ -3,24 +3,24 @@
 namespace Shared;
 
 use Exception;
+use Models\ScriptHistory\ScriptHistory;
 
 class Remember {
 
     private $config,$logger;
 
+    public $site_type_id;
+
+    private $history;
+
     private $error_file,$error_message,$error_stack;
+    private $grand_parent_category_index,$parent_category_index,$child_category_index,$product_index, $error_line_number;
 
-    private $grand_parent_category_index,$parent_category_index,$child_category_index,$product_index, $line_number;
-
-    public $site_name;
-
-    private $file_location;
-
-    function __construct($config,$logger) {
+    function __construct($config,$logger,$database) {
         $this->logger = $logger;
         $this->config = $config;
 
-        $this->file_location = __DIR__."/../Error/Error.json";
+        $this->history = new ScriptHistory($database);
     }
 
     public function get($name){
@@ -34,7 +34,7 @@ class Remember {
         //Save Details After Failure
         $this->{$name} = $index;
         $this->logger->debug("Setting $name: $index");
-        $this->save_data();
+        $this->history->where(['site_type_id' => $this->site_type_id])->update([$name => $index]);
     }
 
     public function set_error($error_message,$error_file,$error_stack,$line_number){
@@ -49,11 +49,8 @@ class Remember {
 
         if($this->config->get('continue')){
 
-            $data = json_decode( file_get_contents($this->file_location) );
-
-            $details = $data->sites->{$this->site_name};
-            
-            $this->grand_parent_category_index = $details->grand_parent_index;
+            $details = $this->history->where(['site_type_id' => $this->site_type_id])->get();
+            $this->grand_parent_category_index = $details->grand_parent_category_index;
             $this->parent_category_index = $details->parent_category_index;
             $this->child_category_index = $details->child_category_index;
             $this->product_index = $details->product_index;
@@ -62,35 +59,18 @@ class Remember {
     }
 
     public function save_data(){
-        //Save Details To File
-        $data = [];
+        //Saving Details To Database
+        $this->history->where(['site_type_id' => $this->site_type_id])->update([
+            'grand_parent_category_index' => $this->grand_parent_category_index,
+            'parent_category_index' => $this->parent_category_index,
+            'child_category_index' => $this->child_category_index,
+            'product_index' => $this->product_index,
 
-        if(!is_null($this->error_message) ){
-            $error_details = [
-                'message' => $this->error_message,
-                'file' => $this->error_file,
-                'line_number' => $this->line_number,
-                // 'stack_trace' => $this->error_stack,
-            ];
-        } else {
-            $error_details = null;
-        }
+            'error_message' => $this->error_message,
+            'error_line_number' => $this->error_line_number,
+            'error_file' => $this->error_file
+        ]);
 
-
-        $last_details = [
-            $this->site_name => [
-                "grand_parent_index" =>  $this->grand_parent_category_index,
-                "parent_category_index" => $this->parent_category_index,
-                "child_category_index" => $this->child_category_index,
-                "product_index" => $this->product_index
-            ]
-
-        ];
-
-        $data['sites'] = $last_details;
-        $data['error'] = $error_details;
-
-        file_put_contents($this->file_location,json_encode($data));
     }
 
 
