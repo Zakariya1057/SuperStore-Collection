@@ -19,7 +19,7 @@ class Requests {
 
     public function request($url, $method="GET",$data=[],$headers=[],$timeout=300){
 
-        $client = HttpClient::create(['verify_peer' => false]);
+        $client = HttpClient::create();
         
         $retry_config = $this->config->get("retry_request");
 
