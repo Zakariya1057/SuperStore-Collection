@@ -27,7 +27,7 @@ class AsdaShelves extends Asda {
         foreach($products as $index => $product_item){
 
             //Between Each Products. Wait 1 Second
-            sleep(2);
+            sleep(1);
 
             $this->remember->set('product_index', $index + $last_product_index);
 
