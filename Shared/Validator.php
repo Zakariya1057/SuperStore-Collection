@@ -19,8 +19,7 @@ class Validator extends Sanitize {
         
         foreach($validation as $field_name => $validate){
 
-            $field = $data[$field_name];
-
+            $field = $data[$field_name] ?? null;
 
             $nullable = $validate['nullable'] ?? false;
             $type = $validate['type'] ?? null;
@@ -29,6 +28,10 @@ class Validator extends Sanitize {
             $max_length = $validate['max_length'] ?? null;
 
             $range = $validate['range'] ?? null;
+
+            if($nullable && is_null($field)){
+                return;
+            }
 
             if(!is_null($range)){
                 $min = $range['min'];
