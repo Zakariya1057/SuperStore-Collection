@@ -240,8 +240,12 @@ class Model {
 
         $wheres = [];
 
+        $sanitize = new Sanitize();
+
+        $data = $sanitize->sanitizeAllFields($data);
+
         foreach($data as $key => $value){
-            $wheres[] = "$key = '$value' ";
+            $wheres[] = "`$key` = '$value' ";
         }
 
         $query = implode(", ",$wheres);
