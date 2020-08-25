@@ -95,19 +95,32 @@ class AsdaProducts extends Asda {
         if($this->env == "dev"){
             $product_response = file_get_contents(__DIR__."/../../Data/Asda/Product.json");
         } else {
+
+            //After running for about an hour this will fail. In that case, wait five minutes and retry
             $product_response = $this->request->request($shelf_endpoint,"POST",[
                 "item_ids" => [$product_id], 
                 "consumer_contract" => "webapp_pdp",
                 "store_id" => "4676",
                 "request_origin" => "gi"
             ]);
+
         }
         
+        if($product_response){
+            $this->logger->debug('Product Returned');
+        } else {
+            $this->logger->debug('No Product Returned');
+        }
+        
+        file_put_contents(__DIR__.'/../../ProductDetails.json',$product_response);
+
+        $this->logger->debug('Saving File and Parse Json Response');
         //Get all product details and set them accordingly
         $product_results = $this->request->parse_json($product_response);
-        $product_details = $product_results->data->uber_item->items[0];
+        $this->logger->debug('Successfully parsed json file');
 
-        //Design and build product table, ingredients table,
+        $product_details = $product_results->data->uber_item->items[0];
+        $this->logger->debug('Fetched product details');
 
         $item = $product_details->item;
         $name = $item->name;
@@ -127,6 +140,8 @@ class AsdaProducts extends Asda {
             return null;
         }
 
+        preg_match("/halal|vegetarian|vegan/i",$product->dietary_info,$halal_matches);
+
         //Check product name, if matches possible haram then double check
         if(!$this->product_possible_haram($name)){
             $this->logger->debug('Stage 2. Product Halal '. $name);
@@ -135,8 +150,6 @@ class AsdaProducts extends Asda {
             $this->logger->debug('Stage 2. Product Maybe Haram. Halal/Vegan/Vegetarian Check');
 
             if(!is_null($product->dietary_info)){
-                preg_match("/halal|vegetarian|vegan/i",$product->dietary_info,$halal_matches);
-
                 if($halal_matches){
                     $this->logger->debug('Stage 2A. Product Halal');
                 } else {
@@ -150,15 +163,18 @@ class AsdaProducts extends Asda {
            
         }
 
-        //Check product ingredients, if pork found then exlucde.
-        $ingredients = $this->ingredients_list($product_details);
-        if($this->haram_ingredients($ingredients)){
-            $this->logger->debug('Stage 3. Haram Ingredients Found: '. $name);
-            return;
+        if(!$halal_matches){
+            //Check product ingredients, if pork found then exlucde.
+            $ingredients = $this->ingredients_list($product_details);
+            if($this->haram_ingredients($ingredients)){
+                $this->logger->debug('Stage 3. Haram Ingredients Found: '. $name);
+                return;
+            } else {
+                $this->logger->debug('Stage 3. No Haram Ingredients Found: '. $name);
+            }
         } else {
-            $this->logger->debug('Stage 3. No Haram Ingredients Found: '. $name);
+            $this->logger->debug('Halal Found In Product Name');
         }
-
 
         $product->site_type_id = $this->site_type_id;
         $product->description = $item->description == '.' ? NULL : $item->description;
@@ -208,72 +224,6 @@ class AsdaProducts extends Asda {
         return "https://ui.assets-asda.com/dm/asdagroceries/{$image_id}?defaultImage=asdagroceries/noImage&resMode=sharp2&layer=comp&fit=constrain,1&wid={$size}&hei={$size}fmt=jpg";
     }
 
-    // public function reviews($product_id,$product_site_id){
-
-    //     $reviews_endpoint = $this->endpoints->reviews . $product_site_id;
-
-    //     $this->logger->debug("Reviews Products ID: $product_site_id");
-
-    //     if($this->env == "dev"){
-    //         $reviews_response = file_get_contents(__DIR__."/../../Data/Asda/Reviews.json");
-    //         $reviews_results = $this->request->parse_json($reviews_response);
-    //         $this->process_reviews($product_id, $reviews_results->Results);
-    //     } else {
-    //         $reviews_response = $this->request->request($reviews_endpoint);
-    //         $reviews_results = $this->request->parse_json($reviews_response);
-
-    //         $total_reviews = $reviews_results->TotalResults;
-    //         $this->logger->notice($total_reviews . ' Reviews Found');
-
-    //         if($total_reviews > 100){
-    //             $total_pages = ceil($total_reviews / 100 );
-    //         } else {
-    //             $total_pages = 1;
-    //         }
-
-    //         $this->logger->notice("Total Review Pages: $total_pages");
-
-    //         for($review_page = 0;$review_page < $total_pages;$review_page++){
-
-    //             $this->logger->debug("Reviews Page $review_page");
-
-    //             $reviews_response = $this->request->request($reviews_endpoint . '&Limit=100&Offset=' . $review_page * 100);
-    //             $reviews_results = $this->request->parse_json($reviews_response);
-
-    //             $this->process_reviews($product_id, $reviews_results->Results);
-    //         }
-            
-    //     }
-
-    // }
-
-    // public function process_reviews($product_id, $reviews_data){
-
-    //     foreach($reviews_data as $review_item){
-    //         $review = new ReviewModel($this->database);
-    //         $review->rating = $review_item->Rating;
-    //         $review->text = $review_item->ReviewText;
-    //         $review->title = $review_item->Title ?? '';
-    //         $review->user_id = $this->user_id;
-    //         $review->site_review_id = $review_item->Id;
-
-    //         $created_date = new \DateTime( $review_item->LastModificationTime );
-    //         $review->created_at = $created_date->format('Y-m-d H:i:s');
-
-    //         $this->logger->debug("Review Details: $review->title \t $review->rating/5 \t $review->created_at");
-
-    //         $select_review = $review->where(['site_review_id' => $review->site_review_id])->get();
-
-    //         if(is_null($select_review)){
-    //             $review->product_id = $product_id;
-    //             $review->database = $this->database;
-    //             $review->save();
-    //         }
-
-    //     }
-
-    // }
-
     public function ingredients($product_id, $product_data){
         //Store Product Ingredients
 
@@ -285,6 +235,7 @@ class AsdaProducts extends Asda {
             $ingredient = new IngredientModel($this->database);
             $ingredient->name = $ingredient_name;
             $ingredient->product_id = $product_id;
+            $ingredient->insert_ignore = true;
 
             $ingredient->save();
         }
