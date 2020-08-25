@@ -57,7 +57,9 @@ class ProductModel extends Model {
                 'nullable' => true
             ],
 
-            'weight' => [],
+            'weight' => [
+                'nullable' => true
+            ],
 
             'brand' => [],
 
@@ -78,7 +80,7 @@ class ProductModel extends Model {
                 'nullable' => true
             ],
 
-            
+
             'reviews_searched' => [
                 'nullable' => true
             ],
