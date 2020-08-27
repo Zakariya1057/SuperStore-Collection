@@ -62,7 +62,7 @@ class AsdaStores extends Asda {
             $new_store = $store;
             $new_store->name = $name;
             $new_store->store_site_id = $id;
-            $new_store->store_type_id = $this->site_type_id;
+            $new_store->store_type_id = $this->store_type_id;
             $new_store->description = $description;
             $new_store->store_image = 
             $new_store->site_url = $site_url;
@@ -97,6 +97,8 @@ class AsdaStores extends Asda {
 
             $longitude = $coordinates->long;
             $latitude = $coordinates->lat;
+            $city = $address->city;
+            $postcode = $address->postalCode;
 
             $location->store_id = $store_id;
 
@@ -106,6 +108,9 @@ class AsdaStores extends Asda {
             $location->address_line1 = $address->line1;
             $location->address_line2 = $address->line2;
             $location->address_line3 = $address->line3;
+
+            $location->city = $city;
+            $location->postcode = $postcode;
             
             $location->save();
         } else {
@@ -137,8 +142,8 @@ class AsdaStores extends Asda {
                 $opening_hours->closed_today = $hour_item->isClosed == false ? NULL : true;
                 $opening_hours->day_of_week = $day_of_week;
                 $opening_hours->store_id = $store_id;
-                $opening_hours->open = $this->format_time($time_details->start);
-                $opening_hours->close = $this->format_time($time_details->end);
+                $opening_hours->opens_at = $this->format_time($time_details->start);
+                $opening_hours->closes_at = $this->format_time($time_details->end);
 
                 $opening_hours->save();
 
@@ -190,6 +195,10 @@ class AsdaStores extends Asda {
         
         $facilities_list = $facilities_details->c_facilitiesList;
         
+        if($facilities_details->c_petrolStation){
+            $facilities_list[] = "Petrol Filling Station";
+        }
+
         foreach($facilities_list as $facility_name){
             $facility = new FacilitiesModel($this->database);
 
