@@ -7,7 +7,7 @@ use Models\Model;
 //Each store location.
 class StoreTypeModel extends Model {
     
-    public $name, $description, $logo_large, $logo_medium;
+    public $name, $description, $large_logo, $small_logo;
     
     // Name, Logo Small, Logo Big
     function __construct($database=null){
@@ -25,13 +25,13 @@ class StoreTypeModel extends Model {
                     'max' => 1000
                 ]
                 ],
-            'logo_large' => [
+            'large_logo' => [
                 'limit' => [
                     'min' => 0,
                     'max' => 500
                 ]
             ],
-            'logo_medium' => [
+            'small_logo' => [
                 'limit' => [
                     'min' => 0,
                     'max' => 500
