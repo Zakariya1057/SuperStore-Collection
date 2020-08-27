@@ -9,7 +9,7 @@ class Remember {
 
     private $config,$logger;
 
-    public $site_type_id;
+    public $store_type_id;
 
     private $history;
 
@@ -34,7 +34,7 @@ class Remember {
         //Save Details After Failure
         $this->{$name} = $index;
         $this->logger->debug("Setting $name: $index");
-        $this->history->where(['site_type_id' => $this->site_type_id])->update([$name => $index]);
+        $this->history->where(['store_type_id' => $this->store_type_id])->update([$name => $index]);
     }
 
     public function set_error($error_message,$error_file,$error_stack,$line_number){
@@ -49,18 +49,25 @@ class Remember {
 
         if($this->config->get('continue')){
 
-            $details = $this->history->where(['site_type_id' => $this->site_type_id])->get();
-            $this->grand_parent_category_index = $details->grand_parent_category_index;
-            $this->parent_category_index = $details->parent_category_index;
-            $this->child_category_index = $details->child_category_index;
-            $this->product_index = $details->product_index;
+            $details = $this->history->where(['store_type_id' => $this->store_type_id])->get();
+
+            if(!$details){
+                $this->logger->debug('No Script History Found For Site. Creating One');
+                $this->history->create(['store_type_id' => $this->store_type_id]);
+            } else {
+                $this->grand_parent_category_index = $details->grand_parent_category_index;
+                $this->parent_category_index = $details->parent_category_index;
+                $this->child_category_index = $details->child_category_index;
+                $this->product_index = $details->product_index;
+            }
+
         }
 
     }
 
     public function save_data(){
         //Saving Details To Database
-        $this->history->where(['site_type_id' => $this->site_type_id])->update([
+        $this->history->where(['store_type_id' => $this->store_type_id])->update([
             'grand_parent_category_index' => $this->grand_parent_category_index,
             'parent_category_index' => $this->parent_category_index,
             'child_category_index' => $this->child_category_index,

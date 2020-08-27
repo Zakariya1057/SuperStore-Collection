@@ -12,8 +12,8 @@ class ChildCategoryModel extends CategoryModel {
 
         $fields = [
             "name" => [],
-            "parent_id" => [],
-            "site_type_id" => [],
+            "parent_category_id" => [],
+            "store_type_id" => [],
             "site_category_id" => [
                 "type" => "int"
             ],

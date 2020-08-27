@@ -176,7 +176,7 @@ class AsdaProducts extends Asda {
             $this->logger->debug('Halal Found In Product Name');
         }
 
-        $product->site_type_id = $this->site_type_id;
+        $product->store_type_id = $this->store_type_id;
         $product->description = $item->description == '.' ? NULL : $item->description;
         $product->site_product_id = $item->sku_id;
 

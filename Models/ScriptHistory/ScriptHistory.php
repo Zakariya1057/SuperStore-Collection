@@ -10,7 +10,7 @@ class ScriptHistory extends Model {
 
     public $database, $logger,$product;
     
-    public $site_type_id, $grand_parent_category_index, $parent_category_index, $child_category_index, $product_index, $error_file, $error_message,$error_line_number;
+    public $store_type_id, $grand_parent_category_index, $parent_category_index, $child_category_index, $product_index, $error_file, $error_message,$error_line_number;
     function __construct($database=null){
 
         parent::__construct($database);
@@ -19,7 +19,7 @@ class ScriptHistory extends Model {
 
         $fields = [
 
-            'site_type_id' => [ 
+            'store_type_id' => [ 
                 'type' => 'int'
             ],
             

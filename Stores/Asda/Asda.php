@@ -19,7 +19,7 @@ class Asda {
         $env,
         $sanitize,
         $weight_converter,
-        $site_type_id,
+        $store_type_id,
         $user_id,
         $city,
         $exclusions,
@@ -39,7 +39,7 @@ class Asda {
         $this->sanitize = new Sanitize();
         $this->weight_converter = new WeightConverter();
 
-        $this->site_type_id = $asda_conf->site_type_id;
+        $this->store_type_id = $asda_conf->store_type_id;
         $this->user_id = $asda_conf->user_id;
         $this->city = $config->get('city');
 

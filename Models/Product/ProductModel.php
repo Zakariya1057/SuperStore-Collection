@@ -28,7 +28,7 @@ class ProductModel extends Model {
         $recommended_searched,
 
         $parent_category_id,
-        $site_type_id,
+        $store_type_id,
         $site_product_id;
     
     function __construct($database=null){
@@ -102,7 +102,7 @@ class ProductModel extends Model {
             'parent_category_id' => [
                 'type' => 'int'
             ],
-            'site_type_id' => [
+            'store_type_id' => [
                 'type' => 'int'
             ],
             'site_product_id' => [

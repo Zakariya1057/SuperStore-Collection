@@ -40,7 +40,7 @@
 
         if($asda_conf->run){
 
-            $remember->site_type_id = $asda_conf->site_type_id;
+            $remember->store_type_id = $asda_conf->store_type_id;
             $remember->retrieve_data();
 
             $logger->notice("----------  Asda Scraping Start ----------");
@@ -85,10 +85,10 @@
 
         $remember->set_error($error_message,$error_file,$e->getTrace(),$line_number);
 
-        $logger->error('Error Occured Exiting Script');
-        $logger->error('Message: ' . $error_message);
-        $logger->error('File: ' . $error_file);
-        $logger->error('Error Stack: ' .$error_stack);
+        // $logger->error('Error Occured Exiting Script');
+        // $logger->error('Message: ' . $error_message);
+        // $logger->error('File: ' . $error_file);
+        // $logger->error('Error Stack: ' .$error_stack);
 
         $remember->save_data();
         
