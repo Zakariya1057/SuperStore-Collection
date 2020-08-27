@@ -8,7 +8,7 @@ use Models\Model;
 //Each store location.
 class OpeningHoursModel extends Model {
 
-    public $store_id, $day_of_week, $open,$close,$closed_today;
+    public $store_id, $day_of_week, $opens_at,$closes_at,$closed_today;
 
     function __construct($database=null){
 
@@ -32,11 +32,11 @@ class OpeningHoursModel extends Model {
                 'nullable' => true
             ],
 
-            'open' => [
+            'opens_at' => [
                 'type' => 'time'
             ],
 
-            'close' => [
+            'closes_at' => [
                 'type' => 'time'
             ]
 
