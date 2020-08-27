@@ -16,12 +16,18 @@ class Model {
 
     public $database, $logger,$product, $insert_ignore;
 
+    public $sanitize, $validator;
+
     function __construct($database=null){
         if($database){
             $this->database = $database;
         }
 
         $log = new Loggers();
+        
+        $this->sanitize = new Sanitize();
+        $this->validator = new Validator();
+
         $this->logger = $log->logger_handler;
     }
     
@@ -32,10 +38,7 @@ class Model {
         $table_fields_list = [];
         $insert_fields_list = [];
 
-        $sanitize = new Sanitize();
-        $validator = new Validator();
-
-        $data = $sanitize->sanitizeAllFields($data);
+        $data = $this->sanitize->sanitizeAllFields($data);
 
         foreach($data as $key => $value){
             $table_fields_list[] = "`$key`";
@@ -50,7 +53,7 @@ class Model {
         }
 
         try {
-            $validator->validate_fields($this->table_fields,$data);
+            $this->validator->validate_fields($this->table_fields,$data);
         } catch(Exception $e) {
             $this->logger->error("Table $this->table Validation Error: ".$e->getMessage());
             throw new Exception($e);
@@ -98,22 +101,37 @@ class Model {
 
     public function where($data){
 
-        $wheres = [];
-
-        foreach($data as $key => $value){
-            if(is_null($value) ){
-                $wheres[] = "$key is NULL ";
-            } else {
-                $wheres[] = "$key = '$value' ";
-            }
-           
-        }
-
-        $query = implode(" AND ",$wheres);
+        $query = $this->makeQuery($data);
 
         $this->where = $query;
 
         return $this;
+    }
+
+    public function orWhere($data){
+
+        $query = $this->makeQuery($data);
+
+        $this->where = "( $this->where ) OR ( $query )";
+
+        return $this;
+    }
+
+    public function makeQuery($data,$seperator='AND'){
+        
+        $wheres = [];
+
+        $data = $this->sanitize->sanitizeAllFields($data);
+
+        foreach($data as $key => $value){
+            if(is_null($value) ){
+                $wheres[] = "$key is NULL";
+            } else {
+                $wheres[] = "$key = '$value'";
+            }
+        }
+
+        return implode(" $seperator ",$wheres);
     }
 
     public function whereRaw($query){
