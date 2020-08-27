@@ -8,18 +8,20 @@ use Models\Model;
 //Each store location.
 class LocationModel extends Model {
 
-    public $store_id, $address_line1,$address_line2,$address_line3,$latitude,$longitude;
+    public $store_id, $address_line1,$address_line2,$address_line3,$latitude,$longitude,$city,$postcode;
 
     function __construct($database=null){
 
         parent::__construct($database);
 
-        $this->table("locations");
+        $this->table("store_locations");
 
         $fields = [
             'store_id' => [
                 'type' => 'int'
             ],
+
+            'city' => [],
 
             'address_line1' => [
                 'limit' => [
@@ -41,6 +43,8 @@ class LocationModel extends Model {
                     'max' => 1000
                 ]
             ],
+
+            'postcode' => [],
 
             'latitude' => [
                 'nullable' => true,
