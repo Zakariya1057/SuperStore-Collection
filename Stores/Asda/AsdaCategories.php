@@ -70,8 +70,8 @@ class AsdaCategories extends Asda {
 
     }
 
-    public function create_department($department_item,$parent_id){
-        $department_item->parent_id = $parent_id;
+    public function create_department($department_item,$parent_category_id){
+        $department_item->parent_category_id = $parent_category_id;
 
         $department_details = $this->select_category($department_item,"parent");
         $this->logger->notice("-- Department: $department_details->name");
@@ -96,8 +96,8 @@ class AsdaCategories extends Asda {
 
     }
 
-    public function create_aisle($aisle,$parent_id){
-        $aisle->parent_id = $parent_id;
+    public function create_aisle($aisle,$parent_category_id){
+        $aisle->parent_category_id = $parent_category_id;
 
         $aisle_details = $this->select_category($aisle,"child");
         $this->logger->notice("--- Aisle: $aisle_details->name");
@@ -110,18 +110,18 @@ class AsdaCategories extends Asda {
     public function select_category($category,$type){
         $category_store_id = $category->dimvalid;
         $category_name = $category->displayName;
-        $parent_id = $category->parent_id ?? null;
+        $parent_category_id = $category->parent_category_id ?? null;
 
         $insert_fields = [
             'name' => $category_name,
             'site_category_id' => $category_store_id,
-            'parent_id' => $parent_id,
-            'site_type_id' => $this->site_type_id 
+            'parent_category_id' => $parent_category_id,
+            'store_type_id' => $this->store_type_id 
         ];
 
         if($type == "grand_parent"){
             $category = new GrandParentCategoryModel($this->database);
-            unset($insert_fields['parent_id']);
+            unset($insert_fields['parent_category_id']);
         } elseif($type == "parent"){
             $category = new ParentCategoryModel($this->database);
         } elseif($type == "child"){
@@ -130,18 +130,20 @@ class AsdaCategories extends Asda {
             throw new Exception("Unknown Category Type Found: $type");
         }
 
-        $category_item = $category->where(["site_category_id" => $category_store_id])->get();
+        $category_item = $category->where(["site_category_id" => $category_store_id])->orWhere(['name' => $category_name])->get();
 
         if($category_item){
+            $this->logger->debug($category_name . ' Category: Found In Database');
             return $category_item;
         } else {
+            $this->logger->debug($category_name . ' Category: Not Found In Database');
             $category_insert_id = $category->create($insert_fields);
 
             $category_item = new CategoryModel();
             $category_item->id = $category_insert_id;
             $category_item->name = $category_name;
             $category_item->site_category_id = $category_store_id;
-            $category_item->parent_id = $parent_id;
+            $category_item->parent_category_id = $parent_category_id;
 
             return $category_item;
 
