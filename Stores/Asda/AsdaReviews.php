@@ -107,6 +107,11 @@ class AsdaReviews extends Asda {
             $review->user_id = $this->user_id;
             $review->site_review_id = $review_item->Id;
 
+            if(is_null($review->text)){
+                $this->logger->warning('Product Without Review Text Found. Skipping: ' . $review->site_review_id);
+                continue;
+            }
+
             $created_date = new \DateTime( $review_item->LastModificationTime );
             $review->created_at = $created_date->format('Y-m-d H:i:s');
 
