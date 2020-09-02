@@ -24,9 +24,10 @@ class Sanitize {
             return;
         }
 
+        $string = str_replace('\n', "\n", $string);
         $string = strip_tags($string);
         $string = preg_replace( "/\r/", "", $string);
-        $string = htmlspecialchars($string, ENT_QUOTES,'ISO-8859-1', false);
+        $string = htmlentities($string, ENT_QUOTES,'UTF-8');
         
         return $string;
     }
