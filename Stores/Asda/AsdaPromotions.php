@@ -98,7 +98,8 @@ class AsdaPromotions extends Asda {
 
             if(!$promotion_results){
                 $this->logger->notice("New Promotion Found: $promotion_name($promotion_site_id)");
-                $promotion->name = $promotion_name;
+                // $promotion->name = $promotion_name;
+                $promotion->name = $this->promotion_name($promotion_site_id);
                 $promotion->site_promotion_id = $promotion_site_id;
                 $promotion->url = "https://groceries.asda.com/promotion/$promotion_name/$promotion_site_id";
                 $promotion_insert_id = $promotion->save();
@@ -119,6 +120,23 @@ class AsdaPromotions extends Asda {
     public function product_item_price($product_data){
         return $this->sanitize->removeCurrency($product_data->price->price_info->price);
     }
+
+    public function promotion_name($promotion_site_id){
+        $promotion_url = $this->endpoints->promotions . $promotion_site_id;
+
+        if($this->env == "dev"){
+            $promotion_response = file_get_contents(__DIR__."/../../Data/Asda/Promotion.json");
+        } else {
+            $promotion_response = $this->request->request($promotion_url);
+        }
+
+        $promotion_info = $this->request->parse_json($promotion_response);
+
+        $name = $promotion_info->contents[0]->mainContent[1]->contents[0]->records[0]->attributes->{'sku.promoDisplayName'}[0];
+
+        return ucwords(strtolower($name));
+    }
+
 }
 
 ?>
