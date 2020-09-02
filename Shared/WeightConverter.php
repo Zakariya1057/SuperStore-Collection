@@ -10,7 +10,7 @@ class WeightConverter {
 
         if($matches){
             $weight = str_replace('kg','',$weight);
-            $weight = number_format($weight / 1000, 2);
+            $weight = number_format($weight * 1000, 2);
         }
 
         return $weight;

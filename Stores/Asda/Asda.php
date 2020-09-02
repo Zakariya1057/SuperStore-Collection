@@ -2,12 +2,8 @@
 
 namespace Stores\Asda;
 
-use Models\ProductModel;
 use Shared\Requests;
-use Models\ReviewModel;
 use Shared\Sanitize;
-use Shared\WeightConverter;
-
 class Asda {
 
     public 
@@ -18,7 +14,6 @@ class Asda {
         $endpoints,
         $env,
         $sanitize,
-        $weight_converter,
         $store_type_id,
         $user_id,
         $city,
@@ -37,7 +32,6 @@ class Asda {
         $this->env = $this->config->get('env');
 
         $this->sanitize = new Sanitize();
-        $this->weight_converter = new WeightConverter();
 
         $this->store_type_id = $asda_conf->store_type_id;
         $this->user_id = $asda_conf->user_id;
