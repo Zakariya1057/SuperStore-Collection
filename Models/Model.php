@@ -35,6 +35,8 @@ class Model {
         $data = $this->convert_string_to_array($data);
         //Insert into table() values();
 
+        print_r($data);
+
         $table_fields_list = [];
         $insert_fields_list = [];
 
@@ -283,7 +285,7 @@ class Model {
         foreach($this->table_fields as $name => $validation){
             $data[$name] = $this->{$name};
         }
-
+        
         $this->create($data);
 
         return $this->database->insert_id();
