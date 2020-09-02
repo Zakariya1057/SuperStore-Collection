@@ -1,0 +1,1201 @@
+{
+    "@type": "PageContentSlot",
+    "endeca:auditInfo": {
+        "ecr:resourcePath": "/pages/ASDASearch/overlays/linksave"
+    },
+    "name": "Dynamic Page Slot",
+    "contentPaths": [
+        "/content/ASDAGroceries/Web/Page Layouts/Linksave overlay page"
+    ],
+    "renderer": "LinkSaveOverlay",
+    "contents": [
+        {
+            "@type": "OverlayTemplate",
+            "endeca:auditInfo": {
+                "ecr:resourcePath": "/content/ASDAGroceries/Web/Page Layouts/Linksave overlay page/Linksave Overlay + Page Layout - 17-9"
+            },
+            "name": "ASDA Overlay Layout",
+            "title": "",
+            "metaDescription": "",
+            "headerContent": [],
+            "mainContent": [
+                {
+                    "@type": "mainContentSlot",
+                    "endeca:auditInfo": {
+                        "ecr:resourcePath": "/content/ASDAGroceries/Web/Page Layouts/Linksave overlay page/Linksave Overlay + Page Layout - 17-9",
+                        "ecr:innerPath": "mainContent[0]"
+                    },
+                    "name": "Takeover",
+                    "renderer": "MainContentSlot",
+                    "contents": []
+                },
+                {
+                    "@type": "mainContentSlot",
+                    "endeca:auditInfo": {
+                        "ecr:resourcePath": "/content/ASDAGroceries/Web/Page Layouts/Linksave overlay page/Linksave Overlay + Page Layout - 17-9",
+                        "ecr:innerPath": "mainContent[1]"
+                    },
+                    "name": "Products",
+                    "renderer": "MainContentSlot",
+                    "contents": [
+                        {
+                            "@type": "ProductListOffers",
+                            "renderer": "ProductList",
+                            "lastRecNum": 15,
+                            "specificRecordBoostCount": 0,
+                            "records": [
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-916897361.en__GB.910000977267&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Halal Beef Mince (Typically Less Than 20% Fat)"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000977267"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "1.620700"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "4927357"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/310/622/5060388310622_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Beef Mince & Meatballs"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/310/622/5060388310622_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Beef Mince & Meatballs"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/310/622/5060388310622_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "916897361"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "All Halal",
+                                            "Beef Mince & Meatballs"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "910001616101"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/310/622/5060388310622_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-989535043.en__GB.910000976699&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Halal Chicken Breast Fillets"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976699"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "3.857100"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "5089243"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/310/103/5060388310103_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Chicken Breasts"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/310/103/5060388310103_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Chicken Breasts"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/310/103/5060388310103_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "989535043"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "All Halal",
+                                            "Chicken Breasts"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "910001920138"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/310/103/5060388310103_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-989535288.en__GB.910000976922&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Halal Peri Peri Chicken Wings"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976922"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "2.000000"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "5089253"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/314/620/5060388314620_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/314/620/5060388314620_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/314/620/5060388314620_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "989535288"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "Chicken Thighs & Drumsticks",
+                                            "View All BBQ",
+                                            "Wings, Drumsticks & Thighs"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "910001920209"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/314/620/5060388314620_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-916896739.en__GB.910000976918&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "4 Quarter Pound Beef Burgers"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976918"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "3.538500"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "4927337"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/310/783/5060388310783_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Beef Burgers & BBQ"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/310/783/5060388310783_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Beef Burgers & BBQ"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/310/783/5060388310783_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "916896739"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "All Halal",
+                                            "Beef Burgers & BBQ"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "910001615715"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/310/783/5060388310783_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-989535277.en__GB.910000976922&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Peri Peri Chicken Drumsticks"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976922"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "3.000000"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "5089249"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/314/583/5060388314583_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/314/583/5060388314583_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/314/583/5060388314583_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "989535277"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "All Halal",
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "910001920448"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/314/583/5060388314583_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-989535801.en__GB.910000976922&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Halal Peri Peri Chicken Thighs"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976922"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "2.625000"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "5089251"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/314/606/5060388314606_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/314/606/5060388314606_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/314/606/5060388314606_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "989535801"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "Chicken Thighs & Drumsticks",
+                                            "View All BBQ",
+                                            "Wings, Drumsticks & Thighs"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "910001920155"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/314/606/5060388314606_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-989535560.en__GB.910000976922&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Halal Tandoori Chicken Drumsticks"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976922"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "0.000000"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "5089255"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/314/644/5060388314644_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/314/644/5060388314644_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/314/644/5060388314644_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "989535560"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "910001920819"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/314/644/5060388314644_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-1629227101.en__GB.910000976888&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Beef Steak"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976888"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "2.166700"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "5910153"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/002/840/5016901002840_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Beef Steaks & Sauces"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/002/840/5016901002840_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Beef Steaks & Sauces"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/002/840/5016901002840_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "1629227101"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "Beef Steaks & Sauces",
+                                            "Steak & Ribs",
+                                            "View All BBQ"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "1000006425406"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/002/840/5016901002840_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-1629226215.en__GB.910000976922&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Chicken Drumsticks & Thighs"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976922"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "2.000000"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "5910157"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/002/802/5016901002802_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/002/802/5016901002802_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/002/802/5016901002802_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "1629226215"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "1000006424520"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/002/802/5016901002802_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-1629227421.en__GB.910000976922&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Chicken Thigh Fillets"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976922"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "1.416700"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "5910159"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/002/826/5016901002826_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/002/826/5016901002826_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/002/826/5016901002826_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "1629227421"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "1000006425726"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/002/826/5016901002826_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-1629224411.en__GB.910000976922&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Chicken Thighs"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976922"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "3.400000"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "5910161"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/002/819/5016901002819_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/002/819/5016901002819_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/002/819/5016901002819_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "1629224411"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "1000006422716"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/002/819/5016901002819_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-1737170522.en__GB.910000976922&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Hot & Spicy Chicken Niblets"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976922"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "1.000000"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "6338819"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/005/018/5016901005018_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/005/018/5016901005018_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/005/018/5016901005018_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "1737170522"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "1000114368827"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/005/018/5016901005018_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-1629225161.en__GB.910000976699&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Chicken Mini Fillets"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976699"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "1.750000"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "5910169"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/002/727/5016901002727_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Chicken Breasts"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/002/727/5016901002727_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Chicken Breasts"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/002/727/5016901002727_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "1629225161"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "Chicken Breasts"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "1000006423466"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/002/727/5016901002727_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-1629225230.en__GB.910000976699&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Diced Chicken Breast"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976699"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "3.666700"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "5910167"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/002/734/5016901002734_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Chicken Breasts"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/002/734/5016901002734_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Chicken Breasts"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/002/734/5016901002734_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "1629225230"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "Chicken Breasts"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "1000006423535"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/002/734/5016901002734_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.Record",
+                                    "detailsAction": {
+                                        "@class": "com.endeca.infront.cartridge.model.RecordAction",
+                                        "siteState": {
+                                            "@class": "com.endeca.infront.site.model.SiteState",
+                                            "contentPath": "/pages/overlays/linksave",
+                                            "siteDisplayName": "ASDAGroceries",
+                                            "siteId": "/ASDASearch",
+                                            "properties": {}
+                                        },
+                                        "recordState": "?R=product-1629228771.en__GB.910000976922&promoid=ls90203&requestorigin=gi&storeId=4977"
+                                    },
+                                    "numRecords": 0,
+                                    "attributes": {
+                                        "sku.displayName": [
+                                            "Chicken Drumsticks"
+                                        ],
+                                        "sku.promoId": [
+                                            "ls90203"
+                                        ],
+                                        "sku.shelfId": [
+                                            "910000976922"
+                                        ],
+                                        "product.brand": [
+                                            "Shazans"
+                                        ],
+                                        "sku.avgStarRating": [
+                                            "4.000000"
+                                        ],
+                                        "sku.consumerItemNumber": [
+                                            "5910155"
+                                        ],
+                                        "sku.largeImage.url": [
+                                            "/g/v5/002/772/5016901002772_197_IDShot_2.jpeg"
+                                        ],
+                                        "sku.promoOfferTypeCode": [
+                                            "15"
+                                        ],
+                                        "sku.shelfName": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.thumbnailImageNew.url": [
+                                            "/g/v5/002/772/5016901002772_130_IDShot_4.jpeg"
+                                        ],
+                                        "product.category": [
+                                            "Chicken Thighs & Drumsticks"
+                                        ],
+                                        "sku.largeImageNew.url": [
+                                            "/g/v5/002/772/5016901002772_280_IDShot_3.jpeg"
+                                        ],
+                                        "product.repositoryId": [
+                                            "1629228771"
+                                        ],
+                                        "parentCategory.displayName": [
+                                            "Chicken Thighs & Drumsticks",
+                                            "View All BBQ",
+                                            "Wings, Drumsticks & Thighs"
+                                        ],
+                                        "sku.repositoryId": [
+                                            "1000006427076"
+                                        ],
+                                        "sku.promoDisplayName": [
+                                            "Halal Meat - 3 for £10"
+                                        ],
+                                        "sku.thumbnailImage.url": [
+                                            "/g/v5/002/772/5016901002772_93_IDShot_1.jpeg"
+                                        ],
+                                        "sku.linkSaveStartDate": [
+                                            "2020-06-25"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "endeca:auditInfo": {
+                                "ecr:resourcePath": "/content/ASDAGroceries/Shared/115 Linksave/Products/Default Linksave"
+                            },
+                            "promoDisplayName": [
+                                "Halal Meat - 3 for £10"
+                            ],
+                            "dynamicSlot": {
+                                "endeca:auditInfo": {
+                                    "ecr:resourcePath": "/content/ASDAGroceries/Shared/115 Linksave/Products/Default Linksave",
+                                    "ecr:innerPath": "dynamicSlot"
+                                }
+                            },
+                            "precomputedSorts": [],
+                            "promoOfferTypeCode": [
+                                "15"
+                            ],
+                            "recsPerPage": 200,
+                            "pagingActionTemplate": {
+                                "@class": "com.endeca.infront.cartridge.model.NavigationAction",
+                                "contentPath": "/overlays/linksave",
+                                "navigationState": "?No=%7Boffset%7D&Nr=AND%28sku.specialOffer%3AYes%2Csku.spOfferStores%3A4977%2CparentCategory.hasPrimaryShelf%3A1%29&Nrpp=%7BrecordsPerPage%7D&Ntk=sku.attributes_4977&Ntt=promoId%3Als90203&Ntx=mode+matchall&promoid=ls90203&requestorigin=gi&storeId=4977",
+                                "siteRootPath": "/pages",
+                                "siteState": {
+                                    "@class": "com.endeca.infront.site.model.SiteState",
+                                    "contentPath": "/pages/overlays/linksave",
+                                    "siteDisplayName": "ASDAGroceries",
+                                    "siteId": "/ASDASearch",
+                                    "properties": {}
+                                }
+                            },
+                            "totalNumRecs": 15,
+                            "sortOptions": [
+                                {
+                                    "@class": "com.endeca.infront.cartridge.model.SortOptionLabel",
+                                    "contentPath": "/overlays/linksave",
+                                    "navigationState": "?Nr=AND%28sku.specialOffer%3AYes%2Csku.spOfferStores%3A4977%2CparentCategory.hasPrimaryShelf%3A1%29&Nrpp=10000000&Ntk=sku.attributes_4977&Ntt=promoId%3Als90203&Ntx=mode+matchall&promoid=ls90203&requestorigin=gi&storeId=4977",
+                                    "siteRootPath": "/pages",
+                                    "siteState": {
+                                        "@class": "com.endeca.infront.site.model.SiteState",
+                                        "contentPath": "/pages/overlays/linksave",
+                                        "siteDisplayName": "ASDAGroceries",
+                                        "siteId": "/ASDASearch",
+                                        "properties": {}
+                                    },
+                                    "label": "Relevance",
+                                    "selected": true
+                                }
+                            ],
+                            "name": "Linksave Product List",
+                            "firstRecNum": 1,
+                            "promoId": "ls90203",
+                            "excludedProducts": {
+                                "@class": "com.endeca.infront.cartridge.RecordSpotlightSelection",
+                                "augment": false,
+                                "filterState": {
+                                    "@class": "com.endeca.infront.navigation.model.FilterState",
+                                    "rangeFilters": [],
+                                    "featuredRecords": [],
+                                    "autoPhraseEnabled": true,
+                                    "recordFilters": [],
+                                    "searchFilters": [],
+                                    "navigationFilters": []
+                                },
+                                "recordLimit": 0
+                            },
+                            "linkSaveStartDate": [
+                                "2020-06-25"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "footerContent": [],
+            "renderer": "LinkSaveOverlay"
+        }
+    ]
+}
