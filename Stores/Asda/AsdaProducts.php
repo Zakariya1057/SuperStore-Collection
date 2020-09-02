@@ -49,7 +49,8 @@ class AsdaProducts extends Asda {
                 }
 
                 if(!$category_details){
-                    throw new Exception('Failed To Find Matching Parent Category');
+                    $this->logger->error('Failed To Find Matching Parent Category');
+                    return;
                 } else {
                     $parent_category_id =  $category_details->id;
                 }
@@ -178,6 +179,16 @@ class AsdaProducts extends Asda {
 
         $product->store_type_id = $this->store_type_id;
         $product->description = $item->description == '.' ? NULL : $item->description;
+        
+        if(!is_null($product->description)){
+            preg_match('/Twitter|YouTube|Instagram|Follow|Facebook|Snapchat/i',$product->description,$social_matches);
+
+            // If product description like follow us on instagram then remove it. No need for nonsense as such
+            if($social_matches){
+                $product->description = NULL;
+            }
+        }
+
         $product->site_product_id = $item->sku_id;
 
         $product->total_reviews_count = $rating_review->total_review_count;
@@ -196,7 +207,7 @@ class AsdaProducts extends Asda {
         $product->storage = $item_enrichment->storage ?? NULL;
 
         if($item->extended_item_info->weight){
-            $product->weight = $this->weight_converter->grams($item->extended_item_info->weight);
+            $product->weight = $item->extended_item_info->weight;
         }
 
         // Promotion Types:
