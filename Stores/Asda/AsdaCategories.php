@@ -8,6 +8,7 @@ use Models\Category\CategoryModel;
 use Models\Category\ChildCategoryModel;
 use Models\Category\GrandParentCategoryModel;
 use Models\Category\ParentCategoryModel;
+use Models\Product\ProductModel;
 
 class AsdaCategories extends Asda {
 
@@ -102,8 +103,24 @@ class AsdaCategories extends Asda {
         $aisle_details = $this->select_category($aisle,"child");
         $this->logger->notice("--- Aisle: $aisle_details->name");
 
+        if($this->exclude_category($aisle_details->name)){
+            $this->logger->error('Exluding Haram Category');
+            return;
+        }
+
         $shelf = new AsdaShelves($this->config,$this->logger,$this->database,$this->remember);
         $shelf->details($aisle_details);
+
+        //If no products for shelves found then delete this aisle.
+        $product = new ProductModel($this->database);
+        $products_count = count((array)$product->where(['parent_category_id' => $aisle_details->id])->get());
+
+        if($products_count == 0){
+            $this->logger->notice('Deleting Aisle Item '. $aisle_details->id.'. No Products Using It');
+
+            $aisle = new ChildCategoryModel($this->database);
+            $aisle->where(['id' => $aisle_details->id])->delete();
+        }
 
     }
 
