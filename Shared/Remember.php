@@ -51,7 +51,7 @@ class Remember {
 
             $details = $this->history->where(['store_type_id' => $this->store_type_id])->get();
 
-            if(!$details){
+            if(is_null($details)){
                 $this->logger->debug('No Script History Found For Site. Creating One');
                 $this->history->create(['store_type_id' => $this->store_type_id]);
             } else {
