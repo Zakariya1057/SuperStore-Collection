@@ -42,8 +42,12 @@ class ProductModel extends Model {
             'description' => [
                 'nullable'=> true
             ],
-            'large_image' => [],
-            'small_image' => [],
+            'large_image' => [
+                'nullable' => true
+            ],
+            'small_image' => [
+                'nullable' => true
+            ],
 
             'price' => [
                 'type' => 'price'

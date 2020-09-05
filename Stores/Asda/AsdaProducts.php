@@ -4,18 +4,19 @@ namespace Stores\Asda;
 
 use Models\Category\ChildCategoryModel;
 use Models\Product\ProductModel;
-use Models\Product\ReviewModel;
 use Models\Product\IngredientModel;
+use Shared\Image;
 use Exception;
 
 class AsdaProducts extends Asda {
 
-    public $product_details,$promotions;
+    public $product_details,$promotions,$image;
 
     function __construct($config,$logger,$database,$remember)
     {
         parent::__construct($config,$logger,$database,$remember);
         $this->promotions = new AsdaPromotions($this->config,$this->logger,$this->database,$this->remember);
+        $this->image = new Image($config,$logger,$this->request);
     }
 
     public function product($product_site_id,$parent_category_id=null,$parent_site_category_name=null){
@@ -165,7 +166,7 @@ class AsdaProducts extends Asda {
         }
 
         if(!$halal_matches){
-            //Check product ingredients, if pork found then exlucde.
+            //Check product ingredients, if pork/alcohol found then exlucde.
             $ingredients = $this->ingredients_list($product_details);
             if($this->haram_ingredients($ingredients)){
                 $this->logger->debug('Stage 3. Haram Ingredients Found: '. $name);
@@ -174,7 +175,7 @@ class AsdaProducts extends Asda {
                 $this->logger->debug('Stage 3. No Haram Ingredients Found: '. $name);
             }
         } else {
-            $this->logger->debug('Halal Found In Product Name');
+            $this->logger->debug('Halal/Vegan/Vegetarian Found In Product Name');
         }
 
         $product->store_type_id = $this->store_type_id;
@@ -183,13 +184,14 @@ class AsdaProducts extends Asda {
         if(!is_null($product->description)){
             preg_match('/Twitter|YouTube|Instagram|Follow|Facebook|Snapchat/i',$product->description,$social_matches);
 
-            // If product description like follow us on instagram then remove it. No need for nonsense as such
+            // If product description like follow us on instagram then remove it. No need for such nonsense here
             if($social_matches){
                 $product->description = NULL;
             }
         }
 
-        $product->site_product_id = $item->sku_id;
+        $product_site_id = $item->sku_id;
+        $product->site_product_id = $product_site_id;
 
         $product->total_reviews_count = $rating_review->total_review_count;
         $product->avg_rating          = $rating_review->avg_star_rating;
@@ -198,8 +200,8 @@ class AsdaProducts extends Asda {
 
         $image_id = $item->images->scene7_id;
         
-        $product->large_image = $this->product_image($image_id,300);
-        $product->small_image = $this->product_image($image_id,150);
+        $product->large_image = $this->product_image($product_site_id, $image_id,300,'large');
+        $product->small_image = $this->product_image($product_site_id, $image_id,150,'small');
 
         $product->brand = $item->brand;
         $product->allergen_info = $item_enrichment->allergy_info_formatted_web ?? NULL;
@@ -211,9 +213,9 @@ class AsdaProducts extends Asda {
         }
 
         // Promotion Types:
-        // * 2 for £10. Product Grouped
-        // * Rollback
-        // * Sale.
+        // 1. 2 for £10. Product Grouped
+        // 2. Rollback
+        // 3. Sale.
 
         //This will get product price, regardless of promotions or not
         $product_prices = $this->promotions->product_prices($product_details);
@@ -230,17 +232,15 @@ class AsdaProducts extends Asda {
         return $product;
     }
 
-    public function product_image($image_id,$size){
-        // return "https://ui.assets-asda.com/dm/asdagroceries/{$product_upc}_T1?defaultImage=asdagroceries/noImage&resMode=sharp2&id=WLURx1&fmt=jpg&fit=constrain,1&wid=$size&hei=$size";
-        return "https://ui.assets-asda.com/dm/asdagroceries/{$image_id}?defaultImage=asdagroceries/noImage&resMode=sharp2&layer=comp&fit=constrain,1&wid={$size}&hei={$size}fmt=jpg";
+    public function product_image($product_site_id, $image_id,$size,$size_name){
+        $url = "https://ui.assets-asda.com/dm/asdagroceries/{$image_id}?defaultImage=asdagroceries/noImage&resMode=sharp2&id=8daSB3&fmt=jpg&fit=constrain,1&wid={$size}&hei={$size}";
+        $file_name = $this->image->save($product_site_id,$url,$size_name);
+        return $file_name;
     }
 
     public function ingredients($product_id, $product_data){
         //Store Product Ingredients
-
         $ingredients_list = $this->ingredients_list($product_data);
-
-        // print_r($ingredients_list);
 
         foreach($ingredients_list as $ingredient_name){
             $ingredient = new IngredientModel($this->database);
@@ -254,7 +254,7 @@ class AsdaProducts extends Asda {
     }
 
     public function ingredients_list($product_data){
-        $ingredients_response = $product_data->item_enrichment->enrichment_info->ingredients_formatted;
+        $ingredients_response = $product_data->item_enrichment->enrichment_info->ingredients_formatted ?? [];
         $ingredients_list = explode(' , ',$ingredients_response);
 
         $list = array();
@@ -267,6 +267,7 @@ class AsdaProducts extends Asda {
 
         }
 
+        //Return All Unique Ingredients
         return array_unique($list);
     }
 

@@ -55,7 +55,7 @@ class Database {
 
         } catch(Exception $e){
             $error = $e->getMessage();
-            $this->logger->error("Query Error: ". $error);
+            $this->logger->error('Query Error: '. $error);
 
             if ($conn->ping()) {
                 $this->logger->debug('Connection Is OK');
