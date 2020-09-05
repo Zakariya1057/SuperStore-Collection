@@ -2,6 +2,7 @@
 
 namespace Stores\Asda;
 
+use Exception;
 use Shared\Requests;
 use Shared\Sanitize;
 class Asda {

@@ -9,18 +9,20 @@
     // DONE - Exclude Haram Products
     // DONE - Resume Scraping
     // DONE - Store Last Run Details In Database. Saving To File Causing Errors: Failed to open stream: Too many open files
-    // TODO - Download Product Image. Locally/S3 Bucket
+    // DONE - Download Product Image. Locally/S3 Bucket
     // TODO - Use Parent Category To See If Haram: 1000017525663 - If meat in parent category
     // TODO - New Promotions
 
     use Shared\Config;
     use Shared\Loggers;
     use Shared\Database;
+    use Shared\Image;
     use Shared\Remember;
     use Stores\Asda\Asda;
 
     $config = new Config();
     $log = new Loggers();
+    
     $logger = $log->logger_handler;
 
     $database = new Database($config,$logger);
