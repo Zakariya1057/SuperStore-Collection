@@ -20,16 +20,45 @@
 
     "continue": true,
 
+    "images": {
+        "host": "192.168.1.187",
+
+        "saving_location": "aws",
+
+        "type_locations": {
+            "logos": "logos",
+            "stores": "stores",
+            "products": "products"
+        },
+
+        "local": {
+            "location": "Resources/Images"
+        },
+
+        "aws": {
+
+            "version": "latest",
+            "region": "eu-west-2",
+
+            "bucket": "superstore.images",
+
+            "credentials": {
+                "key": "AKIAUWEFB7PFX23FYSP3",
+                "secret": "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"
+            }
+        }
+    },
+
     "asda": {
         "run": true,
 
         "stores": false,
 
-        "groceries": true,
-        "reviews": false,
+        "groceries": false,
+        "reviews": true,
         "promotions": false,
         
-        "recommended": true,
+        "recommended": false,
         
         "store_type_id": 1,
         "user_id": 1
@@ -69,8 +98,8 @@
                 "Ales",
                 "Spirit",
                 "Whiskey",
-                " Gin ",
-                " Rum "
+                "\bGin\b",
+                "\bRum\b"
             ]
         },
     
@@ -93,7 +122,8 @@
             ],
             "exclude": [
                 "pork",
-                "bacon"
+                "bacon",
+                "ham"
             ]
         },
 
