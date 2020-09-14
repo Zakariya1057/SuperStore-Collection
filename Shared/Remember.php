@@ -53,7 +53,10 @@ class Remember {
 
             if(is_null($details)){
                 $this->logger->debug('No Script History Found For Site. Creating One');
-                $this->history->create(['store_type_id' => $this->store_type_id]);
+                $history = $this->history;
+                $history->store_type_id = $this->store_type_id;
+                $history->insert_ignore = 1;
+                $history->save();
             } else {
                 $this->grand_parent_category_index = $details->grand_parent_category_index;
                 $this->parent_category_index = $details->parent_category_index;
