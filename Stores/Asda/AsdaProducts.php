@@ -129,6 +129,12 @@ class AsdaProducts extends Asda {
         $item_enrichment = $product_details->item_enrichment->enrichment_info;
         $rating_review = $item->rating_review;
 
+        $is_bundle_product = $product_details->is_bundle ?? false;
+        if($is_bundle_product){
+            $this->logger->debug('Bundle Product Found');
+            return;
+        }
+
         $this->logger->notice('--- Start Product('.$item->sku_id.'): '.$item->name .' ---');
 
         $product = new ProductModel();
@@ -254,7 +260,7 @@ class AsdaProducts extends Asda {
     }
 
     public function ingredients_list($product_data){
-        $ingredients_response = $product_data->item_enrichment->enrichment_info->ingredients_formatted ?? [];
+        $ingredients_response = $product_data->item_enrichment->enrichment_info->ingredients_formatted ?? '';
         $ingredients_list = explode(' , ',$ingredients_response);
 
         $list = array();
