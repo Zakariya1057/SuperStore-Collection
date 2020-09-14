@@ -11,7 +11,16 @@ class Config {
     }
 
     public function get($field){
-        return $this->conf->{$field};
+        // return (object)$this->conf["$field"];
+        $field_list = explode('.',$field) ?? [$field];
+
+        $details = $this->conf;
+
+        foreach($field_list as $field_name){
+            $details = $details->{$field_name};
+        }
+
+        return $details;
     }
 
     public function update($field){

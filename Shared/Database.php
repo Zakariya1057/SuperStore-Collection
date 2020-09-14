@@ -63,7 +63,7 @@ class Database {
             } else {
                 $this->logger->error('Connection To MYSQL Server Has Gone Away');
                 
-                $retry_config = $this->config->get('retry_request');
+                $retry_config = $this->config->get('retry.database');
 
                 $retry_times = $retry_config->attempts;
                 $wait = $retry_config->wait;

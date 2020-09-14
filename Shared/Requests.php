@@ -17,11 +17,11 @@ class Requests {
         $this->validator = new Validator();
     }
 
-    public function request($url, $method="GET",$data=[],$headers=[],$timeout=300){
+    public function request($url, $method='GET',$data=[],$headers=[],$timeout=300){
 
         $client = HttpClient::create();
         
-        $retry_config = $this->config->get("retry_request");
+        $retry_config = $this->config->get('retry.request');
 
         $times_retried = 0;
 
