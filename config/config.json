@@ -23,7 +23,7 @@
     "images": {
         "host": "192.168.1.187",
 
-        "saving_location": "aws",
+        "saving_location": "local",
 
         "type_locations": {
             "logos": "logos",
@@ -52,13 +52,13 @@
     "asda": {
         "run": true,
 
-        "stores": false,
+        "stores": true,
 
-        "groceries": false,
+        "groceries": true,
         "reviews": true,
         "promotions": false,
         
-        "recommended": false,
+        "recommended": true,
         
         "store_type_id": 1,
         "user_id": 1
@@ -78,15 +78,23 @@
 
     },
 
-    "retry_request": {
-        "attempts": 3,
-        "wait": 60
+    "retry": {
+        "request": {
+            "attempts": 5,
+            "wait": 30
+        },
+
+        "database": {
+            "attempts": 5,
+            "wait": 180
+        }
     },
     
     "exclusions": {
 
         "categories": {
             "exclude": [
+                "Back to School",
                 "Summer Drinks",
                 "Wine",
                 "Alcohol",
@@ -118,7 +126,11 @@
                 "chicken",
                 "wings",
                 "beef",
-                "steak"
+                "steak",
+                "turkey",
+                "beef",
+                "pounder",
+                "hot dogs"
             ],
             "exclude": [
                 "pork",
