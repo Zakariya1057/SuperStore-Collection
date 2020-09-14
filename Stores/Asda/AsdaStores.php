@@ -72,15 +72,16 @@ class AsdaStores extends Asda {
 
             $new_store_id = $new_store->save();
 
+            // New Location will be inserted if location not found in database
+            $this->location($new_store_id,$item_details);
+            $this->opening_hours($new_store_id,$item_details);
+            $this->facilities($new_store_id,$item_details);
+
         } else {
             $this->logger->debug("Old Store: $name ($id)");
             $new_store_id = $store_results->id;
         }
 
-        //New Location will be inserted if location not found in database
-        $this->location($new_store_id,$item_details);
-        $this->opening_hours($new_store_id,$item_details);
-        $this->facilities($new_store_id,$item_details);
     }
 
     public function location($store_id,$location_details){
