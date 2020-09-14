@@ -50,25 +50,20 @@ class Image {
     private function store_local($name, $image,$type){
         //Store On Local Server
 
-        $dir = $this->img_config->local->location;
-        
-        if(!file_exists($dir)){
-            $this->logger->debug('Creating Image Directory: ' . $dir);
-            mkdir($dir, 0777, true);
+        $dir = __DIR__ .'/../' . $this->img_config->local->location;
+
+        if(!file_exists($dir . '/' . $type)){
+            $this->logger->debug('Creating Image Directory: ' . $dir . '/' . $type);
+            mkdir($dir . '/' . $type, 0777, true);
         }
 
         $relative_file_location = "$type/$name";
 
         $file_location = "$dir/$relative_file_location";
 
-        // $image = $this->get_image($image_url);
-
         if(!file_put_contents($file_location, $image)){
             throw new Exception("Failed To Save Image: $file_location");
         }
-
-        // $file_name = $this->host . "/images/$name";
-        // $this->logger->debug("Saved Image: $image_url -> $file_location");
 
         return $relative_file_location;
     }
