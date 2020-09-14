@@ -1,5 +1,7 @@
 <?php
 
+    ini_set('memory_limit', '-1');
+
     require_once __DIR__.'/vendor/autoload.php';
 
     // DONE - Reviews Table
@@ -16,7 +18,6 @@
     use Shared\Config;
     use Shared\Loggers;
     use Shared\Database;
-    use Shared\Image;
     use Shared\Remember;
     use Stores\Asda\Asda;
 
@@ -88,10 +89,10 @@
 
         $remember->set_error($error_message,$error_file,$e->getTrace(),$line_number);
 
-        // $logger->error('Error Occured Exiting Script');
-        // $logger->error('Message: ' . $error_message);
-        // $logger->error('File: ' . $error_file);
-        // $logger->error('Error Stack: ' .$error_stack);
+        $logger->error('Error Occured Exiting Script');
+        $logger->error('Message: ' . $error_message);
+        $logger->error('File: ' . $error_file);
+        $logger->error('Error Stack: ' .$error_stack);
 
         $remember->save_data();
         
