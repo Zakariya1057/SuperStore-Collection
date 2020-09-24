@@ -45,7 +45,8 @@ class AsdaStores extends Asda {
         $item_details = $store_item->profile;
 
         $id = $item_details->meta->id;
-        $name = $item_details->name;
+        $name = preg_replace('/\s*supermarket|superstore/i','',$item_details->name);
+
         $description = $item_details->c_aboutSectionDescription;
         $site_image = $item_details->googleCoverPhoto->image->sourceUrl ?? NULL;
         $site_url = $item_details->c_pagesURL;
@@ -93,7 +94,7 @@ class AsdaStores extends Asda {
         if(!$store_results){
             $this->logger->debug("New Store Location: $store_id");
 
-            $coordinates = $location_details->cityCoordinate;
+            $coordinates = $location_details->displayCoordinate ?? $location_details->geocodedCoordinate;
             $address = $location_details->address;
 
             $longitude = $coordinates->long;
