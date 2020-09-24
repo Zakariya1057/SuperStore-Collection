@@ -138,7 +138,7 @@ class AsdaProducts extends Asda {
         $this->logger->notice('--- Start Product('.$item->sku_id.'): '.$item->name .' ---');
 
         $product = new ProductModel();
-        $product->name = $name;
+        $product->name = $this->clean_product_name($name);
         $product->dietary_info = $item_enrichment->dietary_info_formatted ?? NULL;
 
         if(!$this->exclude_product($name)){
@@ -188,7 +188,7 @@ class AsdaProducts extends Asda {
         $product->description = $item->description == '.' ? NULL : $item->description;
         
         if(!is_null($product->description)){
-            preg_match('/Twitter|YouTube|Instagram|Follow|Facebook|Snapchat/i',$product->description,$social_matches);
+            preg_match('/Twitter|YouTube|Instagram|Follow|Facebook|Snapchat|Shop online at asda.com/i',$product->description,$social_matches);
 
             // If product description like follow us on instagram then remove it. No need for such nonsense here
             if($social_matches){
@@ -275,6 +275,11 @@ class AsdaProducts extends Asda {
 
         //Return All Unique Ingredients
         return array_unique($list);
+    }
+
+    private function clean_product_name($name){
+        $name = preg_replace('/\s\s/',' ',$name);
+        return preg_replace('/\s*\(.+/','',$name);
     }
 
 }
