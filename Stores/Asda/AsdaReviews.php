@@ -102,13 +102,13 @@ class AsdaReviews extends Asda {
         foreach($reviews_data as $review_item){
             $review = new ReviewModel($this->database);
             $review->rating = $review_item->Rating;
-            $review->text = ucfirst($review_item->ReviewText);
+            $review->text = ucfirst($review_item->ReviewText ?? '');
             $review->title = ucfirst( $review_item->Title ?? '');
             $review->user_id = $this->user_id;
             $review->site_review_id = $review_item->Id;
 
-            if(is_null($review->text)){
-                $this->logger->warning('Product Without Review Text Found. Skipping: ' . $review->site_review_id);
+            if($review->text == '' || $review->title == ''){
+                $this->logger->warning('Product Without Review Text/Title Found. Skipping: ' . $review->site_review_id);
                 continue;
             }
 
