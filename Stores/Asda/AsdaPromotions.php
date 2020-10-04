@@ -70,7 +70,6 @@ class AsdaPromotions extends Asda {
 
     public function product_rollback($promotion_info,$price_details){
         //Get Prices For Rollback Product
-
         $rollback = $promotion_info->rollback;
 
         if(!is_null($rollback) ){
@@ -100,6 +99,7 @@ class AsdaPromotions extends Asda {
                 $this->logger->notice("New Promotion Found: $promotion_name($promotion_site_id)");
                 // $promotion->name = $promotion_name;
                 $promotion->name = $this->promotion_name($promotion_site_id);
+                $promotion->store_type_id = $this->config->get('asda.store_type_id');
                 $promotion->site_promotion_id = $promotion_site_id;
                 $promotion->url = "https://groceries.asda.com/promotion/$promotion_name/$promotion_site_id";
                 $promotion_insert_id = $promotion->save();

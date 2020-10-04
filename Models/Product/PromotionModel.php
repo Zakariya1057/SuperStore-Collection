@@ -18,6 +18,9 @@ class PromotionModel extends Model {
         $fields = [
             'name' => [],
             'site_promotion_id' => [],
+            'store_type_id' => [
+                'type' => 'int'
+            ],
             'expires' => ['nullable' => true],
             'starts_at' => ['nullable' => true],
             'ends_at' => ['nullable' => true],
