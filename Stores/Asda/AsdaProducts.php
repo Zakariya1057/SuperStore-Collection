@@ -102,7 +102,7 @@ class AsdaProducts extends Asda {
             $product_response = $this->request->request($shelf_endpoint,"POST",[
                 "item_ids" => [$product_id], 
                 "consumer_contract" => "webapp_pdp",
-                "store_id" => "4676",
+                "store_id" => "4676", // Change for different regions
                 "request_origin" => "gi"
             ]);
 
@@ -140,6 +140,11 @@ class AsdaProducts extends Asda {
         $product = new ProductModel();
         $product->name = $this->clean_product_name($name);
         $product->dietary_info = $item_enrichment->dietary_info_formatted ?? NULL;
+
+        if(property_exists($item_enrichment,'alcohol') && $item_enrichment->alcohol != ""){
+            $this->logger->debug('Haram Alcholol Product Found: '. $name);
+            return;
+        }
 
         if(!$this->exclude_product($name)){
             $this->logger->debug('Stage 1. Product Not Exluded: '. $name);
@@ -207,8 +212,10 @@ class AsdaProducts extends Asda {
         $image_id = $item->images->scene7_id;
         
         $product->large_image = $this->product_image($product_site_id, $image_id,300,'large');
-        $product->small_image = $this->product_image($product_site_id, $image_id,150,'small');
-
+        if(!is_null($product->large_image)){
+            $product->small_image = $this->product_image($product_site_id, $image_id,150,'small');
+        }
+        
         $product->brand = $item->brand;
         $product->allergen_info = $item_enrichment->allergy_info_formatted_web ?? NULL;
 
