@@ -16,26 +16,31 @@ class AsdaStores extends Asda {
     }
 
     public function stores(){
-        $stores_endpoint =  $this->endpoints->stores . $this->city;
 
-        $this->logger->notice("Finding All Stores In: $this->city");
+        foreach($this->endpoints->stores as $store_url ){
 
-        if($this->env == "dev"){
-            $stores_response = file_get_contents(__DIR__."/../../Data/Asda/Stores.json");
-        } else {
-            $stores_response = $this->request->request($stores_endpoint,'GET',[],['accept' => 'application/json']);
-        }
+            $stores_endpoint = $store_url . $this->city;
 
-        $stores_results = $this->request->parse_json($stores_response);
-        
-        $stores_list = $stores_results->response->entities;
+            $this->logger->notice("Finding All Stores In: $this->city");
+    
+            if($this->env == "dev"){
+                $stores_response = file_get_contents(__DIR__."/../../Data/Asda/Stores.json");
+            } else {
+                $stores_response = $this->request->request($stores_endpoint,'GET',[],['accept' => 'application/json']);
+            }
+    
+            $stores_results = $this->request->parse_json($stores_response);
+            
+            $stores_list = $stores_results->response->entities;
+    
+            $this->logger->notice('Found ' . count($stores_list) . ' Stores In ' . $this->city);
+    
+            foreach($stores_list as $item){
+                $this->database->start_transaction();
+                $this->store($item);
+                $this->database->end_transaction();
+            }
 
-        $this->logger->notice('Found ' . count($stores_list) . ' Stores In ' . $this->city);
-
-        foreach($stores_list as $item){
-            $this->database->start_transaction();
-            $this->store($item);
-            $this->database->end_transaction();
         }
 
     }

@@ -7,18 +7,18 @@
         "database": "superstore_database"
     },
 
-    "log_query": true,
+    "log_query": 1,
     
     "city": "Birmingham",
 
-    "env": "prod",
+    "env": "dev",
 
     "mock_data": {
-        "reviews": true,
-        "products": true
+        "reviews": 1,
+        "products": 1
     },
 
-    "continue": true,
+    "continue": 1,
 
     "images": {
         "host": "192.168.1.187",
@@ -50,15 +50,14 @@
     },
 
     "asda": {
-        "run": true,
+        "run": 1,
 
-        "stores": true,
+        "stores": 0,
 
-        "groceries": true,
-        "reviews": true,
-        "promotions": false,
-        
-        "recommended": true,
+        "groceries": 1,
+        "recommended": 0,
+        "reviews": 0,
+        "promotions": 0,
         
         "store_type_id": 1,
         "user_id": 1
@@ -73,7 +72,12 @@
             "reviews": "https://groceries.asda.com/review/reviews.json?requestorigin=gi&apiversion=5.4&passkey=92ffdz3h647mtzgbmu5vedbq&Filter=ProductId%3A",
             "promotions": "https://groceries.asda.com/cmscontent/json/pages/overlays/linksave?requestorigin=gi&Nrpp=10000000&storeId=4977&promoid=",
             "recommended": "https://groceries.asda.com/p13nservice/recommendations?storeId=4565&placement=item_page.pdp1&skuId=",
-            "stores": "https://storelocator.asda.com/index.html?q=52.48624299999999,-1.890401000000001&l=en&qp=UK,%20"
+            "stores": [
+                "https://storelocator.asda.com/?q=52.5219314,-1.8446106&qp=Erdington,%20Birmingham,%20UK&l=en",
+                "https://storelocator.asda.com/?q=52.48624299999999,-1.890401000000001&l=en&qp=UK,%20",
+                "https://storelocator.asda.com/?q=52.57038499999999,-1.824042&qp=Sutton%20Coldfield,%20UK&l=en",
+                "https://storelocator.asda.com/?q=52.410447,-1.819373&qp=Shirley,%20Solihull,%20UK&l=en"
+            ]
         }
 
     },
@@ -81,12 +85,12 @@
     "retry": {
         "request": {
             "attempts": 5,
-            "wait": 30
+            "wait": 60
         },
 
         "database": {
-            "attempts": 5,
-            "wait": 180
+            "attempts": 20,
+            "wait": 300
         }
     },
     
@@ -107,7 +111,8 @@
                 "Spirit",
                 "Whiskey",
                 "\bGin\b",
-                "\bRum\b"
+                "\bRum\b",
+                "Prosecco"
             ]
         },
     
