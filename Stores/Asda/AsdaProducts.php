@@ -7,6 +7,7 @@ use Models\Product\ProductModel;
 use Models\Product\IngredientModel;
 use Shared\Image;
 use Exception;
+use Models\Category\CategoryProductModel;
 
 class AsdaProducts extends Asda {
 
@@ -19,13 +20,15 @@ class AsdaProducts extends Asda {
         $this->image = new Image($config,$logger,$this->request);
     }
 
-    public function product($product_site_id,$parent_category_id=null,$parent_site_category_name=null){
+    public function product($product_site_id,$grand_parent_category_id=null, $parent_category_id=null, $child_category_id=null,$parent_site_category_name=null){
         //Get product details for each product and insert into database.
 
         $this->logger->info("Product ID: $product_site_id");
 
         $product_item = new ProductModel($this->database);
         $product_results = $product_item->where(['site_product_id' => $product_site_id])->get();
+
+        $product_categories = new CategoryProductModel($this->database);
 
         if(is_null($product_results)){
             
@@ -64,13 +67,15 @@ class AsdaProducts extends Asda {
 
                 $this->database->start_transaction();
                 
-                //Product Added
-                $product_details->parent_category_id = $parent_category_id;
                 $product_details->database = $this->database;
                 $product_id = $product_details->save();
 
-                // $this->reviews($product_id,$product_site_id);
-                // Product Reviews, Product Recommended Scraped Seperately
+                $product_categories->product_id = $product_id;
+                $product_categories->child_category_id = $child_category_id;
+                $product_categories->parent_category_id = $parent_category_id;
+                $product_categories->grand_parent_category_id = $grand_parent_category_id;
+
+                $product_categories->save();
 
                 $this->ingredients($product_id,$this->product_details);
 
@@ -85,6 +90,18 @@ class AsdaProducts extends Asda {
 
         } else { 
             $this->logger->info("Product Found In Database: $product_site_id");
+            // If under new category, save that under multiple categories
+
+            $results = $product_categories->where(['product_id' => $product_results->id, 'child_category_id' => $child_category_id])->get();
+            if(is_null($results)){
+                $this->logger->info("No Product Under Category: $product_site_id");
+                $product_categories->product_id = $product_results->id;
+                $product_categories->child_category_id = $child_category_id;
+                $product_categories->parent_category_id = $parent_category_id;
+                $product_categories->grand_parent_category_id = $grand_parent_category_id;
+                $product_categories->save();
+            }
+
         }
 
     }
@@ -189,7 +206,7 @@ class AsdaProducts extends Asda {
             $this->logger->debug('Halal/Vegan/Vegetarian Found In Product Name');
         }
 
-        $product->store_type_id = $this->store_type_id;
+        // $product->store_type_id = $this->store_type_id;
         $product->description = $item->description == '.' ? NULL : $item->description;
         
         if(!is_null($product->description)){

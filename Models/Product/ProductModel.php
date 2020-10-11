@@ -27,8 +27,6 @@ class ProductModel extends Model {
         $reviews_searched,
         $recommended_searched,
 
-        $parent_category_id,
-        $store_type_id,
         $site_product_id;
     
     function __construct($database=null){
@@ -101,13 +99,6 @@ class ProductModel extends Model {
             'total_reviews_count' => [
                 'nullable' => true,
                 'regex'=> 'int'
-            ],
-
-            'parent_category_id' => [
-                'type' => 'int'
-            ],
-            'store_type_id' => [
-                'type' => 'int'
             ],
             'site_product_id' => [
                 'type' => 'int'

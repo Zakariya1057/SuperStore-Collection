@@ -5,6 +5,7 @@ namespace Stores\Asda;
 use Exception;
 
 use Models\Category\CategoryModel;
+use Models\Category\CategoryProductModel;
 use Models\Category\ChildCategoryModel;
 use Models\Category\GrandParentCategoryModel;
 use Models\Category\ParentCategoryModel;
@@ -71,8 +72,8 @@ class AsdaCategories extends Asda {
 
     }
 
-    public function create_department($department_item,$parent_category_id){
-        $department_item->parent_category_id = $parent_category_id;
+    public function create_department($department_item,$grand_parent_category_id){
+        $department_item->parent_category_id = $grand_parent_category_id;
 
         $department_details = $this->select_category($department_item,"parent");
         $this->logger->notice("-- Department: $department_details->name");
@@ -88,7 +89,7 @@ class AsdaCategories extends Asda {
     
             foreach($categories_list as $index => $aisle){
                 $this->remember->set('child_category_index',$index + $last_category_index);
-                $this->create_aisle($aisle,$department_details->id);
+                $this->create_aisle($aisle,$grand_parent_category_id, $department_details->id);
             }
 
             $this->remember->set('child_category_index',0);
@@ -97,7 +98,7 @@ class AsdaCategories extends Asda {
 
     }
 
-    public function create_aisle($aisle,$parent_category_id){
+    public function create_aisle($aisle,$grand_parent_category_id,$parent_category_id){
         $aisle->parent_category_id = $parent_category_id;
 
         $aisle_details = $this->select_category($aisle,"child");
@@ -108,12 +109,15 @@ class AsdaCategories extends Asda {
             return;
         }
 
+        $aisle_details->grand_parent_category_id = $grand_parent_category_id;
+        $aisle_details->parent_category_id = $parent_category_id;
+
         $shelf = new AsdaShelves($this->config,$this->logger,$this->database,$this->remember);
         $shelf->details($aisle_details);
 
         //If no products for shelves found then delete this aisle.
-        $product = new ProductModel($this->database);
-        $products_count = count((array)$product->where(['parent_category_id' => $aisle_details->id])->get());
+        $category_products = new CategoryProductModel($this->database);
+        $products_count = count((array)$category_products->where(['child_category_id' => $aisle_details->id])->get());
 
         if($products_count == 0){
             $this->logger->notice('Deleting Aisle Item '. $aisle_details->id.'. No Products Using It');
