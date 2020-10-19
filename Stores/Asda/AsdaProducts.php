@@ -56,7 +56,21 @@ class AsdaProducts extends Asda {
                     $this->logger->error('Failed To Find Matching Parent Category');
                     return;
                 } else {
-                    $parent_category_id =  $category_details->id;
+
+                    $category_info = $product_categories->where(['child_category_id' => $category_details->id])->get();
+
+                    if(is_array($category_info)){
+                        $category_info = $category_info[0];
+                    }
+
+                    if(is_null($category_info)){
+                        $this->logger->error('Failed To Find Product Category Details. ID:'.$category_details->id );
+                        return;
+                    }
+
+                    $grand_parent_category_id = $category_info->grand_parent_category_id;
+                    $parent_category_id = $category_info->parent_category_id;
+                    $child_category_id = $category_info->child_category_id;
                 }
                 
             }

@@ -90,7 +90,8 @@ class AsdaRecommended extends Asda {
 
                 $new_product = new AsdaProducts($this->config,$this->logger,$this->database,$this->remember);
                 
-                $new_product_id = $new_product->product($item->id,null,$this->sanitize->sanitizeField($item->aisleName));
+                // product($product_site_id,$grand_parent_category_id=null, $parent_category_id=null, $child_category_id=null,$parent_site_category_name=null)
+                $new_product_id = $new_product->product($item->id,null,null,null,$this->sanitize->sanitizeField($item->aisleName));
 
                 if($new_product_id){
                     $recommended->product_id = $product_id;
