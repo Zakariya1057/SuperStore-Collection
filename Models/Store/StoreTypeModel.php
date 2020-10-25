@@ -7,7 +7,7 @@ use Models\Model;
 //Each store location.
 class StoreTypeModel extends Model {
     
-    public $name, $description, $large_logo, $small_logo;
+    public $name, $description, $large_logo, $small_logo, $user_id;
     
     // Name, Logo Small, Logo Big
     function __construct($database=null){
@@ -17,6 +17,10 @@ class StoreTypeModel extends Model {
         $this->table("store_types");
 
         $fields = [
+            'id' => [
+                'type' => 'int'
+            ],
+            
             'name' => [],
             'description' => [
                 'nullable' => true,
@@ -36,7 +40,12 @@ class StoreTypeModel extends Model {
                     'min' => 0,
                     'max' => 500
                 ]
-            ]
+            ],
+
+            'user_id' => [
+                'type' => 'int'
+            ],
+
         ];
 
         $this->fields($fields);
