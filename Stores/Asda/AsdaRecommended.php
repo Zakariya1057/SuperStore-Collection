@@ -18,11 +18,6 @@ class AsdaRecommended extends Asda {
 
     public function all_recommended_products(){
         //Loop through all product in database without related products and set their related products.
-        // $this->logger->notice('Getting All Recommended Products');
-
-        // //Get all products from database, get recommended
-
-        // $this->product_recommended(13);
 
         $this->logger->notice('------ Product Recommended Start ---------');
 

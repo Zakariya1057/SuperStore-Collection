@@ -43,7 +43,7 @@ class Database {
         try {
 
             if(is_null($query)){
-                throw new Exception("No Query Specified");
+                throw new Exception('No Query Specified');
             }
 
             if($this->log_query){

@@ -15,19 +15,11 @@ class AsdaPromotions extends Asda {
         parent::__construct($config,$logger,$database,$remember);
     }
 
-    // public function promotion_details(){
-    //     // Get details about promotion, like expire and start date. Get all products involved.
-    // }
-
-    // public function promotions(){
-    //     //Search for new offers not in database.
-    // }
 
     public function product_prices($product_data){
 
         $promotion_info = $product_data->promotion_info[0];
 
-        // $price_details = (object)['price' => null,'old_price' => null,'promotion_id' => null,'is_on_sale' => false];
         $price_details = new PriceModel();
 
         $price_details->price = $this->product_item_price($product_data);
