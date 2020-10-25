@@ -3,6 +3,8 @@
 namespace Stores\Asda;
 
 use Exception;
+use Models\Store\StoreTypeModel;
+use Shared\Image;
 use Shared\Requests;
 use Shared\Sanitize;
 class Asda {
@@ -19,7 +21,8 @@ class Asda {
         $user_id,
         $city,
         $exclusions,
-        $remember;
+        $remember,
+        $image;
     
     function __construct($config,$logger,$database,$remember){
         $this->request = new Requests($config,$logger);
@@ -42,8 +45,24 @@ class Asda {
 
         $this->remember = $remember;
 
+        $this->image = new Image($config,$logger,$this->request);
+
+        $this->store_type();
     }
 
+    public function store_type(){
+        $store_type = new StoreTypeModel($this->database);
+
+        if( is_null($store_type->where(['id' => $this->store_type_id ])->get() ) ){
+            $store_type->id = $this->store_type_id;
+            $store_type->name = 'Asda';
+            $store_type->user_id = 1;
+            $store_type->large_logo = $this->image->save('asda','https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','large','logos');
+            $store_type->small_logo =  $this->image->save('asda','https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','small','logos');
+            $store_type->save();  
+        }
+ 
+    }
 
     public function recommended(){
         $recommended = new AsdaRecommended($this->config,$this->logger,$this->database,$this->remember);
@@ -69,7 +88,6 @@ class Asda {
         $reviews = new AsdaReviews($this->config,$this->logger,$this->database,$this->remember);
         $reviews->reviews();
     }
-
 
 
     //Shared Functionality
