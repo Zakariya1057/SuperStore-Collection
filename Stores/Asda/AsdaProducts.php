@@ -17,7 +17,6 @@ class AsdaProducts extends Asda {
     {
         parent::__construct($config,$logger,$database,$remember);
         $this->promotions = new AsdaPromotions($this->config,$this->logger,$this->database,$this->remember);
-        $this->image = new Image($config,$logger,$this->request);
     }
 
     public function product($product_site_id,$grand_parent_category_id=null, $parent_category_id=null, $child_category_id=null,$parent_site_category_name=null){
@@ -234,6 +233,7 @@ class AsdaProducts extends Asda {
 
         $product_site_id = $item->sku_id;
         $product->site_product_id = $product_site_id;
+        $product->store_type_id = $this->store_type_id;
 
         $product->total_reviews_count = $rating_review->total_review_count;
         $product->avg_rating          = $rating_review->avg_star_rating;
