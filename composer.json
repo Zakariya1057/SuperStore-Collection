@@ -1,7 +1,7 @@
 {
     "require": {
         "monolog/monolog": "^2.1",
-        "symfony/http-client": "5.1",
+        "symfony/http-client": "5.1.5",
         "symfony/dom-crawler": "^5.1",
         "aws/aws-sdk-php": "^3.151",
         "laravel/passport": "^10.0"
