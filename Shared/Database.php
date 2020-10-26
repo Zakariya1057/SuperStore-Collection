@@ -17,12 +17,7 @@ class Database {
 
         $this->database_config = $config->get('database');
 
-        $host     = $this->database_config->host;
-        $username = $this->database_config->username;
-        $password = $this->database_config->password;
-        $database = $this->database_config->database;
-
-        $this->connection = new \mysqli($host,$username,$password,$database);
+        $this->database_connect();
 
         if(!$this->connection){
             throw new Exception("Failed to connect to MySQL Database: " . $this->connect_error);
@@ -31,6 +26,16 @@ class Database {
         }
 
         $this->log_query = $config->get('log_query');
+    }
+
+    private function database_connect(){
+        $host     = $this->database_config->host;
+        $username = $this->database_config->username;
+        $password = $this->database_config->password;
+        $database = $this->database_config->database;
+
+        $this->logger->debug('Initialising Database Connection...');
+        $this->connection = new \mysqli($host,$username,$password,$database);
     }
 
     public function connect(){
@@ -71,19 +76,19 @@ class Database {
                 $connection_successfull = false;
 
                 $this->logger->error('Reattempting To Connect To MYSQL Server');
-
+                
                 for($i =0;$i < $retry_times;$i++){
 
-                    $this->logger->debug("Sleeping First For $wait Seconds");
-
-                    sleep($wait);
+                    $this->database_connect();
 
                     if($conn->ping()) {
                         $this->logger->debug('Successfully Reconnected To Database');
                         $connection_successfull = true;
                         break;
                     } else {
-                        $this->logger->debug('Failed To Reconnect To Database');
+                        $this->logger->debug('Failed To Reconnect To Database. Trying Again Shortly');
+                        $this->logger->debug("Sleeping First For $wait Seconds");
+                        sleep($wait);
                     }
 
                 }

@@ -41,6 +41,7 @@
             $remember->retrieve_data();
 
             $logger->notice("----------  Asda Scraping Start ----------");
+            
             $asda = new Asda($config,$logger,$database,$remember);
         
             if($asda_conf->stores){
@@ -72,9 +73,6 @@
         }
 
     } catch(Exception $e){
-        //Save failure error
-        //Exit Script
-
         $error_message = $e->getMessage();
         $error_file = $e->getFile();
         $error_stack = $e->getTraceAsString();
