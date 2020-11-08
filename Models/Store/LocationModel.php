@@ -1,5 +1,5 @@
 <?php
-// Create Model Class. Use For Inserting Into Databas. Searching And Deleting.
+ 
 namespace Models\Store;
 
 use Shared\Loggers;
