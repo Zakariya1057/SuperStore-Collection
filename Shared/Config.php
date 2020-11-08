@@ -23,9 +23,6 @@ class Config {
         return $details;
     }
 
-    public function update($field){
-
-    }
 }
 
 
