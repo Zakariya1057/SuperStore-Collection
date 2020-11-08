@@ -47,7 +47,6 @@ class Asda {
 
         $this->image = new Image($config,$logger,$this->request);
 
-        $this->store_type();
     }
 
     public function store_type(){

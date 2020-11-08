@@ -7,7 +7,7 @@
     // TODO - Product Update Daily. Reviews, New Suggestions, Price Change, Promotions
     // TODO - Use Parent Category To See If Haram: 1000017525663 - If meat in parent category
     // TODO - New Promotions
-
+    
     use Shared\Config;
     use Shared\Loggers;
     use Shared\Database;
@@ -44,6 +44,9 @@
             
             $asda = new Asda($config,$logger,$database,$remember);
         
+            // Generate Asda Store Type
+            $asda->store_type();
+
             if($asda_conf->stores){
                 //Get all stores in given city
                 $asda->stores();
