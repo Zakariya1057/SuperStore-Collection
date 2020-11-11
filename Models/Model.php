@@ -11,7 +11,7 @@ use Shared\Validator;
 
 class Model {
 
-    private $select, $create, $delete, $where,$update, $limit, $like, $table,$table_fields;
+    private $select, $create, $delete, $where, $group_by, $update, $limit, $like, $join, $order, $table, $table_fields;
 
     public $database, $logger,$product, $insert_ignore;
 
@@ -37,7 +37,7 @@ class Model {
         $table_fields_list = [];
         $insert_fields_list = [];
 
-        $data = $this->sanitize->sanitizeAllFields($data);
+        $data = $this->sanitize->sanitize_fields($data);
 
         foreach($data as $key => $value){
             $table_fields_list[] = "`$key`";
@@ -83,7 +83,7 @@ class Model {
         return $this;
     }
 
-    public function selectRaw($data){
+    public function select_raw($data){
         $selects = [];
 
         $data = $this->convert_string_to_array($data);
@@ -100,27 +100,37 @@ class Model {
 
     public function where($data){
 
-        $query = $this->makeQuery($data);
+        $query = $this->create_query($data);
 
         $this->where = $query;
 
         return $this;
     }
 
-    public function orWhere($data){
+    public function where_raw($query){
 
-        $query = $this->makeQuery($data);
+        $query = $this->convert_string_to_array($query);
+
+        $query = implode(" AND ",$query);
+        $this->where = $query;
+
+        return $this;
+    }
+
+    public function or_where($data){
+
+        $query = $this->create_query($data);
 
         $this->where = "( $this->where ) OR ( $query )";
 
         return $this;
     }
 
-    public function makeQuery($data,$seperator='AND'){
+    public function create_query($data,$seperator='AND'){
         
         $wheres = [];
 
-        $data = $this->sanitize->sanitizeAllFields($data);
+        $data = $this->sanitize->sanitize_fields($data);
 
         foreach($data as $key => $value){
             if(is_null($value) ){
@@ -133,18 +143,39 @@ class Model {
         return implode(" $seperator ",$wheres);
     }
 
-    public function whereRaw($query){
-
-        $query = $this->convert_string_to_array($query);
-
-        $query = implode(" AND ",$query);
-        $this->where = $query;
-
+    public function group_by($field){
+        $this->group_by = $field;
         return $this;
     }
     
     public function limit($limit=null){
         $this->limit = $limit;
+        return $this;
+    }
+
+    public function order_by($field, $order = 'DESC'){
+        
+        $order = strtoupper($order);
+
+        if($order != 'ASC' && $order != 'DESC'){
+            throw new Exception('Unknown Order By: '.$order);
+        }
+
+        $this->order = "ORDER BY $field $order";
+
+        return $this;
+    }
+
+    public function join($table, $relationship_1, $relationship_2, $join_type = 'LEFT'){
+
+        $join_type = strtoupper($join_type);
+
+        if($join_type != 'LEFT' && $join_type != 'RIGHT' && $join_type != 'INNER' && $join_type != 'FULL' && $join_type != 'SELF'){
+            throw new Exception('Unknown Database Join: ' . $join_type);
+        }
+
+        $this->join .= "$join_type JOIN $table ON $relationship_1 = $relationship_2 ";
+
         return $this;
     }
 
@@ -172,7 +203,7 @@ class Model {
         if(!is_null($table_name)){
             $this->table = $table_name;
         } else {
-            throw new Exception("No Table Name Found");
+            throw new Exception('No Table Name Found');
         }
         
     }
@@ -193,6 +224,9 @@ class Model {
         $delete        = $this->delete;
         $like          = $this->like;
         $create        = $this->create;
+        $group_by      = $this->group_by;
+        $join          = $this->join;
+        $order         = $this->order;
         
 
         if(!is_null($create)){
@@ -225,6 +259,10 @@ class Model {
     
             }
     
+            if(!is_null($join)){
+                $query .= " $join ";
+            }
+
             if(!is_null($where_fields)){
                 if(!is_null($like)){
                     $where_fields .= " AND $like";
@@ -236,7 +274,15 @@ class Model {
                     $query .= "WHERE $like";
                 }
             }
-    
+
+            if(!is_null($group_by)){
+                $query .= "GROUP BY $group_by";
+            }
+
+            if(!is_null($order)){
+                $query .= " $order ";
+            }
+
             if(!is_null($limit)){
                 $query .= "LIMIT $limit";
             }
@@ -253,16 +299,23 @@ class Model {
         
     }
 
-    public function update($data){
+    public function update($data, $raw = false){
 
         $wheres = [];
 
+        $this->join = $this->order = $this->group_by = null;
+
         $sanitize = new Sanitize();
 
-        $data = $sanitize->sanitizeAllFields($data);
+        $data = $sanitize->sanitize_fields($data);
 
         foreach($data as $key => $value){
-            $wheres[] = "`$key` = '$value' ";
+
+            if($raw){
+                $wheres[] = "`$key` = $value ";
+            } else {
+                $wheres[] = "`$key` = '$value' ";
+            }
         }
 
         $query = implode(", ",$wheres);
