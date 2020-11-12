@@ -116,20 +116,13 @@ class Database {
 
             return null;
         } else {
-            
-            if($results->num_rows > 1){
+            $results_list = [];
 
-                $results_list = [];
-
-                for($i =0; $i < $results->num_rows; $i++){
-                    $results_list[] = $results->fetch_object();
-                }
-
-                return $results_list;
-            } else {
-                return $results->fetch_object();
+            for($i =0; $i < $results->num_rows; $i++){
+                $results_list[] = $results->fetch_object();
             }
-            
+
+            return $results_list;   
         }
 
     }
@@ -140,7 +133,6 @@ class Database {
 
     public function start_transaction(){
         $this->logger->notice("--- Transaction Begin ---");
-        // $this->query('START TRANSACTION;');
         $this->connection->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
     }
 

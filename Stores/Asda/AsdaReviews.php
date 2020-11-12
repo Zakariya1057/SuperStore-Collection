@@ -22,11 +22,7 @@ class AsdaReviews extends Asda {
         //Get all products without reviews, get matching reviews
         $this->logger->notice('------ Product Reviews Start ---------');
 
-        $products_without_reviews = $this->productModel->select(['id','site_product_id','name'])->where(['reviews_searched' => null])->get();
-
-        if(is_object($products_without_reviews) ){
-            $products_without_reviews = [$products_without_reviews];
-        }
+        $products_without_reviews = $this->productModel->select(['id','site_product_id','name'])->where(['reviews_searched' => null])->get() ?? null;
 
         if($products_without_reviews){
 
@@ -117,7 +113,7 @@ class AsdaReviews extends Asda {
 
             $this->logger->debug("Review Details: $review->title \t $review->rating/5 \t $review->created_at");
 
-            $select_review = $review->where(['site_review_id' => $review->site_review_id])->get();
+            $select_review = $review->where(['site_review_id' => $review->site_review_id])->get()[0] ?? null;
 
             if(is_null($select_review)){
                 $review->product_id = $product_id;

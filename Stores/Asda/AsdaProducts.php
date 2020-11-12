@@ -24,11 +24,11 @@ class AsdaProducts extends Asda {
         $this->logger->info("Product ID: $product_site_id");
 
         $product_item = new ProductModel($this->database);
-        $product_results = $product_item->where(['site_product_id' => $product_site_id])->get();
+        $product_results = $product_item->where(['site_product_id' => $product_site_id])->get()[0] ?? null;
 
         $product_categories = new CategoryProductModel($this->database);
 
-        if(is_null($product_results)){
+        if(!$product_results){
             
             $this->logger->info("New Product Found: $product_site_id");
 
@@ -43,7 +43,7 @@ class AsdaProducts extends Asda {
                 $category = new ChildCategoryModel($this->database);
                 $category_details = $category->like(['name'=> "$parent_site_category_name%"])->get();
 
-                if(is_array($category_details)){
+                if(count($category_details) > 1){
                     //Multiple Category Match
                     $this->logger->debug('Multiple Possible Category Match With Name: ' . $parent_site_category_name);
                     $this->logger->debug('Select First Product In List');
@@ -55,11 +55,7 @@ class AsdaProducts extends Asda {
                     return;
                 } else {
 
-                    $category_info = $product_categories->where(['child_category_id' => $category_details->id])->get();
-
-                    if(is_array($category_info)){
-                        $category_info = $category_info[0];
-                    }
+                    $category_info = $product_categories->where(['child_category_id' => $category_details->id])->get()[0] ?? null;
 
                     if(is_null($category_info)){
                         $this->logger->error('Failed To Find Product Category Details. ID:'.$category_details->id );
@@ -104,8 +100,8 @@ class AsdaProducts extends Asda {
             $this->logger->info("Product Found In Database: $product_site_id");
             // If under new category, save that under multiple categories
 
-            $results = $product_categories->where(['product_id' => $product_results->id, 'child_category_id' => $child_category_id])->get();
-            if(is_null($results)){
+            $results = $product_categories->where(['product_id' => $product_results->id, 'child_category_id' => $child_category_id])->get()[0] ?? null;
+            if(!$results){
                 $this->logger->info("No Product Under Category: $product_site_id");
                 $product_categories->product_id = $product_results->id;
                 $product_categories->child_category_id = $child_category_id;

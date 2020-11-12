@@ -60,7 +60,7 @@ class AsdaStores extends Asda {
 
         $store = new StoreModel($this->database);
 
-        $store_results = $store->where(['store_site_id' => $id])->get();
+        $store_results = $store->where(['store_site_id' => $id])->get()[0] ?? null;
 
         if(!$store_results){
             $this->logger->debug("New Store: $name ($id)");
@@ -94,7 +94,7 @@ class AsdaStores extends Asda {
         //Insert Store Locations
         $location = new LocationModel($this->database);
 
-        $store_results = $location->where(['store_id' => $store_id])->get();
+        $store_results = $location->where(['store_id' => $store_id])->get()[0] ?? null;
 
         if(!$store_results){
             $this->logger->debug("New Store Location: $store_id");
@@ -138,19 +138,25 @@ class AsdaStores extends Asda {
 
             $opening_hours = new OpeningHoursModel($this->database);
 
-            $hour_results = $opening_hours->where(['store_id' => $store_id,'day_of_week' => $day_of_week])->get();
+            $hour_results = $opening_hours->where(['store_id' => $store_id,'day_of_week' => $day_of_week])->get()[0] ?? null;
 
             if(!$hour_results){
                 //New Hour Found
                 $this->logger->debug("New Store Opening Hour Found. Store: $store_id. Day Of Week: $day_of_week");
 
-                $time_details = $hour_item->intervals[0];
-
                 $opening_hours->closed_today = $hour_item->isClosed == false ? NULL : true;
+
                 $opening_hours->day_of_week = $day_of_week;
                 $opening_hours->store_id = $store_id;
-                $opening_hours->opens_at = $this->format_time($time_details->start);
-                $opening_hours->closes_at = $this->format_time($time_details->end);
+
+                if(!$opening_hours->closed_today){
+                    //If Closed, no opens or closed
+                    $time_details = $hour_item->intervals[0];
+                    $opening_hours->opens_at = $this->format_time($time_details->start);
+                    $opening_hours->closes_at = $this->format_time($time_details->end);
+                } else {
+                    $this->logger->debug("Store Closed Day: {$day_of_week}");
+                }
 
                 $opening_hours->save();
 
@@ -209,7 +215,7 @@ class AsdaStores extends Asda {
         foreach($facilities_list as $facility_name){
             $facility = new FacilitiesModel($this->database);
 
-            $facilities_results = $facility->where(['store_id' => $store_id, 'name' => $facility_name])->get();
+            $facilities_results = $facility->where(['store_id' => $store_id, 'name' => $facility_name])->get()[0] ?? null;
             
             if(!$facilities_results){
                 $this->logger->debug("New Store Facilities: $facility_name . $store_id ");

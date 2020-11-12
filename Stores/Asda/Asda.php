@@ -52,7 +52,9 @@ class Asda {
     public function store_type(){
         $store_type = new StoreTypeModel($this->database);
 
-        if( is_null($store_type->where(['id' => $this->store_type_id ])->get() ) ){
+        $store = $store_type->where(['id' => $this->store_type_id ])->get()[0] ?? null;
+
+        if(!$store){
             $store_type->id = $this->store_type_id;
             $store_type->name = 'Asda';
             $store_type->user_id = 1;
