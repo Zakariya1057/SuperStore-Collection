@@ -7,23 +7,22 @@
         "database": "superstore_database"
     },
 
+    "elasticsearch": {
+        "host": "localhost"
+    },
+
     "log_query": 1,
     
     "city": "Birmingham",
 
-    "env": "dev",
-
-    "mock_data": {
-        "reviews": 1,
-        "products": 1
-    },
+    "env": "prod",
 
     "continue": 1,
 
     "images": {
         "host": "192.168.1.187",
 
-        "saving_location": "local",
+        "saving_location": "aws",
 
         "type_locations": {
             "logos": "logos",
@@ -52,11 +51,13 @@
     "asda": {
         "run": 1,
 
-        "stores": 0,
+        "monitor": 1,
+
+        "stores": 1,
 
         "groceries": 1,
-        "recommended": 0,
-        "reviews": 0,
+        "recommended": 1,
+        "reviews": 1,
         "promotions": 0,
         
         "store_type_id": 1,
@@ -92,6 +93,12 @@
             "attempts": 20,
             "wait": 300
         }
+    },
+
+    "notification": {
+        "url": "gateway.sandbox.push.apple.com:2195",
+        "pass_phrase": "GFDAxqVADmNa22Q6jJRVy9gtXSJYpfSPHcU9r8dL64yCkP5kkW",
+        "file_path": "storage/apple_push_notification_production.pem"
     },
     
     "exclusions": {
