@@ -14,7 +14,7 @@ class IngredientModel extends Model {
 
         parent::__construct($database);
 
-        $this->table("ingredients");
+        $this->table('ingredients');
 
         $fields = [
             'name' => ['max_range' => 500],

@@ -13,7 +13,7 @@ class ReviewModel extends Model {
 
         parent::__construct($database);
 
-        $this->table("reviews");
+        $this->table('reviews');
 
         $fields = [
             'text' => [

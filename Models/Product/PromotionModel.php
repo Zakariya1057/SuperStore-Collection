@@ -13,7 +13,7 @@ class PromotionModel extends Model {
 
         parent::__construct($database);
 
-        $this->table("promotions");
+        $this->table('promotions');
 
         $fields = [
             'name' => [],

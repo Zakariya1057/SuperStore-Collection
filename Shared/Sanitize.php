@@ -4,21 +4,21 @@ namespace Shared;
 
 class Sanitize {
 
-    public function sanitizeAllFields($data){
+    public function sanitize_fields($data){
         $data = (array)$data;
 
         foreach($data as $key => $value){
             if(is_array($value)){
-                $data[$key] = $this->sanitizeAllFields($value);
+                $data[$key] = $this->sanitize_fields($value);
             } else {
-                $data[$key] = $this->sanitizeField($value);
+                $data[$key] = $this->sanitize_field($value);
             }
         }
 
         return $data;
     }
 
-    public function sanitizeField($string){
+    public function sanitize_field($string){
         
         if(is_null($string)){
             return;

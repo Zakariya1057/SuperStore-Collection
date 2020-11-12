@@ -34,10 +34,11 @@ class ProductModel extends Model {
 
         parent::__construct($database);
 
-        $this->table("products");
+        $this->table('products');
 
         $fields = [
             'name' => [],
+
             'description' => [
                 'nullable'=> true
             ],
@@ -83,14 +84,12 @@ class ProductModel extends Model {
                 'nullable' => true
             ],
 
-
             'reviews_searched' => [
                 'nullable' => true
             ],
             'recommended_searched' => [
                 'nullable' => true
             ],
-
 
             'avg_rating' => [
                 'nullable' => true,

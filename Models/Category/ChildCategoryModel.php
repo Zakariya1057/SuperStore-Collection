@@ -8,14 +8,14 @@ class ChildCategoryModel extends CategoryModel {
 
         parent::__construct($database);
 
-        $this->table("child_categories");
+        $this->table('child_categories');
 
         $fields = [
-            "name" => [],
-            "parent_category_id" => [],
-            "store_type_id" => [],
-            "site_category_id" => [
-                "type" => "int"
+            'name' => [],
+            'parent_category_id' => [],
+            'store_type_id' => [],
+            'site_category_id' => [
+                'type' => 'int'
             ],
         ];
 

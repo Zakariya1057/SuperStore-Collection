@@ -10,7 +10,7 @@ class ParentCategoryModel extends CategoryModel {
 
         parent::__construct($database);
 
-        $this->table("parent_categories");
+        $this->table('parent_categories');
 
         $fields = [
             "name" => [],

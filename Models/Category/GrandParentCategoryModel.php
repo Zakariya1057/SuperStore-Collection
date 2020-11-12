@@ -10,13 +10,13 @@ class GrandParentCategoryModel extends CategoryModel {
         
         parent::__construct($database);
 
-        $this->table("grand_parent_categories");
+        $this->table('grand_parent_categories');
 
         $fields = [
-            "name" => [],
-            "store_type_id" => [],
-            "site_category_id" => [
-                "type" => "int"
+            'name' => [],
+            'store_type_id' => [],
+            'site_category_id' => [
+                'type' => 'int'
             ],
         ];
 

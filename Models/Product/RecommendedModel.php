@@ -12,7 +12,7 @@ class RecommendedModel extends Model {
 
         parent::__construct($database);
 
-        $this->table("recommended");
+        $this->table('recommended');
 
         $fields = [
             'product_id' => ['type' => 'int'],

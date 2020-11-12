@@ -151,7 +151,7 @@ class AsdaCategories extends Asda {
             throw new Exception("Unknown Category Type Found: $type");
         }
 
-        $category_item = $category->where(["site_category_id" => $category_store_id])->orWhere(['name' => $category_name])->get();
+        $category_item = $category->where(["site_category_id" => $category_store_id])->or_where(['name' => $category_name])->get();
 
         if($category_item){
             $this->logger->debug($category_name . ' Category: Found In Database');
