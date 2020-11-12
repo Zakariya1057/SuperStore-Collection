@@ -33,10 +33,12 @@ class OpeningHoursModel extends Model {
             ],
 
             'opens_at' => [
+                'nullable' => true,
                 'type' => 'time'
             ],
 
             'closes_at' => [
+                'nullable' => true,
                 'type' => 'time'
             ]
 
