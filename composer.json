@@ -4,7 +4,8 @@
         "symfony/http-client": "5.1.5",
         "symfony/dom-crawler": "^5.1",
         "aws/aws-sdk-php": "^3.151",
-        "laravel/passport": "^10.0"
+        "laravel/passport": "^10.0",
+        "elasticsearch/elasticsearch": "^7.9"
     },
     "autoload": {
         "psr-4": {
