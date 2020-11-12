@@ -209,7 +209,9 @@ class Model {
     }
 
     public function get(){
-        return $this->run_query();
+        $results = $this->run_query();
+        $this->join = $this->order = $this->group_by = null;
+        return $results;
     }
 
     private function run_query(){
@@ -299,7 +301,7 @@ class Model {
         
     }
 
-    public function update($data, $raw = false){
+    public function update($data){
 
         $wheres = [];
 
@@ -310,12 +312,7 @@ class Model {
         $data = $sanitize->sanitize_fields($data);
 
         foreach($data as $key => $value){
-
-            if($raw){
-                $wheres[] = "`$key` = $value ";
-            } else {
-                $wheres[] = "`$key` = '$value' ";
-            }
+            $wheres[] = "`$key` = '$value' ";
         }
 
         $query = implode(", ",$wheres);
