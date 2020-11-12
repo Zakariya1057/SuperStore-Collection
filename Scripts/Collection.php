@@ -2,10 +2,8 @@
 
     ini_set('memory_limit', '-1');
 
-    require_once __DIR__.'/vendor/autoload.php';
+    require_once __DIR__.'/../vendor/autoload.php';
 
-    // TODO - Product Update Daily. Reviews, New Suggestions, Price Change, Promotions
-    // TODO - Use Parent Category To See If Haram: 1000017525663 - If meat in parent category
     // TODO - New Promotions
     
     use Shared\Config;
@@ -23,7 +21,7 @@
 
     $remember = new Remember($config,$logger,$database);
 
-    $logger->notice("---------------------------- Script Start ----------------------------");
+    $logger->notice("---------------------------- Collection Script Start ----------------------------");
 
     $asda_conf = $config->get('asda');
 
@@ -93,6 +91,6 @@
         throw new Exception($e);
     }
 
-    $logger->notice("---------------------------- Script Complete ----------------------------");
+    $logger->notice("---------------------------- Collection Script Complete ----------------------------");
 
 ?>
