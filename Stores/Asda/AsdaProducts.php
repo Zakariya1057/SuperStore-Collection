@@ -5,7 +5,6 @@ namespace Stores\Asda;
 use Models\Category\ChildCategoryModel;
 use Models\Product\ProductModel;
 use Models\Product\IngredientModel;
-use Shared\Image;
 use Exception;
 use Models\Category\CategoryProductModel;
 
@@ -119,10 +118,10 @@ class AsdaProducts extends Asda {
 
     }
 
-    public function product_details($product_id){
+    public function product_details($site_product_id){
 
         $shelf_endpoint = $this->endpoints->products;
-        $this->logger->debug("Product Details ID: $product_id");
+        $this->logger->debug("Product Details ID: $site_product_id");
 
         if($this->env == "dev"){
             $product_response = file_get_contents(__DIR__."/../../Data/Asda/Product.json");
@@ -130,7 +129,7 @@ class AsdaProducts extends Asda {
 
             //After running for about an hour this will fail. In that case, wait five minutes and retry
             $product_response = $this->request->request($shelf_endpoint,"POST",[
-                "item_ids" => [$product_id], 
+                "item_ids" => [$site_product_id], 
                 "consumer_contract" => "webapp_pdp",
                 "store_id" => "4676", // Change for different regions
                 "request_origin" => "gi"
