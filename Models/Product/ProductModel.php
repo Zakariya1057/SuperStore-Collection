@@ -42,6 +42,7 @@ class ProductModel extends Model {
             'description' => [
                 'nullable'=> true
             ],
+            
             'large_image' => [
                 'nullable' => true
             ],

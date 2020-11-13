@@ -18,7 +18,6 @@ class AsdaRecommended extends Asda {
 
     public function all_recommended_products(){
         //Loop through all product in database without related products and set their related products.
-
         $this->logger->notice('------ Product Recommended Start ---------');
 
         $products_without_recommended = $this->productModel->select(['id','site_product_id','name'])->where(['recommended_searched' => null])->get()[0] ?? null;
@@ -38,7 +37,7 @@ class AsdaRecommended extends Asda {
     
                 $this->database->start_transaction();
                 $this->product_recommended($product_id, $site_product_id);
-                $this->database->end_transaction();
+                $this->database->commit_transaction();
             }
 
         } else {
@@ -49,7 +48,6 @@ class AsdaRecommended extends Asda {
 
     }
 
-    // Id,parent_product_id, product_id, site_product_id, created_at,
     public function product_recommended($product_id, $site_product_id){
 
         $recommendation_endpoint = $this->endpoints->recommended . $site_product_id;
@@ -66,9 +64,12 @@ class AsdaRecommended extends Asda {
 
         $results = $recommended_data->results[0]->items;
 
-        foreach($results as $item){
-            $recommended = new RecommendedModel($this->database);
+        $recommended = new RecommendedModel($this->database);
 
+        $product_ids = [];
+
+        foreach($results as $item){
+            
             $new_prduct_details = $product->where(['site_product_id' => $item->id])->get()[0] ?? null;
 
             if($new_prduct_details){
@@ -76,6 +77,8 @@ class AsdaRecommended extends Asda {
                 $recommended->recommended_product_id = $new_prduct_details->id;
                 $recommended->insert_ignore = true;
                 $recommended->save();
+
+                $product_ids[] = $new_prduct_details->id;
             } else {
                 $this->logger->warning('Similar Product Not Found In Database. Creating The Product, Then Setting As Recommened');
 
@@ -88,11 +91,16 @@ class AsdaRecommended extends Asda {
                     $recommended->recommended_product_id = $new_product_id;
                     $recommended->insert_ignore = true;
                     $recommended->save();
+
+                    $product_ids[] = $new_product_id;
                 }
 
             }
 
         }
+
+        // Delete older recommended not found.
+        $recommended->where_not_in('recommended_product_id',$product_ids)->delete();
 
         $this->productModel->where(['id' => $product_id])->update(['recommended_searched' => 1]);
 
