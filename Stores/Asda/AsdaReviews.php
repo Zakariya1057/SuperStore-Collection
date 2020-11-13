@@ -38,8 +38,8 @@ class AsdaReviews extends Asda {
                 $this->logger->debug("New Product Review Item: [$product_id]$name");
     
                 $this->database->start_transaction();
-                $this->insert_review($product_id, $site_product_id);
-                $this->database->end_transaction();
+                $this->create_review($product_id, $site_product_id);
+                $this->database->commit_transaction();
             }
 
         } else {
@@ -50,7 +50,7 @@ class AsdaReviews extends Asda {
 
     }
 
-    public function insert_review($product_id,$product_site_id){
+    public function create_review($product_id,$product_site_id){
 
         $reviews_endpoint = $this->endpoints->reviews . $product_site_id;
 
