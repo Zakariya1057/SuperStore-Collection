@@ -136,7 +136,7 @@ class Database {
         $this->connection->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
     }
 
-    public function end_transaction(){
+    public function commit_transaction(){
         $this->logger->notice("--- Transaction Complete ---");
         $this->connection->commit();
     }

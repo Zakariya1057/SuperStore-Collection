@@ -31,7 +31,6 @@ class AsdaShelves extends Asda {
 
             $this->remember->set('product_index', $index + $last_product_index);
 
-            // product($product_site_id,$child_category_id=null,$parent_category_id=null, $grand_parent_category_id=null,$parent_site_category_name=null)
             $product = new AsdaProducts($this->config,$this->logger,$this->database,$this->remember);
             $product->product($product_item,$shelf->grand_parent_category_id, $shelf->parent_category_id,$shelf->id);
         }
@@ -78,14 +77,10 @@ class AsdaShelves extends Asda {
             }
             
         }
-        
-        // file_put_contents(__DIR__.'/../../Data/Asda/Products_List.json',json_encode($products));
 
         return $products;
 
     }
-
-
 
 }
 

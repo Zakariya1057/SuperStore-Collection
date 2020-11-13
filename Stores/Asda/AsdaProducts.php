@@ -89,7 +89,7 @@ class AsdaProducts extends Asda {
 
                 $this->logger->notice("Complete Product Added: " . $product_details->name);
 
-                $this->database->end_transaction();
+                $this->database->commit_transaction();
 
                 return $product_id;
             } else {

@@ -38,7 +38,7 @@ class AsdaStores extends Asda {
             foreach($stores_list as $item){
                 $this->database->start_transaction();
                 $this->store($item);
-                $this->database->end_transaction();
+                $this->database->commit_transaction();
             }
 
         }
