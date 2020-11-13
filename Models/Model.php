@@ -11,7 +11,7 @@ use Shared\Validator;
 
 class Model {
 
-    private $select, $create, $delete, $where, $group_by, $update, $limit, $like, $join, $order, $table, $table_fields;
+    private $select, $create, $delete, $where, $group_by, $update, $limit, $like, $join, $not_in, $order, $table, $table_fields;
 
     public $database, $logger,$product, $insert_ignore;
 
@@ -179,6 +179,34 @@ class Model {
         return $this;
     }
 
+    public function where_not_in($field, $list){
+
+        $query_list = [];
+
+        foreach($list as $item){
+            $query_list[] = "'$item'";
+        }
+
+        $query_list = join(',', $query_list);
+
+        $this->not_in = "WHERE `$field` NOT IN ($query_list)";
+        return $this;
+    }
+
+    public function where_in($field, $list){
+
+        $query_list = [];
+
+        foreach($list as $item){
+            $query_list[] = "'$item'";
+        }
+
+        $query_list = join(',', $query_list);
+
+        $this->not_in = "WHERE `$field` IN ($query_list)";
+        return $this;
+    }
+
     public function like($data){
         $likes = [];
 
@@ -210,7 +238,6 @@ class Model {
 
     public function get(){
         $results = $this->run_query();
-        $this->join = $this->order = $this->group_by = null;
         return $results;
     }
 
@@ -229,7 +256,7 @@ class Model {
         $group_by      = $this->group_by;
         $join          = $this->join;
         $order         = $this->order;
-        
+        $not_in        = $this->not_in;
 
         if(!is_null($create)){
 
@@ -277,6 +304,10 @@ class Model {
                 }
             }
 
+            if(!is_null($not_in)){
+                $query .= "$not_in";
+            }
+
             if(!is_null($group_by)){
                 $query .= "GROUP BY $group_by";
             }
@@ -291,6 +322,8 @@ class Model {
 
         }
 
+        $this->reset_data();
+        
         $results = $this->database->query($query);
         
         if(!is_null($create)){
@@ -304,8 +337,6 @@ class Model {
     public function update($data){
 
         $wheres = [];
-
-        $this->join = $this->order = $this->group_by = null;
 
         $sanitize = new Sanitize();
 
@@ -351,6 +382,10 @@ class Model {
         }  else {
             return $data;
         }
+    }
+
+    private function reset_data(){
+        $this->join = $this->order = $this->group_by = $this->create = $this->delete = null;
     }
 }
 
