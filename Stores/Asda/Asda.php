@@ -92,6 +92,12 @@ class Asda {
 
 
     //Shared Functionality
+    public function include_category($category_name){
+        $inclusion_list = join('|',$this->exclusions->categories->include);
+        preg_match("/$inclusion_list/i",$category_name,$category_matches);
+        return $category_matches ? true : false; 
+    }
+
     public function exclude_category($category_name){
         $exclusions_list = join('|',$this->exclusions->categories->exclude );
         preg_match("/$exclusions_list/i",$category_name,$category_matches);

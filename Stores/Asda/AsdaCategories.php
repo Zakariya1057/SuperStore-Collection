@@ -40,12 +40,10 @@ class AsdaCategories extends Asda {
     }
 
     public function create_category($category_item){
-        //Insert or select category item.
-
-        if(!$this->exclude_category($category_item->displayName)){
+        if($this->include_category($category_item->displayName)){
             $this->logger->debug('Category Not Excluded: '. $category_item->displayName);
 
-            $category_details = $this->select_category($category_item,"grand_parent");
+            $category_details = $this->select_category($category_item,'grand_parent');
             $this->logger->notice("- Category: $category_details->name");
             
             $last_category_index = $this->remember->get('parent_category_index') ?? 0;
@@ -64,8 +62,6 @@ class AsdaCategories extends Asda {
                 $this->remember->set('parent_category_index',0);
 
             }
-
-
         } else {
             $this->logger->notice('Category Excluded: '. $category_item->displayName );
         }

@@ -53,7 +53,7 @@
 
         "monitor": 1,
 
-        "stores": 1,
+        "stores": 0,
 
         "groceries": 1,
         "recommended": 1,
@@ -104,6 +104,7 @@
     "exclusions": {
 
         "categories": {
+
             "exclude": [
                 "Back to School",
                 "Summer Drinks",
@@ -120,7 +121,24 @@
                 "\bGin\b",
                 "\bRum\b",
                 "Prosecco"
+            ],
+
+            "include": [
+                "Fresh Food & Bakery",
+                "Chilled Food",
+                "Food Cupboard",
+                "Frozen Food",
+                "Vegan & Plant Based",
+                "Free From...",
+                "Drinks",
+                "Health & Beauty",
+                "Laundry & Household",
+                "Pets",
+                "Baby, Toddler & Kids",
+                "Home & Entertainment",
+                "Big Night In"
             ]
+            
         },
     
         "products": {
@@ -147,7 +165,8 @@
             "exclude": [
                 "pork",
                 "bacon",
-                "ham"
+                "ham",
+                "pig"
             ]
         },
 
