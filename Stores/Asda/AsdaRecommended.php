@@ -20,7 +20,7 @@ class AsdaRecommended extends Asda {
         //Loop through all product in database without related products and set their related products.
         $this->logger->notice('------ Product Recommended Start ---------');
 
-        $products_without_recommended = $this->productModel->select(['id','site_product_id','name'])->where(['recommended_searched' => null])->get()[0] ?? null;
+        $products_without_recommended = $this->productModel->select(['id','site_product_id','name'])->where(['recommended_searched' => null])->get();
         
         if($products_without_recommended){
 
@@ -52,7 +52,7 @@ class AsdaRecommended extends Asda {
 
         $recommendation_endpoint = $this->endpoints->recommended . $site_product_id;
 
-        if($this->env == "dev"){
+        if($this->env == 'dev'){
             $recommended_response = file_get_contents(__DIR__."/../../Data/Asda/Recommendations.json");
         } else {
             $recommended_response = $this->request->request($recommendation_endpoint);
@@ -64,12 +64,11 @@ class AsdaRecommended extends Asda {
 
         $results = $recommended_data->results[0]->items;
 
-        $recommended = new RecommendedModel($this->database);
-
         $product_ids = [];
 
+        $recommended = new RecommendedModel($this->database);
+
         foreach($results as $item){
-            
             $new_prduct_details = $product->where(['site_product_id' => $item->id])->get()[0] ?? null;
 
             if($new_prduct_details){
@@ -77,13 +76,11 @@ class AsdaRecommended extends Asda {
                 $recommended->recommended_product_id = $new_prduct_details->id;
                 $recommended->insert_ignore = true;
                 $recommended->save();
-
                 $product_ids[] = $new_prduct_details->id;
             } else {
                 $this->logger->warning('Similar Product Not Found In Database. Creating The Product, Then Setting As Recommened');
 
                 $new_product = new AsdaProducts($this->config,$this->logger,$this->database,$this->remember);
-                
                 $new_product_id = $new_product->product($item->id,null,null,null,$this->sanitize->sanitize_field($item->aisleName));
 
                 if($new_product_id){
@@ -91,7 +88,6 @@ class AsdaRecommended extends Asda {
                     $recommended->recommended_product_id = $new_product_id;
                     $recommended->insert_ignore = true;
                     $recommended->save();
-
                     $product_ids[] = $new_product_id;
                 }
 
