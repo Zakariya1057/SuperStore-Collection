@@ -45,7 +45,7 @@ class AsdaShelves extends Asda {
         $shelf_endpoint = $this->endpoints->shelves . $site_shelf_id;
         $this->logger->debug("Shelf: $site_shelf_id");
 
-        if($this->env == "dev"){
+        if($this->env == 'dev'){
             $shelf_results = file_get_contents(__DIR__."/../../Data/Asda/Shelf.json");
         } else {
             $shelf_results = $this->request->request($shelf_endpoint);

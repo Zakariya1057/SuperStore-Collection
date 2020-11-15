@@ -116,7 +116,7 @@ class AsdaPromotions extends Asda {
     public function promotion_name($promotion_site_id){
         $promotion_url = $this->endpoints->promotions . $promotion_site_id;
 
-        if($this->env == "dev"){
+        if($this->env == 'dev'){
             $promotion_response = file_get_contents(__DIR__."/../../Data/Asda/Promotion.json");
         } else {
             $promotion_response = $this->request->request($promotion_url);

@@ -56,7 +56,7 @@ class AsdaReviews extends Asda {
 
         $this->logger->debug("Reviews Products ID: $product_site_id");
 
-        if($this->env == "dev"){
+        if($this->env == 'dev'){
             $reviews_response = file_get_contents(__DIR__."/../../Data/Asda/Reviews.json");
             $reviews_results = $this->request->parse_json($reviews_response);
             $this->process_reviews($product_id, $reviews_results->Results);
