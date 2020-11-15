@@ -323,7 +323,7 @@ class Model {
         }
 
         $this->reset_data();
-        
+
         $results = $this->database->query($query);
         
         if(!is_null($create)){
@@ -363,6 +363,8 @@ class Model {
         foreach($this->table_fields as $name => $validation){
             $data[$name] = $this->{$name};
         }
+        
+        $this->reset_data();
         
         $this->create($data);
 
