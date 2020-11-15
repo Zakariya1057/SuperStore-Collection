@@ -29,7 +29,7 @@ class OpeningHoursModel extends Model {
             ],
 
             'closed_today' => [
-                'nullable' => true
+                'nullable' => false
             ],
 
             'opens_at' => [
