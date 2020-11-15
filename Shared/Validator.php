@@ -19,9 +19,10 @@ class Validator extends Sanitize {
         
         foreach($validation as $field_name => $validate){
 
-            $field = $data[$field_name] ?? null;
+            $value = $data[$field_name] ?? null;
 
             $nullable = $validate['nullable'] ?? false;
+            $boolean =  $validate['boolean'] ?? null;
             $type = $validate['type'] ?? null;
             $regex = null;
 
@@ -29,7 +30,14 @@ class Validator extends Sanitize {
 
             $range = $validate['range'] ?? null;
 
-            if($nullable && is_null($field)){
+            if(!is_null($boolean)){
+                
+               if(!is_bool($value)){
+                   throw new Exception('Boolean Not Found. Value: '. $value);
+               }
+            }
+
+            if($nullable && is_null($value)){
                 return;
             }
 
@@ -37,20 +45,20 @@ class Validator extends Sanitize {
                 $min = $range['min'];
                 $max = $range['max'];
 
-                if($field < $min || $field > $max){
-                    throw new Exception("Field($field) $field_name Exceedes Ranges");
+                if($value < $min || $value > $max){
+                    throw new Exception("Field($value) $field_name Exceedes Ranges");
                 }
             }
 
-            if(!is_null($max_length) && strlen($field) > $max_length){
-                throw new Exception("Field $field_name Too Long. Value: $field. Length: $max_length");
+            if(!is_null($max_length) && strlen($value) > $max_length){
+                throw new Exception("Field $field_name Too Long. Value: $value. Length: $max_length");
             }
 
             if(!key_exists($field_name,$data)){
                 throw new Exception("Field: $field_name Not Found");
             }
 
-            if(!$nullable && is_null($field)){
+            if(!$nullable && is_null($value)){
                 throw new Exception("Field: $field_name Cannot Be Null");
             }
 
@@ -59,10 +67,10 @@ class Validator extends Sanitize {
             }
             
             if(!is_null($regex)){
-                preg_match($regex,$field,$matches);
+                preg_match($regex,$value,$matches);
 
                 if(!$matches){
-                    throw new Exception("$field_name($field) Failed Regex Validation: $regex");
+                    throw new Exception("$field_name($value) Failed Regex Validation: $regex");
                 }
             }
 
