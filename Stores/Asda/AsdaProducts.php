@@ -43,10 +43,7 @@ class AsdaProducts extends Asda {
                 $category = new ChildCategoryModel($this->database);
                 $category_details = $category->like(['name'=> "$parent_site_category_name%"])->get();
 
-                if(count($category_details) > 1){
-                    //Multiple Category Match
-                    $this->logger->debug('Multiple Possible Category Match With Name: ' . $parent_site_category_name);
-                    $this->logger->debug('Select First Product In List');
+                if(count($category_details) > 0){
                     $category_details = $category_details[0];
                 }
 
@@ -119,7 +116,7 @@ class AsdaProducts extends Asda {
         $shelf_endpoint = $this->endpoints->products;
         $this->logger->debug("Product Details ID: $site_product_id");
 
-        if($this->env == "dev"){
+        if($this->env == 'dev'){
             $product_response = file_get_contents(__DIR__."/../../Data/Asda/Product.json");
         } else {
 
