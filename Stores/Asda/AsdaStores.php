@@ -23,7 +23,7 @@ class AsdaStores extends Asda {
 
             $this->logger->notice("Finding All Stores In: $this->city");
     
-            if($this->env == "dev"){
+            if($this->env == 'dev'){
                 $stores_response = file_get_contents(__DIR__."/../../Data/Asda/Stores.json");
             } else {
                 $stores_response = $this->request->request($stores_endpoint,'GET',[],['accept' => 'application/json']);
@@ -37,7 +37,7 @@ class AsdaStores extends Asda {
     
             foreach($stores_list as $item){
                 $this->database->start_transaction();
-                $this->store($item);
+                $this->store_details($item);
                 $this->database->commit_transaction();
             }
 
@@ -45,24 +45,34 @@ class AsdaStores extends Asda {
 
     }
 
-    public function store($store_item){
+    public function page_store_details($url){
+        // Get Store details from store url
+        $response = $this->request->request($url);
+        $content = $this->request->parse_html($response);
+
+        $json_body = $this->request->parse_json($content->filter('script#js-map-config-dir-map')->eq(0)->text());
+
+        return $this->store_details($json_body->entities[0], true);
+    }
+
+    public function store_details($store_item,$retrieve=false){
 
         $item_details = $store_item->profile;
 
         $id = $item_details->meta->id;
         $name = preg_replace('/\s*supermarket|superstore/i','',$item_details->name);
 
-        $description = $item_details->c_aboutSectionDescription;
+        $store = new StoreModel($this->database);
+
+        $description = $item_details->c_aboutSectionDescription ?? NULL;
         $site_image = $item_details->googleCoverPhoto->image->sourceUrl ?? NULL;
         $site_url = $item_details->c_pagesURL;
-        $uber_url = $store_item->derivedData->uber->url;
-        $google_url = $store_item->listings->googleMyBusiness->url;
-
-        $store = new StoreModel($this->database);
+        $uber_url = $store_item->derivedData->uber->url ?? NULL;
+        $google_url = $store_item->listings->googleMyBusiness->url ?? NULL;
 
         $store_results = $store->where(['store_site_id' => $id])->get()[0] ?? null;
 
-        if(!$store_results){
+        if(!$store_results || $retrieve){
             $this->logger->debug("New Store: $name ($id)");
 
             $new_store = $store;
@@ -71,27 +81,31 @@ class AsdaStores extends Asda {
             $new_store->store_type_id = $this->store_type_id;
             $new_store->description = $description;
             $new_store->store_image = 
-            $new_store->site_url = $site_url;
+            $new_store->url = $site_url;
             $new_store->uber_url = $uber_url;
             $new_store->google_url = $google_url;
             $new_store->store_image = $site_image;
 
-            $new_store_id = $new_store->save();
+            if(!$retrieve){
+                $new_store_id = $new_store->save();
+            } else {
+                $new_store_id = 0;
+            }
 
-            // New Location will be inserted if location not found in database
-            $this->location($new_store_id,$item_details);
-            $this->opening_hours($new_store_id,$item_details);
-            $this->facilities($new_store_id,$item_details);
+            $new_store->location = $this->location($new_store_id,$item_details, $retrieve);
+            $new_store->opening_hours = $this->opening_hours($new_store_id,$item_details, $retrieve);
+            $new_store->facilities = $this->facilities($new_store_id,$item_details, $retrieve);
 
+            return $new_store;
         } else {
-            $this->logger->debug("Old Store: $name ($id)");
-            $new_store_id = $store_results->id;
+            $this->logger->debug("Store Found In Database: $name ($id)");
         }
+
 
     }
 
-    public function location($store_id,$location_details){
-        //Insert Store Locations
+    public function location($store_id,$location_details, $retrieve){
+
         $location = new LocationModel($this->database);
 
         $store_results = $location->where(['store_id' => $store_id])->get()[0] ?? null;
@@ -119,20 +133,25 @@ class AsdaStores extends Asda {
             $location->city = $city;
             $location->postcode = $postcode;
             
-            $location->save();
+            if(!$retrieve){
+                $location->save();
+            }
+            
+            return $location;
+
         } else {
             $this->logger->debug("Old Store Location: $store_id");
         }
         
     }
 
-    public function opening_hours($store_id,$hours_details){
-        //Insert new opening hours
-       
+    public function opening_hours($store_id,$hours_details, $retrieve){
         $hours_details = $hours_details->hours;
 
         $normal_hours = $hours_details->normalHours;
         $holiday_hours =  $hours_details->holidayHours;
+
+        $hours = [];
 
         foreach($normal_hours as $day_of_week => $hour_item){
 
@@ -140,11 +159,11 @@ class AsdaStores extends Asda {
 
             $hour_results = $opening_hours->where(['store_id' => $store_id,'day_of_week' => $day_of_week])->get()[0] ?? null;
 
-            if(!$hour_results){
+            if(!$hour_results || $retrieve){
                 //New Hour Found
                 $this->logger->debug("New Store Opening Hour Found. Store: $store_id. Day Of Week: $day_of_week");
 
-                $opening_hours->closed_today = $hour_item->isClosed == false ? NULL : true;
+                $opening_hours->closed_today = $hour_item->isClosed;
 
                 $opening_hours->day_of_week = $day_of_week;
                 $opening_hours->store_id = $store_id;
@@ -158,13 +177,53 @@ class AsdaStores extends Asda {
                     $this->logger->debug("Store Closed Day: {$day_of_week}");
                 }
 
-                $opening_hours->save();
+                if(!$retrieve){
+                    $opening_hours->save();
+                }
+                
+                $hours[] = $opening_hours;
 
             } else {
                 $this->logger->debug("Old Store Opening Hour Found. Store: $store_id. Day Of Week: $day_of_week");
             }
         }
 
+        return $hours;
+
+    }
+
+    public function facilities($store_id,$facilities_details, $retrieve){
+        
+        $facilities_list = $facilities_details->c_facilitiesList;
+        
+        $facilities = [];
+
+        if($facilities_details->c_petrolStation){
+            $facilities_list[] = "Petrol Filling Station";
+        }
+
+        foreach($facilities_list as $facility_name){
+            $facility = new FacilitiesModel($this->database);
+
+            $facilities_results = $facility->where(['store_id' => $store_id, 'name' => $facility_name])->get()[0] ?? null;
+            
+            if(!$facilities_results || $retrieve){
+                $this->logger->debug("New Store Facilities: $facility_name . $store_id ");
+                $facility->name = $facility_name;
+                $facility->store_id = $store_id;
+
+                if(!$retrieve){
+                    $facility->save();
+                }
+
+                $facilities[] = $facility;
+            } else {
+                $this->logger->debug("Old Store Facilities: $store_id ");
+            }
+
+        }
+
+        return $facilities;
     }
 
     public function format_time($time){
@@ -203,35 +262,6 @@ class AsdaStores extends Asda {
             return $new_time;
         }
     }
-
-    public function facilities($store_id,$facilities_details){
-        
-        $facilities_list = $facilities_details->c_facilitiesList;
-        
-        if($facilities_details->c_petrolStation){
-            $facilities_list[] = "Petrol Filling Station";
-        }
-
-        foreach($facilities_list as $facility_name){
-            $facility = new FacilitiesModel($this->database);
-
-            $facilities_results = $facility->where(['store_id' => $store_id, 'name' => $facility_name])->get()[0] ?? null;
-            
-            if(!$facilities_results){
-                $this->logger->debug("New Store Facilities: $facility_name . $store_id ");
-                $facility->name = $facility_name;
-                $facility->store_id = $store_id;
-
-                $facility->save();
-
-            } else {
-                $this->logger->debug("Old Store Facilities: $store_id ");
-            }
-
-        }
-
-    }
-
 
 
 }

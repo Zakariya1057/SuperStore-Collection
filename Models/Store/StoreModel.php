@@ -15,7 +15,7 @@ class StoreModel extends Model {
     // Opening Hours - From Monday To Sunday
     // Locations Table - Address 1, Address 2, Address 3, Long, Lat
 
-    public $name, $description, $store_image, $uber_url, $google_url, $site_url, $store_site_id, $store_type_id;
+    public $name, $description, $store_image, $uber_url, $google_url, $url, $store_site_id, $store_type_id;
 
     //Name, Store Type, Google Store Image, Google Maps URl, Uber URL
     function __construct($database=null){
@@ -58,7 +58,7 @@ class StoreModel extends Model {
                     'max' => 1000
                 ]
             ],
-            'site_url'      => [
+            'url'      => [
                 'type' => 'url',
                 'nullable' => true,
                 'limit' => [

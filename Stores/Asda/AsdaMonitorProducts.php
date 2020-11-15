@@ -28,8 +28,8 @@ class AsdaMonitorProducts extends Asda {
         ->join('grocery_list_items', 'grocery_list_items.product_id', 'products.id')
         ->join('monitored_products', 'monitored_products.product_id', 'products.id')
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
-        ->where_raw(['TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) = 0'])
-        // ->where_raw(['products.id = 5'])
+        ->where_raw(['TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
+        // ->where_raw(['products.id = 11'])
         ->group_by('products.id')
         ->order_by('num_monitoring')
         // ->limit(1)
@@ -57,7 +57,7 @@ class AsdaMonitorProducts extends Asda {
 
         $new_product = $asda_product->product_details($product_item->site_product_id);
 
-        $notify_user = false;
+        $notify_user = true;
         $product_changed = false;
 
         $monitor_fields = ['name', 'description', 'price','site_product_id'];
@@ -72,7 +72,7 @@ class AsdaMonitorProducts extends Asda {
             }
         }
 
-        /////////////////////  Start Transaction ////////////////////////
+        $notify_user = true;
         $this->database->start_transaction();
 
         // Check to see for new reviews
@@ -95,7 +95,6 @@ class AsdaMonitorProducts extends Asda {
         }
 
         $this->database->commit_transaction();
-        /////////////////////  End Transaction  ////////////////////////
 
     }
 
@@ -121,7 +120,7 @@ class AsdaMonitorProducts extends Asda {
 
                 $user = $user_info->where(['id' => $user_id])->get()[0] ?? null;
 
-                if($user){
+                if($user && $user->send_notifications){
                     $this->notification->notify_change($product_item, $user);
                 } else {
                     throw new Exception('User not found in database: ' . $user_id);

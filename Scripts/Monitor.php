@@ -5,6 +5,7 @@ use Shared\Config;
 use Shared\Loggers;
 use Shared\Database;
 use Stores\Asda\AsdaMonitorProducts;
+use Stores\Asda\AsdaMonitorStores;
 
 ini_set('memory_limit', '-1');
 
@@ -26,8 +27,12 @@ $logger->notice("---------------------------- Monitor Script Start -------------
 
 if($asda_conf->run && $asda_conf->monitor){
     $logger->notice("---------- Asda Monitoring Start ---------- ");
-    $asda_monitor = new AsdaMonitorProducts($config, $logger, $database, null, $notification);
-    $asda_monitor->monitor_products();
+
+    // $asda_monitor = new AsdaMonitorProducts($config, $logger, $database, null, $notification);
+    // $asda_monitor->monitor_products();
+
+    $asda_monitor = new AsdaMonitorStores($config, $logger, $database, null);
+    $asda_monitor->monitor_stores();
 
 
     $logger->notice("---------- Asda Monitoring Complete ---------- ");
