@@ -119,7 +119,13 @@ class Database {
             $results_list = [];
 
             for($i =0; $i < $results->num_rows; $i++){
-                $results_list[] = $results->fetch_object();
+                $data = $results->fetch_object();
+
+                foreach($data as $field => $value){
+                    $data->{$field} = html_entity_decode($value, ENT_QUOTES);
+                }
+
+                $results_list[] = $data;
             }
 
             return $results_list;   
