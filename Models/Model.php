@@ -42,10 +42,10 @@ class Model {
         foreach($data as $key => $value){
             $table_fields_list[] = "`$key`";
 
-            if(!is_null($value)){
-                $insert_fields_list[] = "'$value'";
-            } else {
+            if(is_null($value)){
                 $insert_fields_list[] = "NULL";
+            } else {
+                $insert_fields_list[] = "'$value'";
             }
             
             $values_list[] = $value;
@@ -213,7 +213,11 @@ class Model {
         $data = $this->convert_string_to_array($data);
 
         foreach($data as $key => $value){
-            $likes[] = "$key LIKE '$value'";
+            if(is_null($value)){
+                $likes[] = "$key LIKE NULL";
+            } else {
+                $likes[] = "$key LIKE '$value'";
+            }
         }
 
         $query = implode(" AND ",$likes);
@@ -343,7 +347,11 @@ class Model {
         $data = $sanitize->sanitize_fields($data);
 
         foreach($data as $key => $value){
-            $wheres[] = "`$key` = '$value' ";
+            if(is_null($value)){
+                $wheres[] = "`$key` = NULL ";
+            } else {
+                $wheres[] = "`$key` = '$value' ";
+            }
         }
 
         $query = implode(", ",$wheres);
