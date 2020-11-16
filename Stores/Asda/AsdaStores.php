@@ -60,7 +60,7 @@ class AsdaStores extends Asda {
         $item_details = $store_item->profile;
 
         $id = $item_details->meta->id;
-        $name = preg_replace('/\s*supermarket|superstore/i','',$item_details->name);
+        $name = trim(preg_replace('/\s*supermarket|superstore/i','',$item_details->name));
 
         $store = new StoreModel($this->database);
 
@@ -169,13 +169,15 @@ class AsdaStores extends Asda {
                 $opening_hours->store_id = $store_id;
 
                 if(!$opening_hours->closed_today){
-                    //If Closed, no opens or closed
+                    // If Closed, no opens or closed
                     $time_details = $hour_item->intervals[0];
                     $opening_hours->opens_at = $this->format_time($time_details->start);
                     $opening_hours->closes_at = $this->format_time($time_details->end);
                 } else {
                     $this->logger->debug("Store Closed Day: {$day_of_week}");
                 }
+
+                $opening_hours->closed_today = $opening_hours->closed_today ? 1 : 0;
 
                 if(!$retrieve){
                     $opening_hours->save();
@@ -207,10 +209,11 @@ class AsdaStores extends Asda {
 
             $facilities_results = $facility->where(['store_id' => $store_id, 'name' => $facility_name])->get()[0] ?? null;
             
+            $facility->store_id = $store_id;
+            $facility->name = $facility_name;
+
             if(!$facilities_results || $retrieve){
                 $this->logger->debug("New Store Facilities: $facility_name . $store_id ");
-                $facility->name = $facility_name;
-                $facility->store_id = $store_id;
 
                 if(!$retrieve){
                     $facility->save();
