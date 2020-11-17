@@ -136,9 +136,10 @@ class AsdaProducts extends Asda {
             $this->logger->debug('No Product Returned');
         }
         
-        file_put_contents(__DIR__.'/../../ProductDetails.json',$product_response);
+        // file_put_contents(__DIR__.'/../../ProductDetails.json',$product_response);
 
         $this->logger->debug('Saving File and Parse Json Response');
+
         //Get all product details and set them accordingly
         $product_results = $this->request->parse_json($product_response);
         $this->logger->debug('Successfully parsed json file');
@@ -259,7 +260,11 @@ class AsdaProducts extends Asda {
         $product->price = $product_prices->price;
         $product->old_price = $product_prices->old_price;
         $product->is_on_sale = $product_prices->is_on_sale;
-        $product->promotion_id = $product_prices->promotion_id;
+        $product->promotion_id = $product_prices->promotion_id ?? null;
+        $product->promotion = $product_prices->promotion ?? null;
+
+        // $product->promotion = null;
+        // $product->promotion_id = null;
 
         $this->product_details = $product_details;
 
