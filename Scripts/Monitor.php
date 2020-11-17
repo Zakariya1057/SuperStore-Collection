@@ -28,12 +28,14 @@ $logger->notice("---------------------------- Monitor Script Start -------------
 if($asda_conf->run && $asda_conf->monitor){
     $logger->notice("---------- Asda Monitoring Start ---------- ");
 
-    // $asda_monitor = new AsdaMonitorProducts($config, $logger, $database, null, $notification);
-    // $asda_monitor->monitor_products();
+    // Run every 3 Hours.
+    $asda_monitor = new AsdaMonitorProducts($config, $logger, $database, null, $notification);
+    $asda_monitor->monitor_products();
 
-    $asda_monitor = new AsdaMonitorStores($config, $logger, $database, null);
-    $asda_monitor->monitor_stores();
+    // Run every week
 
+    // $asda_monitor = new AsdaMonitorStores($config, $logger, $database, null);
+    // $asda_monitor->monitor_stores();
 
     $logger->notice("---------- Asda Monitoring Complete ---------- ");
 }

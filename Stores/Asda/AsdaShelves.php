@@ -33,6 +33,7 @@ class AsdaShelves extends Asda {
 
             $product = new AsdaProducts($this->config,$this->logger,$this->database,$this->remember);
             $product->product($product_item,$shelf->grand_parent_category_id, $shelf->parent_category_id,$shelf->id);
+            
         }
 
         $this->remember->set('product_index',0);
