@@ -122,7 +122,13 @@ class Database {
                 $data = $results->fetch_object();
 
                 foreach($data as $field => $value){
-                    $data->{$field} = html_entity_decode($value, ENT_QUOTES);
+
+                    if(is_null($value)){
+                        $data->{$field} = NULL;
+                    } else {
+                        $data->{$field} = html_entity_decode($value, ENT_QUOTES);
+                    }
+                    
                 }
 
                 $results_list[] = $data;
