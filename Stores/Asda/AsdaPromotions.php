@@ -87,24 +87,31 @@ class AsdaPromotions extends Asda {
             $promotion_name = $promotion_details->promo_detail;
             $promotion_site_id = $promotion_details->promo_id;
 
+            $promotion_info = $this->promotion_info($promotion_site_id);
+            $promotion->name = $promotion_info->name;
+            $promotion->category =$promotion_info->category;
+
+            $promotion->store_type_id = $this->config->get('asda.store_type_id');
+            $promotion->site_promotion_id = $promotion_site_id;
+            $promotion->url = "https://groceries.asda.com/promotion/$promotion_name/$promotion_site_id";
+            
             if(!$promotion_results){
                 $this->logger->notice("New Promotion Found: $promotion_name($promotion_site_id)");
-                // $promotion->name = $promotion_name;
-                $promotion->name = $this->promotion_name($promotion_site_id);
-                $promotion->store_type_id = $this->config->get('asda.store_type_id');
-                $promotion->site_promotion_id = $promotion_site_id;
-                $promotion->url = "https://groceries.asda.com/promotion/$promotion_name/$promotion_site_id";
+                $promotion->new = true;
                 $promotion_insert_id = $promotion->save();
             } else {
                 $this->logger->notice("Promotion Found In Database: $promotion_name($promotion_site_id)");
+                $promotion->new = false;
                 $promotion_insert_id = $promotion_results->id;
             }
             
+            $promotion->promotion_id = $promotion_insert_id;
+
         } else {
             throw new Exception('Product Not Part Of Promotion.');
         }
 
-
+        $price_details->promotion = $promotion;
         $price_details->promotion_id = $promotion_insert_id;
 
     }
@@ -113,7 +120,7 @@ class AsdaPromotions extends Asda {
         return $this->sanitize->removeCurrency($product_data->price->price_info->price);
     }
 
-    public function promotion_name($promotion_site_id){
+    public function promotion_info($promotion_site_id){
         $promotion_url = $this->endpoints->promotions . $promotion_site_id;
 
         if($this->env == 'dev'){
@@ -124,9 +131,38 @@ class AsdaPromotions extends Asda {
 
         $promotion_info = $this->request->parse_json($promotion_response);
 
-        $name = $promotion_info->contents[0]->mainContent[1]->contents[0]->records[0]->attributes->{'sku.promoDisplayName'}[0];
+        $attributes = $promotion_info->contents[0]->mainContent[1]->contents[0]->records[0]->attributes;
+        $name = $attributes->{'sku.promoDisplayName'}[0];
+        $category = $attributes->{'sku.shelfName'}[0];
 
-        return ucwords(strtolower($name));
+        $name = ucwords(strtolower($name));
+
+        return (object)['name' => $name, 'category' => $category];
+    }
+
+    public function promotion_calculator($promotion_id, $promotion_name){
+
+        $value = html_entity_decode($promotion_name, ENT_QUOTES);
+        preg_match('/(\d+).+£(\d+\.*\d*)$/',$value,$price_promotion_matches);
+
+        $quantity = $price = $for_quantity = null;
+
+        if($price_promotion_matches){
+            $quantity = (int)$price_promotion_matches[1];
+            $price = (float)$price_promotion_matches[2];
+        }
+
+        preg_match('/(\d+).+\s(\d+)$/',$promotion_name,$quantity_promotion_matches);
+        if($quantity_promotion_matches){
+            $quantity = (int)$quantity_promotion_matches[1];
+            $for_quantity = (int)$quantity_promotion_matches[2];
+        }
+
+        if(!$quantity_promotion_matches && !$price_promotion_matches){
+            return null;
+        }
+
+        return (object)['id' => $promotion_id,'name' => $promotion_name, 'quantity' => $quantity, 'price' => $price, 'for_quantity' => $for_quantity];
     }
 
 }
