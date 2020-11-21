@@ -111,7 +111,7 @@ class AsdaProducts extends Asda {
 
     }
 
-    public function product_details($site_product_id){
+    public function product_details($site_product_id, $ignore_image=false){
 
         $shelf_endpoint = $this->endpoints->products;
         $this->logger->debug("Product Details ID: $site_product_id");
@@ -234,12 +234,14 @@ class AsdaProducts extends Asda {
         $product->url = "https://groceries.asda.com/product/{$item->sku_id}";
 
         $image_id = $item->images->scene7_id;
-        
-        $product->large_image = $this->product_image($product_site_id, $image_id,400,'large');
-        if(!is_null($product->large_image)){
-            $product->small_image = $this->product_image($product_site_id, $image_id,200,'small');
+
+        if(!$ignore_image){
+            $product->large_image = $this->product_image($product_site_id, $image_id,400,'large');
+            if(!is_null($product->large_image)){
+                $product->small_image = $this->product_image($product_site_id, $image_id,200,'small');
+            }
         }
-        
+
         $product->brand = $item->brand;
         $product->allergen_info = $item_enrichment->allergy_info_formatted_web ?? NULL;
 
