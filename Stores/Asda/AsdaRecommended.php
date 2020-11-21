@@ -20,7 +20,7 @@ class AsdaRecommended extends Asda {
         //Loop through all product in database without related products and set their related products.
         $this->logger->notice('------ Product Recommended Start ---------');
 
-        $products_without_recommended = $this->productModel->select(['id','site_product_id','name'])->where(['recommended_searched' => null])->get();
+        $products_without_recommended = $this->productModel->select(['id','site_product_id','name'])->where(['recommended_searched' => null])->order_by('id','ASC')->get();
         
         if($products_without_recommended){
 
@@ -62,41 +62,47 @@ class AsdaRecommended extends Asda {
 
         $product = new ProductModel($this->database);
 
-        $results = $recommended_data->results[0]->items;
+        if(property_exists($recommended_data, 'results') && count($recommended_data->results) > 0){
+        
+            $results = $recommended_data->results[0]->items;
 
-        $product_ids = [];
+            $product_ids = [];
 
-        $recommended = new RecommendedModel($this->database);
+            $recommended = new RecommendedModel($this->database);
 
-        foreach($results as $item){
-            $new_prduct_details = $product->where(['site_product_id' => $item->id])->get()[0] ?? null;
+            foreach($results as $item){
+                $new_prduct_details = $product->where(['site_product_id' => $item->id])->get()[0] ?? null;
 
-            if($new_prduct_details){
-                $recommended->product_id = $product_id;
-                $recommended->recommended_product_id = $new_prduct_details->id;
-                $recommended->insert_ignore = true;
-                $recommended->save();
-                $product_ids[] = $new_prduct_details->id;
-            } else {
-                $this->logger->warning('Similar Product Not Found In Database. Creating The Product, Then Setting As Recommened');
-
-                $new_product = new AsdaProducts($this->config,$this->logger,$this->database,$this->remember);
-                $new_product_id = $new_product->product($item->id,null,null,null,$this->sanitize->sanitize_field($item->aisleName));
-
-                if($new_product_id){
+                if($new_prduct_details){
                     $recommended->product_id = $product_id;
-                    $recommended->recommended_product_id = $new_product_id;
+                    $recommended->recommended_product_id = $new_prduct_details->id;
                     $recommended->insert_ignore = true;
                     $recommended->save();
-                    $product_ids[] = $new_product_id;
+                    $product_ids[] = $new_prduct_details->id;
+                } else {
+                    $this->logger->warning('Similar Product Not Found In Database. Creating The Product, Then Setting As Recommened');
+
+                    $new_product = new AsdaProducts($this->config,$this->logger,$this->database,$this->remember);
+                    $new_product_id = $new_product->product($item->id,null,null,null,$this->sanitize->sanitize_field($item->aisleName));
+
+                    if($new_product_id){
+                        $recommended->product_id = $product_id;
+                        $recommended->recommended_product_id = $new_product_id;
+                        $recommended->insert_ignore = true;
+                        $recommended->save();
+                        $product_ids[] = $new_product_id;
+                    }
+
                 }
 
             }
 
-        }
+            if(count($product_ids) > 0){
+                // Delete older recommended not found.
+                $recommended->where(['product_id' => $product_id])->where_not_in('recommended_product_id',$product_ids)->delete();
+            }
 
-        // Delete older recommended not found.
-        $recommended->where_not_in('recommended_product_id',$product_ids)->delete();
+        }
 
         $this->productModel->where(['id' => $product_id])->update(['recommended_searched' => 1]);
 
