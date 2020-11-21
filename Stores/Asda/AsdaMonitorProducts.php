@@ -57,19 +57,17 @@ class AsdaMonitorProducts extends Asda {
         
         $asda_product = new AsdaProducts($this->config, $this->logger, $this->database, null);
 
-        $new_product = $asda_product->product_details($product_item->site_product_id);
+        $new_product = $asda_product->product_details($product_item->site_product_id, true);
 
         $notify_user = true;
         $send_notification = false;
 
         $notification_type = 'product';
-        $promotion_type = '';
+        $promotion_deleted = false;
 
         $monitor_fields = [
             'name',
             'description',
-            'large_image',
-            'small_image',
             'price',
             'weight',
             'brand',
@@ -90,26 +88,20 @@ class AsdaMonitorProducts extends Asda {
                 $update_fields[$field] = $new_product->{$field};
             }
         }
-        
-        $notify_user = true;
-        // $notification_type = 'promotion';
 
-        // New promotion
         if(is_null($product_item->promotion_id) && !is_null($new_product->promotion)){
+            // Notify User. New Promotion
             $this->logger->notice('New Product Promotion Found: '.$new_product->promotion_id);
             $notification_type = 'promotion';
             $send_notification = true;
-            $promotion_type = 'new';
             $update_fields['promotion_id'] = $new_product->promotion_id;
             $new_product->promotion->content = $this->product_promotions->promotion_calculator($new_product->promotion_id, $new_product->promotion->name);
-            // Notify User. New Promotion
         } elseif( !is_null($product_item->promotion_id) && is_null($new_product->promotion) ){
-            $this->logger->notice('Product promotion removed');
-            $notification_type = 'promotion';
-            $send_notification = true;
-            $promotion_type = 'delete';
-            $update_fields['promotion_id'] = NULL;
             // Notify User. Promotion Expires
+            $this->logger->notice('Product promotion removed');
+            $promotion_deleted = true;
+            $send_notification = true;
+            $update_fields['promotion_id'] = NULL;
         } 
         
         $notify_user = true;
@@ -131,12 +123,12 @@ class AsdaMonitorProducts extends Asda {
                     $this->notify_product_changes($product_item, $notification_type);
                 }
             } else {
-                if($promotion_type == 'delete'){
+                if($$promotion_deleted){
                     $promotion = (object)['id' => (int)$product_item->promotion_id];
                     $new_product->promotion = $promotion;
                 }
 
-                $this->notify_promotion_changes($new_product->promotion, $promotion_type == 'delete');
+                $this->notify_promotion_changes($new_product->promotion, $promotion_deleted);
             }
 
         } else {
