@@ -189,7 +189,12 @@ class Model {
 
         $query_list = join(',', $query_list);
 
-        $this->not_in = "WHERE `$field` NOT IN ($query_list)";
+        if(is_null($this->where)){
+            $this->not_in = "WHERE `$field` NOT IN ($query_list)";
+        } else {
+            $this->where .= " AND `$field` NOT IN ($query_list)";
+        }
+        
         return $this;
     }
 
