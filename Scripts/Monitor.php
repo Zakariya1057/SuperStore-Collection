@@ -25,17 +25,31 @@ $asda_conf = $config->get('asda');
 
 $logger->notice("---------------------------- Monitor Script Start ----------------------------");
 
+$arguments = $argv;
+
+if(count($arguments) > 1){
+    $type = strtolower($arguments[1]);
+
+    if($type != 'stores' && $type != 'products'){
+        return exit($logger->error('Unknown Run Type: '.$type));
+    }
+} else {
+    return exit($logger->error('Script Monitor Type Required: Products/Stores'));
+}
+
+
 if($asda_conf->run && $asda_conf->monitor){
     $logger->notice("---------- Asda Monitoring Start ---------- ");
 
-    // Run every 3 Hours.
-    $asda_monitor = new AsdaMonitorProducts($config, $logger, $database, null, $notification);
-    $asda_monitor->monitor_products();
-
-    // Run every week
-
-    // $asda_monitor = new AsdaMonitorStores($config, $logger, $database, null);
-    // $asda_monitor->monitor_stores();
+    if($type == 'products'){
+        // Runs every 3 hours
+        $asda_monitor = new AsdaMonitorProducts($config, $logger, $database, null, $notification);
+        $asda_monitor->monitor_products();
+    } else {
+        // Runs every sunday morning. 4am.
+        $asda_monitor = new AsdaMonitorStores($config, $logger, $database, null);
+        $asda_monitor->monitor_stores();
+    }
 
     $logger->notice("---------- Asda Monitoring Complete ---------- ");
 }
