@@ -43,7 +43,6 @@ class Database {
     }
 
     public function query($query){
-        $conn = $this->connection;
 
         try {
 
@@ -55,14 +54,14 @@ class Database {
                 $this->logger->debug("Query: $query");
             }
 
-            $database_results = $conn->query($query);
+            $database_results = $this->connection->query($query);
             return $this->process_results( $database_results );
 
         } catch(Exception $e){
             $error = $e->getMessage();
             $this->logger->error('Query Error: '. $error);
 
-            if ($conn->ping()) {
+            if ($this->connection->ping()) {
                 $this->logger->debug('Connection Is OK');
                 throw new Exception($error);
             } else {
@@ -81,7 +80,7 @@ class Database {
 
                     $this->database_connect();
 
-                    if($conn->ping()) {
+                    if($$this->connection->ping()) {
                         $this->logger->debug('Successfully Reconnected To Database');
                         $connection_successfull = true;
                         break;
@@ -95,7 +94,7 @@ class Database {
 
                 if($connection_successfull){
                     $this->logger->debug('Reattempting Query After Successfull Connection To Database');
-                    return $this->process_results( $conn->query($query) );
+                    return $this->process_results( $this->connection->query($query) );
                 } else {
                     throw new Exception('Failed To Reconnect To MYSQL Server');
                 }
