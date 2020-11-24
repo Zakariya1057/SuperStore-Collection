@@ -72,7 +72,7 @@ class AsdaStores extends Asda {
 
         $store_results = $store->where(['store_site_id' => $id])->get()[0] ?? null;
 
-        if(!$store_results || $retrieve){
+        if(is_null($store_results) || $retrieve){
             $this->logger->debug("New Store: $name ($id)");
 
             $new_store = $store;
@@ -110,7 +110,7 @@ class AsdaStores extends Asda {
 
         $store_results = $location->where(['store_id' => $store_id])->get()[0] ?? null;
 
-        if(!$store_results){
+        if(is_null($store_results)){
             $this->logger->debug("New Store Location: $store_id");
 
             $coordinates = $location_details->displayCoordinate ?? $location_details->geocodedCoordinate;
@@ -159,7 +159,7 @@ class AsdaStores extends Asda {
 
             $hour_results = $opening_hours->where(['store_id' => $store_id,'day_of_week' => $day_of_week])->get()[0] ?? null;
 
-            if(!$hour_results || $retrieve){
+            if(is_null($hour_results) || $retrieve){
                 //New Hour Found
                 $this->logger->debug("New Store Opening Hour Found. Store: $store_id. Day Of Week: $day_of_week");
 
@@ -212,7 +212,7 @@ class AsdaStores extends Asda {
             $facility->store_id = $store_id;
             $facility->name = $facility_name;
 
-            if(!$facilities_results || $retrieve){
+            if(is_null($facilities_results) || $retrieve){
                 $this->logger->debug("New Store Facilities: $facility_name . $store_id ");
 
                 if(!$retrieve){
