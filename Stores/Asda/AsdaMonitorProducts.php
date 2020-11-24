@@ -160,7 +160,7 @@ class AsdaMonitorProducts extends Asda {
 
                 $user = $this->user_info->where(['id' => $user_id])->get()[0] ?? null;
 
-                if($user && $user->send_notifications){
+                if(!is_null($user) && $user->send_notifications){
                     $this->notification->notify_change($product_item, $user, 'product');
                 } else {
                     throw new Exception('User not found in database: ' . $user_id);

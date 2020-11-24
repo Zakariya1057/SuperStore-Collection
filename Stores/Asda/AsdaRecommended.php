@@ -73,7 +73,7 @@ class AsdaRecommended extends Asda {
             foreach($results as $item){
                 $new_prduct_details = $product->where(['site_product_id' => $item->id])->get()[0] ?? null;
 
-                if($new_prduct_details){
+                if(!is_null($new_prduct_details)){
                     $recommended->product_id = $product_id;
                     $recommended->recommended_product_id = $new_prduct_details->id;
                     $recommended->insert_ignore = true;

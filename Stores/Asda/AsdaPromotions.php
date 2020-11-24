@@ -95,7 +95,7 @@ class AsdaPromotions extends Asda {
             $promotion->site_promotion_id = $promotion_site_id;
             $promotion->url = "https://groceries.asda.com/promotion/$promotion_name/$promotion_site_id";
             
-            if(!$promotion_results){
+            if(is_null($promotion_results)){
                 $this->logger->notice("New Promotion Found: $promotion_name($promotion_site_id)");
                 $promotion->new = true;
                 $promotion_insert_id = $promotion->save();

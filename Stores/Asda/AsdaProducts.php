@@ -28,16 +28,16 @@ class AsdaProducts extends Asda {
 
         $product_categories = new CategoryProductModel($this->database);
 
-        if(!$product_results){
+        if(is_null($product_results)){
             
             $this->logger->info("New Product Found: $product_site_id");
 
             $product_details  = $this->product_details($product_site_id);
 
-            if(!$parent_category_id){
+            if(is_null($parent_category_id)){
 
-                if(!$parent_site_category_name){
-                    throw new Exception('Parent Category Id or Parent Site Category Id Required');
+                if(is_null($parent_site_category_name)){
+                    throw new Exception('Parent Category Id or Parent Category Name Required');
                 }
 
                 $category = new ChildCategoryModel($this->database);
@@ -66,7 +66,7 @@ class AsdaProducts extends Asda {
                 
             }
 
-            if($product_details){
+            if(!is_null($product_details)){
 
                 $this->logger->notice("Adding New Product: ".$product_details->name);
 
@@ -98,7 +98,7 @@ class AsdaProducts extends Asda {
             // If under new category, save that under multiple categories
 
             $results = $product_categories->where(['product_id' => $product_results->id, 'child_category_id' => $child_category_id])->get()[0] ?? null;
-            if(!$results){
+            if(is_null($results)){
                 $this->logger->info("No Product Under Category: $product_site_id");
                 $product_categories->product_id = $product_results->id;
                 $product_categories->child_category_id = $child_category_id;
@@ -134,18 +134,16 @@ class AsdaProducts extends Asda {
             $this->logger->debug('Product Returned');
         } else {
             $this->logger->debug('No Product Returned');
+            return;
         }
         
         // file_put_contents(__DIR__.'/../../ProductDetails.json',$product_response);
-
-        $this->logger->debug('Saving File and Parse Json Response');
+        // $this->logger->debug('Saving File and Parse Json Response');
 
         //Get all product details and set them accordingly
         $product_results = $this->request->parse_json($product_response);
-        $this->logger->debug('Successfully parsed json file');
 
         $product_details = $product_results->data->uber_item->items[0];
-        $this->logger->debug('Fetched product details');
 
         $item = $product_details->item;
         $name = $item->name;
@@ -154,7 +152,7 @@ class AsdaProducts extends Asda {
 
         $is_bundle_product = $product_details->is_bundle ?? false;
         if($is_bundle_product){
-            $this->logger->debug('Bundle Product Found');
+            return $this->logger->debug('Bundle Product Found');
             return;
         }
 
@@ -176,7 +174,8 @@ class AsdaProducts extends Asda {
             return null;
         }
 
-        preg_match("/halal|vegetarian|vegan/i",$product->dietary_info,$halal_matches);
+        preg_match("/halal/i",$product->dietary_info,$halal_matches);
+        preg_match("/vegetarian|vegan/i",$product->dietary_info,$vegan_matches);
 
         //Check product name, if matches possible haram then double check
         if(!$this->product_possible_haram($name)){
@@ -186,7 +185,7 @@ class AsdaProducts extends Asda {
             $this->logger->debug('Stage 2. Product Maybe Haram. Halal/Vegan/Vegetarian Check');
 
             if(!is_null($product->dietary_info)){
-                if($halal_matches){
+                if($halal_matches || $vegan_matches){
                     $this->logger->debug('Stage 2A. Product Halal');
                 } else {
                     $this->logger->debug('Stage 2. Product Haram: '. $name);

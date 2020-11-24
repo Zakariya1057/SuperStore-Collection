@@ -149,7 +149,7 @@ class AsdaCategories extends Asda {
 
         $category_item = $category->where(["site_category_id" => $category_store_id])->or_where(['name' => $category_name])->get()[0] ?? null;
 
-        if($category_item){
+        if(!is_null($category_item)){
             $this->logger->debug($category_name . ' Category: Found In Database');
             return $category_item;
         } else {

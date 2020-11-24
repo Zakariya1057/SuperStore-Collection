@@ -63,7 +63,7 @@ class AsdaMonitorStores extends Asda {
             $facility->save();
 
             $store_facility = $facility->where(['store_id' => $store->id, 'name' => $facility->name])->get()[0] ?? null;
-            if($store_facility){
+            if(!is_null($store_facility)){
                 $found_facilities[] = $store_facility->id;
             }
         }
