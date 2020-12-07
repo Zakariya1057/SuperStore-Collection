@@ -7,10 +7,14 @@ use Models\Store\FacilitiesModel;
 use Models\Store\LocationModel;
 use Models\Store\OpeningHoursModel;
 use Models\Store\StoreModel;
+use Monolog\Logger;
+use Shared\Config;
+use Shared\Database;
+use Shared\Remember;
 
 class AsdaStores extends Asda {
 
-    function __construct($config,$logger,$database,$remember)
+    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
     }

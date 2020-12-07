@@ -7,10 +7,14 @@ use Shared\Requests;
 use Exception;
 use Models\Product\PriceModel;
 use Models\Product\PromotionModel;
+use Monolog\Logger;
+use Shared\Config;
+use Shared\Database;
+use Shared\Remember;
 
 class AsdaPromotions extends Asda {
 
-    function __construct($config,$logger,$database,$remember)
+    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
     }

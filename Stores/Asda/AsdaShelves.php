@@ -2,9 +2,13 @@
 
 namespace Stores\Asda;
 
+use Monolog\Logger;
+use Shared\Config;
+use Shared\Database;
+use Shared\Remember;
 class AsdaShelves extends Asda {
 
-    function __construct($config,$logger,$database,$remember)
+    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
     }

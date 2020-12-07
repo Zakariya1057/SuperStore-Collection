@@ -8,19 +8,24 @@ use Models\Shared\FavouriteModel;
 use Models\Shared\GroceryListItemModel;
 use Models\Shared\MonitoredProductModel;
 use Models\Shared\UserModel;
+use Shared\Notification;
+use Monolog\Logger;
+use Shared\Config;
+use Shared\Database;
+use Shared\Remember;
 
 class AsdaMonitorProducts extends Asda {
 
     public $notification, $product, $review, $recommended, $user_info, $product_promotions;
 
-    function __construct($config,$logger,$database,$remember, $notification){
+    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null, Notification $notification){
         parent::__construct($config,$logger,$database,$remember);
         $this->notification = $notification;
         $this->product = new ProductModel($this->database);
-        $this->review = new AsdaReviews($config, $logger, $database, null);
-        $this->recommended = new AsdaRecommended($config, $logger, $database, null);
+        $this->review = new AsdaReviews($config, $logger, $database);
+        $this->recommended = new AsdaRecommended($config, $logger, $database);
         $this->user_info = new UserModel($this->database);
-        $this->product_promotions = new AsdaPromotions($config, $logger, $database, null);
+        $this->product_promotions = new AsdaPromotions($config, $logger, $database);
     }
 
     public function monitor_products(){

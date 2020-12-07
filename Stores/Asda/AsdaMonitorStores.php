@@ -5,12 +5,16 @@ namespace Stores\Asda;
 use Exception;
 use Models\Store\FacilitiesModel;
 use Models\Store\StoreModel;
+use Monolog\Logger;
+use Shared\Config;
+use Shared\Database;
+use Shared\Remember;
 
 class AsdaMonitorStores extends Asda {
 
     public $store;
 
-    function __construct($config,$logger,$database){
+    function __construct(Config $config, Logger $logger, Database $database,Remember $remember=null){
         parent::__construct($config,$logger,$database,null);
         $this->store = new StoreModel($database);
     }

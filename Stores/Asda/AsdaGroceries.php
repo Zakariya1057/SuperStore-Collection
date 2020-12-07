@@ -3,10 +3,14 @@
 namespace Stores\Asda;
 
 use Exception;
+use Monolog\Logger;
+use Shared\Config;
+use Shared\Database;
+use Shared\Remember;
 
 class AsdaGroceries extends Asda {
 
-    function __construct($config,$logger,$database,$remember)
+    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
     }

@@ -7,12 +7,16 @@ use Models\Product\ProductModel;
 use Models\Product\IngredientModel;
 use Exception;
 use Models\Category\CategoryProductModel;
+use Monolog\Logger;
+use Shared\Config;
+use Shared\Database;
+use Shared\Remember;
 
 class AsdaProducts extends Asda {
 
     public $product_details,$promotions,$image;
 
-    function __construct($config,$logger,$database,$remember)
+    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
         $this->promotions = new AsdaPromotions($this->config,$this->logger,$this->database,$this->remember);

@@ -5,12 +5,15 @@ namespace Stores\Asda;
 use Exception;
 use Models\Product\ProductModel;
 use Models\Product\RecommendedModel;
-
+use Monolog\Logger;
+use Shared\Config;
+use Shared\Database;
+use Shared\Remember;
 class AsdaRecommended extends Asda {
 
     public $productModel;
 
-    function __construct($config,$logger,$database,$remember)
+    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
         $this->productModel = new ProductModel($this->database);

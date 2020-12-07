@@ -3,8 +3,13 @@
 namespace Stores\Asda;
 
 use Exception;
+use Models\ScriptHistory\ScriptHistory;
 use Models\Store\StoreTypeModel;
+use Monolog\Logger;
+use Shared\Config;
+use Shared\Database;
 use Shared\Image;
+use Shared\Remember;
 use Shared\Requests;
 use Shared\Sanitize;
 class Asda {
@@ -24,7 +29,7 @@ class Asda {
         $remember,
         $image;
     
-    function __construct($config,$logger,$database,$remember){
+    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null){
         $this->request = new Requests($config,$logger);
         $this->logger  = $logger;
         $this->config  = $config;
