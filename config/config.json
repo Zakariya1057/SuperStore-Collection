@@ -8,7 +8,112 @@
     },
 
     "elasticsearch": {
-        "host": "localhost"
+
+        "credentials": {
+            "host": "localhost"
+        },
+
+        "settings": {
+            "number_of_shards": 3,
+            "number_of_replicas": 2,
+
+            "analysis": {
+
+                "filter": {
+                  "english_stop": {
+                    "type": "stop",
+                    "stopwords": "_english"
+                  },
+                  "english_stemmer": {
+                    "type": "stemmer",
+                    "language": "english"
+                  },
+                  "english_possessive_stemmer": {
+                    "type": "stemmer",
+                    "language": "possessive_english"
+                  }
+                },
+
+                "analyzer": {
+                  "text_analyzer": {
+                    "tokenizer": "standard",
+                    "filter": [
+                      "stop",
+                      "english_possessive_stemmer",
+                      "lowercase",
+                      "english_stop",
+                      "english_stemmer"
+                    ]
+                  }
+                }
+
+            }
+        },
+
+        "indices": {
+
+            "products": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "text",
+                    "analyzer": "text_analyzer"
+                },
+                "description": {
+                    "type": "text",
+                    "analyzer": "text_analyzer"
+                },
+                "price": {
+                    "type": "float"
+                },
+                "brand": {
+                    "type": "text"
+                },
+                "dietary_info": {
+                    "type": "text"
+                },
+                "allergen_info": {
+                    "type": "text"
+                },
+                "weight": {
+                    "type": "text"
+                },
+                "avg_rating": {
+                    "type": "float"
+                },
+                "total_reviews_count": {
+                    "type": "integer"
+                }
+            }, 
+
+            "stores": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "text",
+                    "analyzer": "text_analyzer"
+                }
+            },
+
+            "categories": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "text",
+                    "analyzer": "text_analyzer"
+                },
+                "type": {
+                    "type": "text"
+                }
+            }
+
+        },
+
+        "create_index": 0,
+        "index_documents": 1
     },
 
     "log_query": 1,
