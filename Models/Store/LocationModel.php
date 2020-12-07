@@ -2,10 +2,8 @@
  
 namespace Models\Store;
 
-use Shared\Loggers;
 use Models\Model;
 
-//Each store location.
 class LocationModel extends Model {
 
     public $store_id, $address_line1,$address_line2,$address_line3,$latitude,$longitude,$city,$postcode;

@@ -15,7 +15,7 @@ class ScriptHistory extends Model {
 
         parent::__construct($database);
 
-        $this->table("script_histories");
+        $this->table('script_histories');
 
         $fields = [
 

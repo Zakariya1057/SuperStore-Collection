@@ -2,10 +2,8 @@
  
 namespace Models\Store;
 
-use Shared\Loggers;
 use Models\Model;
 
-//Each store location.
 class OpeningHoursModel extends Model {
 
     public $store_id, $day_of_week, $opens_at,$closes_at,$closed_today;
