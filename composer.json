@@ -12,7 +12,8 @@
         "psr-4": {
             "Shared\\": "Shared/",
             "Models\\": "Models/",
-            "Stores\\": "Stores/"
+            "Stores\\": "Stores/",
+            "ElasticSearch\\": "ElasticSearch/"
         }
     }
 }
