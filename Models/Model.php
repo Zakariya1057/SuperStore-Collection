@@ -400,7 +400,7 @@ class Model {
     }
 
     private function reset_data(){
-        $this->join = $this->order = $this->group_by = $this->create = $this->delete = null;
+        $this->join = $this->order = $this->group_by = $this->create = $this->delete = $this->select =null;
     }
 }
 
