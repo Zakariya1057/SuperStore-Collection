@@ -6,13 +6,15 @@ use Models\Category\ChildCategoryModel;
 use Models\Category\GrandParentCategoryModel;
 use Models\Category\ParentCategoryModel;
 use Models\Product\ProductModel;
+use Models\Store\StoreModel;
+use Models\Store\StoreTypeModel;
 use Monolog\Logger;
 use Shared\Config;
 use Shared\Database;
 
 // Index Documents
 
-class Indices extends Search{
+class Indices extends Search {
 
     public $product, $store;
     public $child_category, $parent_category, $grand_parent_category;
@@ -21,7 +23,7 @@ class Indices extends Search{
         parent::__construct($config, $logger, $database, $client);
 
         $this->product = new ProductModel($database);
-        $this->store = new ProductModel($database);
+        $this->store = new StoreTypeModel($database);
 
         $this->child_category = new ChildCategoryModel($database);
         $this->parent_category = new ParentCategoryModel($database);
@@ -32,35 +34,14 @@ class Indices extends Search{
 
         $this->delete_documents('products');
 
-        $products = $this->product->get();
+        $results = $this->product->select_raw('COUNT(*) as total_count')->get();
+        $product_count = $results[0]->total_count;
 
-        $params = [
-            'body' => []
-        ];
-
-        foreach($products as $product){
-            $params['body'][] = [
-                'index' => [
-                    '_index' => 'products',
-                    '_id'    => $product->id
-                ]
-            ];
-        
-            $params['body'][] = [
-                'id' => (int)$product->id,
-                'name'     => $product->name,
-                'description' => $product->description,
-                'price' => (float)$product->price,
-                'weight' => $product->weight,
-                'brand' => $product->brand,
-                'dietary_info' => $product->dietary_info,
-                'allergen_info' => $product->allergen_info,
-                'avg_rating' => (float)$product->avg_rating,
-                'total_reviews_count' => (float)$product->total_reviews_count,
-            ];
+        // Loop through groups of 5000 products.
+        for($i = 0; $i < $product_count; $i += 5000){
+            $products = $this->product->limit("$i,5000")->get();
+            $this->index_product_group($products);
         }
-
-        $responses = $this->client->bulk($params);
 
     }
 
@@ -124,6 +105,35 @@ class Indices extends Search{
 
     }
 
+    private function index_product_group($products){
+
+        $params = ['body' => []];
+
+        foreach($products as $product){
+            $params['body'][] = [
+                'index' => [
+                    '_index' => 'products',
+                    '_id'    => $product->id
+                ]
+            ];
+        
+            $params['body'][] = [
+                'id' => (int)$product->id,
+                'name'     => $product->name,
+                'description' => $product->description,
+                'price' => (float)$product->price,
+                'weight' => $product->weight,
+                'brand' => $product->brand,
+                'dietary_info' => $product->dietary_info,
+                'allergen_info' => $product->allergen_info,
+                'avg_rating' => (float)$product->avg_rating,
+                'total_reviews_count' => (float)$product->total_reviews_count,
+            ];
+        }
+
+        return $this->client->bulk($params);
+
+    }
     public function delete_documents($index){
         $this->client->deleteByQuery([
             'index' => $index,
