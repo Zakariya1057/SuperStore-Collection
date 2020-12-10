@@ -225,6 +225,10 @@ class AsdaProducts extends Asda {
             if($social_matches){
                 $product->description = NULL;
             }
+        } else {
+            if(property_exists($product,'additional_info') && $product->additional_info != ""){
+                $product->description = $product->additional_info;
+            }
         }
 
         $product_site_id = $item->sku_id;
