@@ -27,7 +27,7 @@ class Sanitize {
         $string = str_replace('\n', "\n", $string);
         $string = strip_tags($string);
         $string = preg_replace( "/\r/", "", $string);
-        $string = htmlentities($string, ENT_QUOTES,'UTF-8');
+        $string = htmlentities($string, ENT_QUOTES,'UTF-8',false);
         
         return $string;
     }
