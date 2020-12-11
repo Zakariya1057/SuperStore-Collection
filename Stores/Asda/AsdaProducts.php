@@ -115,7 +115,7 @@ class AsdaProducts extends Asda {
 
     }
 
-    public function product_details($site_product_id, $ignore_image=false){
+    public function product_details($site_product_id, $ignore_image=false): ?ProductModel {
 
         $shelf_endpoint = $this->endpoints->products;
         $this->logger->debug("Product Details ID: $site_product_id");
@@ -138,7 +138,7 @@ class AsdaProducts extends Asda {
             $this->logger->debug('Product Returned');
         } else {
             $this->logger->debug('No Product Returned');
-            return;
+            return null;
         }
         
         // file_put_contents(__DIR__.'/../../ProductDetails.json',$product_response);
@@ -157,7 +157,7 @@ class AsdaProducts extends Asda {
         $is_bundle_product = $product_details->is_bundle ?? false;
         if($is_bundle_product){
             return $this->logger->debug('Bundle Product Found');
-            return;
+            return null;
         }
 
         $this->logger->notice('--- Start Product('.$item->sku_id.'): '.$item->name .' ---');
@@ -168,7 +168,7 @@ class AsdaProducts extends Asda {
 
         if(property_exists($item_enrichment,'alcohol') && $item_enrichment->alcohol != ""){
             $this->logger->debug('Haram Alcholol Product Found: '. $name);
-            return;
+            return null;
         }
 
         if(!$this->exclude_product($name)){
@@ -193,11 +193,11 @@ class AsdaProducts extends Asda {
                     $this->logger->debug('Stage 2A. Product Halal');
                 } else {
                     $this->logger->debug('Stage 2. Product Haram: '. $name);
-                    return;
+                    return null;
                 }
             } else {
                 $this->logger->debug('Stage 2. Product Haram: '. $name);
-                return;
+                return null;
             }
            
         }
@@ -207,7 +207,7 @@ class AsdaProducts extends Asda {
             $ingredients = $this->ingredients_list($product_details);
             if($this->haram_ingredients($ingredients)){
                 $this->logger->debug('Stage 3. Haram Ingredients Found: '. $name);
-                return;
+                return null;
             } else {
                 $this->logger->debug('Stage 3. No Haram Ingredients Found: '. $name);
             }
