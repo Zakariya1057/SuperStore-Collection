@@ -115,7 +115,7 @@ class AsdaProducts extends Asda {
 
     }
 
-    public function product_details($site_product_id, $ignore_image=false): ?ProductModel {
+    public function product_details($site_product_id, $ignore_image=false,$ignore_promotion=false): ?ProductModel {
 
         $shelf_endpoint = $this->endpoints->products;
         $this->logger->debug("Product Details ID: $site_product_id");
@@ -124,11 +124,10 @@ class AsdaProducts extends Asda {
             $product_response = file_get_contents(__DIR__."/../../Data/Asda/Product.json");
         } else {
 
-            //After running for about an hour this will fail. In that case, wait five minutes and retry
             $product_response = $this->request->request($shelf_endpoint,"POST",[
                 "item_ids" => [$site_product_id], 
                 "consumer_contract" => "webapp_pdp",
-                "store_id" => "4676", // Change for different regions
+                "store_id" => "4565", // Change for different regions. Different stores, different prices
                 "request_origin" => "gi"
             ]);
 
@@ -166,6 +165,11 @@ class AsdaProducts extends Asda {
         $product->name = $this->clean_product_name($name);
         $product->dietary_info = $item_enrichment->dietary_info_formatted ?? NULL;
 
+        if(is_null($product_details->price)){
+            $this->logger->notice('Product Not Available. No Price Details Found.');
+            return null;
+        }
+        
         if(property_exists($item_enrichment,'alcohol') && $item_enrichment->alcohol != ""){
             $this->logger->debug('Haram Alcholol Product Found: '. $name);
             return null;
@@ -263,17 +267,19 @@ class AsdaProducts extends Asda {
         // 2. Rollback
         // 3. Sale.
 
-        //This will get product price, regardless of promotions or not
-        $product_prices = $this->promotions->product_prices($product_details);
+        if(!$ignore_promotion){
+            //This will get product price, regardless of promotions or not
+            $product_prices = $this->promotions->product_prices($product_details);
 
-        $product->price = $product_prices->price;
-        $product->old_price = $product_prices->old_price;
-        $product->is_on_sale = $product_prices->is_on_sale;
-        $product->promotion_id = $product_prices->promotion_id ?? null;
-        $product->promotion = $product_prices->promotion ?? null;
+            $product->price = $product_prices->price;
+            $product->old_price = $product_prices->old_price;
+            $product->is_on_sale = $product_prices->is_on_sale;
+            $product->promotion_id = $product_prices->promotion_id ?? null;
+            $product->promotion = $product_prices->promotion ?? null;
 
-        // $product->promotion = null;
-        // $product->promotion_id = null;
+            // $product->promotion = null;
+            // $product->promotion_id = null;
+        }
 
         $this->product_details = $product_details;
 
@@ -310,7 +316,7 @@ class AsdaProducts extends Asda {
         $list = array();
 
         foreach($ingredients_list as $ingredient_item){
-            $ingredient_name = preg_replace('/\s*\.?\s*$/','',$ingredient_item);
+            $ingredient_name = preg_replace('/\s*\.?\s*$|\n|\t/','',$ingredient_item);
             if($ingredient_name != ''){
                 $list[] = $ingredient_name;
             }
