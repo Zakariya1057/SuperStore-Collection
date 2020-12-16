@@ -38,8 +38,8 @@ class Indices extends Search {
         $product_count = $results[0]->total_count;
 
         // Loop through groups of 5000 products.
-        for($i = 0; $i < $product_count; $i += 5000){
-            $products = $this->product->limit("$i,5000")->get();
+        for($i = 0; $i < $product_count; $i += 1000){
+            $products = $this->product->limit("$i,1000")->get();
             $this->index_product_group($products);
         }
 
