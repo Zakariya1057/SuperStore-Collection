@@ -25,34 +25,42 @@ $asda_conf = $config->get('asda');
 
 $logger->notice("---------------------------- Monitor Script Start ----------------------------");
 
-$arguments = $argv;
+try {
 
-if(count($arguments) > 1){
-    $type = strtolower($arguments[1]);
+    $arguments = $argv;
 
-    if($type != 'stores' && $type != 'products'){
-        return exit($logger->error('Unknown Run Type: '.$type));
-    }
-} else {
-    return exit($logger->error('Script Monitor Type Required: Products/Stores'));
-}
+    if(count($arguments) > 1){
+        $type = strtolower($arguments[1]);
 
-
-if($asda_conf->run && $asda_conf->monitor){
-    $logger->notice("---------- Asda Monitoring Start ---------- ");
-
-    if($type == 'products'){
-        // Runs every 3 hours
-        $asda_monitor = new AsdaMonitorProducts($config, $logger, $database, null, $notification);
-        $asda_monitor->monitor_products();
+        if($type != 'stores' && $type != 'products'){
+            return exit($logger->error('Unknown Run Type: '.$type));
+        }
     } else {
-        // Runs every sunday morning. 4am.
-        $asda_monitor = new AsdaMonitorStores($config, $logger, $database, null);
-        $asda_monitor->monitor_stores();
+        return exit($logger->error('Script Monitor Type Required: Products/Stores'));
     }
 
-    $logger->notice("---------- Asda Monitoring Complete ---------- ");
+
+    // Create another script runs less frequently. Check if unaivavle products available vice versa
+    if($asda_conf->run && $asda_conf->monitor){
+        $logger->notice("---------- Asda Monitoring Start ---------- ");
+
+        if($type == 'products'){
+            // Runs every 3 hours.  [ 0 */3 * * * ]
+            $asda_monitor = new AsdaMonitorProducts($config, $logger, $database, null, $notification);
+            $asda_monitor->monitor_products();
+        } else {
+            // Runs every sunday morning. 4am. [ 0 4 * * SUN ]
+            $asda_monitor = new AsdaMonitorStores($config, $logger, $database, null);
+            $asda_monitor->monitor_stores();
+        }
+
+        $logger->notice("---------- Asda Monitoring Complete ---------- ");
+    }
+
+} catch(Exception $e){
+    $logger->error('Script Monitor Error: '. $e->getMessage());
 }
+
 
 $logger->notice("---------------------------- Monitor Script END ------------------------------");
 
