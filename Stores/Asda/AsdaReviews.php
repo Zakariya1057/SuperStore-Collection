@@ -101,7 +101,7 @@ class AsdaReviews extends Asda {
         foreach($reviews_data as $review_item){
             $review = new ReviewModel($this->database);
             $review->rating = $review_item->Rating;
-            $review->text = ucfirst($review_item->ReviewText ?? '');
+            $review->text = preg_replace('/\s*\\\\$/','',ucfirst($review_item->ReviewText ?? ''));
             $review->title = ucfirst( $review_item->Title ?? '');
             $review->user_id = $this->user_id;
             $review->site_review_id = $review_item->Id;
