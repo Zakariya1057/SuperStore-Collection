@@ -1,17 +1,25 @@
 {
 
     "database": {
-        "host": "workdatabase.cuyqkwdewraf.eu-west-2.rds.amazonaws.com",
-        "username": "ironman",
-        "password": "pNV44xH!N=Jv2%Bu5EWn86Msu7-wX^",
-        "database": "superstore_database"
+        "env": "dev",
+
+        "dev": {
+            "host": "192.168.1.187",
+            "username": "zakariya",
+            "password": "umU5-,PGN43P[eVnr5[+r!R.Mnd!6T",
+            "database": "superstore_database"
+        },
+        "prod": {
+            "host": "workdatabase.cuyqkwdewraf.eu-west-2.rds.amazonaws.com",
+            "username": "ironman",
+            "password": "pNV44xH!N=Jv2%Bu5EWn86Msu7-wX^",
+            "database": "superstore_database"
+        }
     },
 
     "elasticsearch": {
 
-        "credentials": {
-            "host": "localhost"
-        },
+        "host": "https://search-superstorenew-bwonesrfb6itaycf4lnd2uhxee.eu-west-1.es.amazonaws.com:443",
 
         "settings": {
             "number_of_shards": 3,
@@ -127,7 +135,7 @@
     "images": {
         "host": "192.168.1.187",
 
-        "saving_location": "local",
+        "saving_location": "aws",
 
         "type_locations": {
             "logos": "logos",
@@ -160,7 +168,7 @@
 
         "stores": 0,
 
-        "groceries": 1,
+        "groceries": 0,
         "recommended": 1,
         "reviews": 1,
         "promotions": 0,
@@ -176,7 +184,7 @@
             "shelves": "https://groceries.asda.com/cmscontent/json/pages/browse/aisle?requestorigin=gi&Nrpp=10000000&storeId=4676&N=",
             "products": "https://groceries.asda.com/api/items/catalog",
             "reviews": "https://groceries.asda.com/review/reviews.json?requestorigin=gi&apiversion=5.4&passkey=92ffdz3h647mtzgbmu5vedbq&Filter=ProductId%3A",
-            "promotions": "https://groceries.asda.com/cmscontent/json/pages/overlays/linksave?requestorigin=gi&Nrpp=10000000&storeId=4977&promoid=",
+            "promotions": "https://groceries.asda.com/cmscontent/json/pages/overlays/linksave?requestorigin=gi&Nrpp=10000000&storeId=4565&promoid=",
             "recommended": "https://groceries.asda.com/p13nservice/recommendations?storeId=4565&placement=item_page.pdp1&skuId=",
             "stores": [
                 "https://storelocator.asda.com/?q=52.5219314,-1.8446106&qp=Erdington,%20Birmingham,%20UK&l=en",
@@ -203,7 +211,7 @@
     "notification": {
         "url": "gateway.sandbox.push.apple.com:2195",
         "pass_phrase": "GFDAxqVADmNa22Q6jJRVy9gtXSJYpfSPHcU9r8dL64yCkP5kkW",
-        "file_path": "storage/apple_push_notification_production.pem"
+        "file_path": "Storage/apple_push_notification_production.pem"
     },
     
     "exclusions": {
@@ -225,7 +233,8 @@
                 "Whiskey",
                 "\bGin\b",
                 "\bRum\b",
-                "Prosecco"
+                "Prosecco",
+                "Tobac"
             ],
 
             "include": [
@@ -265,13 +274,16 @@
                 "turkey",
                 "beef",
                 "pounder",
-                "hot dogs"
+                "hot dogs",
+                "pie"
             ],
             "exclude": [
                 "pork",
                 "bacon",
                 "ham",
-                "pig"
+                "pig",
+                "nicotine",
+                "vape"
             ]
         },
 
@@ -283,7 +295,8 @@
                 "gelatine",
                 "alcohol",
                 "animal",
-                "insect"
+                "insect",
+                "nicotine"
             ]
         }
 
