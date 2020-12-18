@@ -13,9 +13,12 @@ class Database {
         $this->logger = $logger;
         $this->config = $config;
         
-        $this->logger->notice("Connecting To Database");
+        $this->logger->notice('Connecting To Database');
 
-        $this->database_config = $config->get('database');
+        $database_env =  $config->get('database.env');
+        $this->logger->info('Database Environment: '. ucwords($database_env));
+
+        $this->database_config = $config->get('database.'.$database_env);
 
         $this->database_connect();
 
