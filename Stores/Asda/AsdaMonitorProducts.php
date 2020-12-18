@@ -42,7 +42,6 @@ class AsdaMonitorProducts extends Asda {
         // ->limit(1)
         ->get();
 
-        // fix image saving everytime to once a day
         foreach($products as $product_item){
 
             if(is_null($product_item) || $product_item->num_monitoring == 0){

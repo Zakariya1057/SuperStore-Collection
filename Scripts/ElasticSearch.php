@@ -2,13 +2,12 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use ElasticSearch\Search;
+use Search\Search;
 use Shared\Config;
 use Shared\Loggers;
 use Shared\Database;
 
 $config = new Config();
-$details = (array)$config->get('elasticsearch.credentials');
 
 $index_documents = $config->get('elasticsearch.index_documents');
 $create_index = $config->get('elasticsearch.create_index');

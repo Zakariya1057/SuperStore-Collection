@@ -1,19 +1,18 @@
 <?php
 
-namespace ElasticSearch;
+namespace Search;
 
+use Elasticsearch\Client;
 use Models\Category\ChildCategoryModel;
 use Models\Category\GrandParentCategoryModel;
 use Models\Category\ParentCategoryModel;
 use Models\Product\ProductModel;
-use Models\Store\StoreModel;
 use Models\Store\StoreTypeModel;
 use Monolog\Logger;
 use Shared\Config;
 use Shared\Database;
 
 // Index Documents
-
 class Indices extends Search {
 
     public $product, $store;

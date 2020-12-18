@@ -1,6 +1,6 @@
 <?php
 
-namespace ElasticSearch;
+namespace Search;
 
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
@@ -10,10 +10,10 @@ use Shared\Database;
 
 class Search {
         
-    public Client $client;
-    public Database $database;
-    public Logger $logger;
-    public Config $config;
+    public $client;
+    public $database;
+    public $logger;
+    public $config;
 
     function __construct(Config $config, Logger $logger, Database $database, Client $client=null){
         $this->config = $config;
@@ -21,8 +21,9 @@ class Search {
         $this->database = $database;
 
         if(!$client){
-            $details = (array)$config->get('elasticsearch.credentials');
-            $this->client = ClientBuilder::create()->setRetries(3)->setHosts([$details])->setLogger($logger)->build();
+            $host = $config->get('elasticsearch.host');
+            // $this->client = ClientBuilder::create()->setRetries(3)->setHosts([$details])->setLogger($logger)->build();
+            $this->client = ClientBuilder::create()->setRetries(3)->setHosts([$host])->build();
         } else {
             $this->client = $client;
         }
@@ -48,7 +49,7 @@ class Search {
     */
     public function indexes(){
         $index = new Indices($this->config, $this->logger, $this->database, $this->client);
-        $index->index_products();
+        // $index->index_products();
         $index->index_stores();
         $index->index_categories();
     }

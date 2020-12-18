@@ -1,9 +1,8 @@
 <?php
 
-namespace ElasticSearch;
+namespace Search;
 
-use Elasticsearch\ClientBuilder;
-use Illuminate\Support\Facades\Log;
+use Elasticsearch\Client;
 use Monolog\Logger;
 use Shared\Config;
 use Shared\Database;
