@@ -36,7 +36,7 @@ class AsdaMonitorProducts extends Asda {
         ->join('monitored_products', 'monitored_products.product_id', 'products.id')
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
         ->where_raw(['TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
-        // ->where_raw(['products.id = 18'])
+        // ->where_raw(['products.id = 1855'])
         ->group_by('products.id')
         ->order_by('num_monitoring')
         // ->limit(1)
@@ -62,6 +62,10 @@ class AsdaMonitorProducts extends Asda {
         $asda_product = new AsdaProducts($this->config, $this->logger, $this->database, null);
 
         $new_product = $asda_product->product_details($product_item->site_product_id, true);
+
+        if(is_null($new_product)){
+            return $this->logger->notice('No Product Details Found. Skipping for now. Will try again next run.');
+        }
 
         $notify_user = true;
         $send_notification = false;
