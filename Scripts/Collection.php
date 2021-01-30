@@ -56,10 +56,10 @@
             }
         
             //Searches For new promotions.
-            if($asda_conf->promotions){
-                //Get new promotions. Update old ones
-                $asda->promotions();
-            }
+            // if($asda_conf->promotions){
+            //     //Get new promotions. Update old ones
+            //     $asda->promotions();
+            // }
         
             if($asda_conf->recommended){
                 //Get all similar Products.
