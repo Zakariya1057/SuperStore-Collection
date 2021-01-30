@@ -31,6 +31,8 @@ class Indices extends Search {
 
     public function index_products(){
 
+        $this->logger->debug('Indexing Products');
+
         $this->delete_documents('products');
 
         $results = $this->product->select_raw('COUNT(*) as total_count')->get();
@@ -39,12 +41,15 @@ class Indices extends Search {
         // Loop through groups of 5000 products.
         for($i = 0; $i < $product_count; $i += 1000){
             $products = $this->product->limit("$i,1000")->get();
+            $this->logger->debug("Indexing Product Groups: $i,1000");
             $this->index_product_group($products);
         }
 
     }
 
     public function index_stores(){
+
+        $this->logger->debug('Indexing Stores');
 
         $this->delete_documents('stores');
 
@@ -72,6 +77,8 @@ class Indices extends Search {
     }
 
     public function index_categories(){
+
+        $this->logger->debug('Indexing Categories');
 
         $this->delete_documents('categories');
 

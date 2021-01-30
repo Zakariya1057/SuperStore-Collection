@@ -15,6 +15,8 @@ $create_index = $config->get('elasticsearch.create_index');
 $log = new Loggers();
 $logger = $log->logger_handler;
 
+$logger->notice("---------------------------- ElasticSearch Script Start ----------------------------");
+
 $database = new Database($config,$logger);
 
 $search = new Search($config, $logger, $database);
@@ -26,5 +28,7 @@ if($create_index){
 if($index_documents){
     $search->indexes();
 }
+
+$logger->notice("---------------------------- ElasticSearch Script END ------------------------------");
 
 ?>

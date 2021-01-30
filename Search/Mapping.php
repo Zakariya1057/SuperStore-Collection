@@ -31,7 +31,9 @@ class Mapping extends Search {
 
     private function create_params($index): Array {
 
+        $this->logger->debug('Creating Index For: '. $index);
         // $this->client->indices()->delete(['index' => $index]);
+
         $mappings_properties = $this->config->get('elasticsearch.indices.'.$index);
         $mapping_settings = $this->config->get('elasticsearch.settings');
 

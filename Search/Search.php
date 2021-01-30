@@ -49,7 +49,7 @@ class Search {
     */
     public function indexes(){
         $index = new Indices($this->config, $this->logger, $this->database, $this->client);
-        // $index->index_products();
+        $index->index_products();
         $index->index_stores();
         $index->index_categories();
     }
