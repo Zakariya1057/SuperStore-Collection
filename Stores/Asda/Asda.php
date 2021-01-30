@@ -3,7 +3,6 @@
 namespace Stores\Asda;
 
 use Exception;
-use Models\ScriptHistory\ScriptHistory;
 use Models\Store\StoreTypeModel;
 use Monolog\Logger;
 use Shared\Config;
@@ -95,7 +94,6 @@ class Asda {
         $reviews->reviews();
     }
 
-
     //Shared Functionality
     public function include_category($category_name){
         $inclusion_list = join('|',$this->exclusions->categories->include);
@@ -116,7 +114,9 @@ class Asda {
     }
 
     public function exclude_product($product_name){
-        $exclusions_list = join('|', array_merge($this->exclusions->products->exclude,$this->exclusions->categories->exclude) );
+
+        $exclusions_list = $this->match_whole( array_merge($this->exclusions->products->exclude,$this->exclusions->categories->exclude) );
+
         preg_match("/$exclusions_list/i",$product_name,$product_matches);
 
         if($product_matches){
@@ -128,7 +128,9 @@ class Asda {
     }
 
     public function product_possible_haram($product_name){
-        $exclusions_list = join('|', $this->exclusions->products->check );
+        // $exclusions_list = join('|', $this->exclusions->products->check );
+        $exclusions_list = $this->match_whole( $this->exclusions->products->check );
+
         preg_match("/$exclusions_list/i",$product_name,$product_matches);
             
         if($product_matches){
@@ -142,7 +144,8 @@ class Asda {
     public function haram_ingredients($ingredients){
 
         foreach($ingredients as $ingredient_name){
-            $exclusions_list = join('|',$this->exclusions->ingredients->exclude);
+            // $exclusions_list = join('|',$this->exclusions->ingredients->exclude);
+            $exclusions_list = $this->match_whole( $this->exclusions->ingredients->exclude );
             preg_match("/$exclusions_list/i",$ingredient_name,$haram_matches);
 
             if($haram_matches){
@@ -152,6 +155,13 @@ class Asda {
 
         return false;
 
+    }
+
+    public function match_whole($exclusions){
+        foreach($exclusions as $index => $item){
+            $exclusions[$index] = "\b$item\b";
+        }
+        return join('|',  $exclusions);
     }
 
 }
