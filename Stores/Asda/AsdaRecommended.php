@@ -89,11 +89,15 @@ class AsdaRecommended extends Asda {
                     $new_product_id = $new_product->product($item->id,null,null,null,$this->sanitize->sanitize_field($item->aisleName));
 
                     if($new_product_id){
+                        $this->logger->debug('Setting New Product As Recommened');
+
                         $recommended->product_id = $product_id;
                         $recommended->recommended_product_id = $new_product_id;
                         $recommended->insert_ignore = true;
                         $recommended->save();
                         $product_ids[] = $new_product_id;
+                    } else {
+                        $this->logger->debug('New Product Not Added. Ignoring');
                     }
 
                 }

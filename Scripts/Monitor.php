@@ -58,7 +58,7 @@ try {
     }
 
 } catch(Exception $e){
-    $logger->error('Script Monitor Error: '. $e->getMessage());
+    $logger->critical('Script Monitor Error: '. $e->getMessage());
 }
 
 

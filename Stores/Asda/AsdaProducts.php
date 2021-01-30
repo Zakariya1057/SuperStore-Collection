@@ -121,7 +121,7 @@ class AsdaProducts extends Asda {
         $this->logger->debug("Product Details ID: $site_product_id");
 
         if($this->env == 'dev'){
-            $product_response = file_get_contents(__DIR__."/../../Data/Asda/Product.json");
+            $product_response = file_get_contents( __DIR__. '/../../' . $this->config->get('test_files.product'));
         } else {
 
             $product_response = $this->request->request($shelf_endpoint,"POST",[
