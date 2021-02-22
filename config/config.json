@@ -1,7 +1,7 @@
 {
 
     "database": {
-        "env": "dev",
+        "env": "prod",
 
         "dev": {
             "host": "192.168.1.187",
@@ -36,15 +36,31 @@
                     "type": "stemmer",
                     "language": "english"
                   },
+                  "whitespace_remove": {
+                    "type": "pattern_replace",
+                    "pattern": "|-|\\.|:|,|\\'|\\s",
+                    "replacement": ""
+                  },
                   "english_possessive_stemmer": {
                     "type": "stemmer",
                     "language": "possessive_english"
                   }
                 },
-
+                "char_filter": {
+                    "custom_char_filter": {
+                      "type": "mapping",
+                      "mappings": [
+                        "and => &",
+                        "' =>"
+                      ]
+                    }
+                },
                 "analyzer": {
                   "text_analyzer": {
                     "tokenizer": "standard",
+                    "char_filter": [
+                        "custom_char_filter"
+                    ],
                     "filter": [
                       "stop",
                       "english_possessive_stemmer",
@@ -132,6 +148,10 @@
 
     "continue": 1,
 
+    "test_files": {
+        "product": "Data/Asda/Product.json"
+    },
+
     "images": {
         "host": "192.168.1.187",
 
@@ -171,7 +191,6 @@
         "groceries": 0,
         "recommended": 1,
         "reviews": 1,
-        "promotions": 0,
         
         "store_type_id": 1,
         "user_id": 1
@@ -231,8 +250,8 @@
                 "Ales",
                 "Spirit",
                 "Whiskey",
-                "\bGin\b",
-                "\bRum\b",
+                "Gin",
+                "Rum",
                 "Prosecco",
                 "Tobac"
             ],
