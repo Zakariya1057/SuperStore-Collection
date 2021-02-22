@@ -33,13 +33,13 @@ class Shelves extends Asda {
         //Loop through and insert into database
         foreach($products as $index => $product_item){
 
-            //Between Each Products. Wait 1 Second
-            sleep(1);
-
             $this->remember->set('product_index', $index + $last_product_index);
 
             $product = new Products($this->config,$this->logger,$this->database,$this->remember);
             $product->product($product_item,$shelf->grand_parent_category_id, $shelf->parent_category_id,$shelf->id);
+
+            //Between Each Products. Wait 1 Second
+            sleep(1);
             
         }
 
