@@ -1,6 +1,6 @@
 <?php
 
-namespace Stores\Asda;
+namespace Supermarkets\Asda\Monitors;
 
 use Exception;
 use Models\Product\ProductModel;
@@ -13,6 +13,11 @@ use Monolog\Logger;
 use Services\Config;
 use Services\Database;
 use Services\Remember;
+use Supermarkets\Asda\Asda;
+use Supermarkets\Asda\Groceries\Products\Products;
+use Supermarkets\Asda\Groceries\Products\Promotions;
+use Supermarkets\Asda\Groceries\Products\Recommended;
+use Supermarkets\Asda\Groceries\Products\Reviews;
 
 class MonitorProducts extends Asda {
 
@@ -58,7 +63,7 @@ class MonitorProducts extends Asda {
     }
 
     public function check_product_change($product_item){
-        
+
         $asda_product = new Products($this->config, $this->logger, $this->database, null);
 
         $new_product = $asda_product->product_details($product_item->site_product_id, true);
@@ -86,13 +91,20 @@ class MonitorProducts extends Asda {
             'site_product_id',
         ];
 
-        $update_fields  = ['last_checked' => date('Y-m-d H:i:s')];
-        
+        $update_fields  = ['last_checked' => date('Y-m-d H:i:s'), 'is_on_sale' => null, 'old_price' => null];
+
         foreach($monitor_fields as $field){
             if($product_item->{$field} != $new_product->{$field}){
                 $this->logger->notice("Product $field changed: {$product_item->{$field}} -> {$new_product->{$field}}");
                 $send_notification = true;
+
                 $notify_user = $field == 'price' ? true : false;
+
+                if($notify_user && ($new_product->is_on_sale || !is_null($new_product->old_price))){
+                    $update_fields['is_on_sale'] = $new_product->is_on_sale;
+                    $update_fields['old_price'] = $new_product->old_price;
+                }
+
                 $update_fields[$field] = $new_product->{$field};
             }
         }
@@ -117,6 +129,7 @@ class MonitorProducts extends Asda {
 
         // Check to see for new reviews
         // $this->review->create_review($product_item->id, $new_product->site_product_id);
+
         // Check to see if recommened changed
         // $this->recommended->product_recommended($product_item->id, $new_product->site_product_id);
 

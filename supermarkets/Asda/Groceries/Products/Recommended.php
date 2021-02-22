@@ -1,6 +1,6 @@
 <?php
 
-namespace Stores\Asda;
+namespace Supermarkets\Asda\Groceries\Products;
 
 use Exception;
 use Models\Product\ProductModel;
@@ -9,6 +9,8 @@ use Monolog\Logger;
 use Services\Config;
 use Services\Database;
 use Services\Remember;
+use Supermarkets\Asda\Asda;
+
 class Recommended extends Asda {
 
     public $productModel;

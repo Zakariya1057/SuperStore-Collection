@@ -1,7 +1,7 @@
 {
 
     "database": {
-        "env": "prod",
+        "env": "dev",
 
         "dev": {
             "host": "192.168.1.187",
@@ -188,7 +188,7 @@
 
         "stores": 0,
 
-        "groceries": 0,
+        "groceries": 1,
         "recommended": 1,
         "reviews": 1,
         

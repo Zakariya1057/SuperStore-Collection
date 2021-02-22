@@ -1,6 +1,6 @@
 <?php
 
-namespace Stores\Asda;
+namespace Supermarkets\Asda\Stores;
 
 use Exception;
 use Models\Store\FacilitiesModel;
@@ -11,6 +11,7 @@ use Monolog\Logger;
 use Services\Config;
 use Services\Database;
 use Services\Remember;
+use Supermarkets\Asda\Asda;
 
 class Stores extends Asda {
 

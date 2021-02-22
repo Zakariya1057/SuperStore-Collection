@@ -10,7 +10,7 @@
     use Services\Loggers;
     use Services\Database;
     use Services\Remember;
-    use Stores\Asda\Asda;
+    use Supermarkets\Asda\Asda;
 
     $config = new Config();
     $log = new Loggers();

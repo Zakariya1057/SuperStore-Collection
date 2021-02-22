@@ -1,11 +1,14 @@
 <?php
 
-namespace Stores\Asda;
+namespace Supermarkets\Asda\Groceries\Categories;
 
 use Monolog\Logger;
 use Services\Config;
 use Services\Database;
 use Services\Remember;
+use Supermarkets\Asda\Asda;
+use Supermarkets\Asda\Groceries\Products\Products;
+
 class Shelves extends Asda {
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)

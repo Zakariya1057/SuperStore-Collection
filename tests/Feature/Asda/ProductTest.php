@@ -9,7 +9,7 @@ require_once __DIR__.'/../../vendor/autoload.php';
 use Services\Config;
 use Services\Database;
 use Services\Loggers;
-use Stores\Asda\AsdaProducts;
+use Supermarkets\Asda\AsdaProducts;
 
 use PHPUnit\Framework\TestCase;
 

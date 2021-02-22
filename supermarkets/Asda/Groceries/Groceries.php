@@ -1,12 +1,14 @@
 <?php
 
-namespace Stores\Asda;
+namespace Supermarkets\Asda\Groceries;
 
 use Exception;
 use Monolog\Logger;
 use Services\Config;
 use Services\Database;
 use Services\Remember;
+use Supermarkets\Asda\Asda;
+use Supermarkets\Asda\Groceries\Categories\Categories;
 
 class Groceries extends Asda {
 

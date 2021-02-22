@@ -1,6 +1,6 @@
 <?php
 
-namespace Stores\Asda;
+namespace Supermarkets\Asda\Groceries\Products;
 
 use Models\Product\ProductModel;
 use Models\Product\ReviewModel;
@@ -9,6 +9,7 @@ use Monolog\Logger;
 use Services\Config;
 use Services\Database;
 use Services\Remember;
+use Supermarkets\Asda\Asda;
 
 class Reviews extends Asda {
 

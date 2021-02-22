@@ -1,6 +1,6 @@
 <?php
 
-namespace Stores\Asda;
+namespace Supermarkets\Asda\Groceries\Products;
 
 use Models\Category\ChildCategoryModel;
 use Models\Product\ProductModel;
@@ -11,6 +11,7 @@ use Monolog\Logger;
 use Services\Config;
 use Services\Database;
 use Services\Remember;
+use Supermarkets\Asda\Asda;
 
 class Products extends Asda {
 
@@ -175,7 +176,7 @@ class Products extends Asda {
             return null;
         }
 
-        if(!$this->exclude_product($name)){
+        if(!$this->exclude_service->exclude_product($name)){
             $this->logger->debug('Stage 1. Product Not Exluded: '. $name);
         } else {
             $this->logger->debug('Stage 1. Product Exluded: '. $name);
@@ -186,7 +187,7 @@ class Products extends Asda {
         preg_match("/vegetarian|vegan/i",$product->dietary_info,$vegan_matches);
 
         //Check product name, if matches possible haram then double check
-        if(!$this->product_possible_haram($name)){
+        if(!$this->exclude_service->product_possible_haram($name)){
             $this->logger->debug('Stage 2. Product Halal '. $name);
         } else {
             
@@ -209,7 +210,7 @@ class Products extends Asda {
         if(!$halal_matches){
             //Check product ingredients, if pork/alcohol found then exlucde.
             $ingredients = $this->ingredients_list($product_details);
-            if($this->haram_ingredients($ingredients)){
+            if($this->exclude_service->haram_ingredients($ingredients)){
                 $this->logger->debug('Stage 3. Haram Ingredients Found: '. $name);
                 return null;
             } else {
@@ -272,11 +273,11 @@ class Products extends Asda {
             $product_prices = $this->promotions->product_prices($product_details);
 
             $product->price = $product_prices->price;
-            $product->old_price = $product_prices->old_price;
-            $product->is_on_sale = $product_prices->is_on_sale;
+            $product->old_price = $product_prices->old_price ?? null;
+            $product->is_on_sale = $product_prices->is_on_sale ?? null;
             $product->promotion_id = $product_prices->promotion_id ?? null;
             $product->promotion = $product_prices->promotion ?? null;
-
+            
             // $product->promotion = null;
             // $product->promotion_id = null;
         }

@@ -1,9 +1,8 @@
 <?php
 
-namespace Stores\Asda;
+namespace Supermarkets\Asda\Groceries\Categories;
 
 use Exception;
-
 use Models\Category\CategoryModel;
 use Models\Category\CategoryProductModel;
 use Models\Category\ChildCategoryModel;
@@ -13,6 +12,7 @@ use Monolog\Logger;
 use Services\Config;
 use Services\Database;
 use Services\Remember;
+use Supermarkets\Asda\Asda;
 
 class Categories extends Asda {
 
@@ -43,7 +43,7 @@ class Categories extends Asda {
     }
 
     public function create_category($category_item){
-        if($this->include_category($category_item->displayName)){
+        if($this->exclude_service->include_category($category_item->displayName)){
             $this->logger->debug('Category Not Excluded: '. $category_item->displayName);
 
             $category_details = $this->select_category($category_item,'grand_parent');
@@ -103,7 +103,7 @@ class Categories extends Asda {
         $aisle_details = $this->select_category($aisle,"child");
         $this->logger->notice("--- Aisle: $aisle_details->name");
 
-        if($this->exclude_category($aisle_details->name)){
+        if($this->exclude_service->exclude_category($aisle_details->name)){
             $this->logger->error('Exluding Haram Category');
             return;
         }

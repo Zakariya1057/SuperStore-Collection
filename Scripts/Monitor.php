@@ -4,8 +4,8 @@ use Services\Notification;
 use Services\Config;
 use Services\Loggers;
 use Services\Database;
-use Stores\Asda\MonitorProducts;
-use Stores\Asda\MonitorStores;
+use Supermarkets\Asda\Monitors\MonitorProducts;
+use Supermarkets\Asda\Monitors\MonitorStores;
 
 ini_set('memory_limit', '-1');
 
@@ -43,6 +43,7 @@ try {
     // Create another script runs less frequently. Check if unaivavle products available vice versa
     if($asda_conf->run && $asda_conf->monitor){
         $logger->notice("---------- Asda Monitoring Start ---------- ");
+
 
         if($type == 'products'){
             // Runs every 3 hours.  [ 0 */3 * * * ]
