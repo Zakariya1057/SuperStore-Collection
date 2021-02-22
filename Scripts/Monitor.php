@@ -1,11 +1,11 @@
 <?php
 
-use Shared\Notification;
-use Shared\Config;
-use Shared\Loggers;
-use Shared\Database;
-use Stores\Asda\AsdaMonitorProducts;
-use Stores\Asda\AsdaMonitorStores;
+use Services\Notification;
+use Services\Config;
+use Services\Loggers;
+use Services\Database;
+use Stores\Asda\MonitorProducts;
+use Stores\Asda\MonitorStores;
 
 ini_set('memory_limit', '-1');
 
@@ -46,11 +46,11 @@ try {
 
         if($type == 'products'){
             // Runs every 3 hours.  [ 0 */3 * * * ]
-            $asda_monitor = new AsdaMonitorProducts($config, $logger, $database, null, $notification);
+            $asda_monitor = new MonitorProducts($config, $logger, $database, null, $notification);
             $asda_monitor->monitor_products();
         } else {
             // Runs every sunday morning. 4am. [ 0 4 * * SUN ]
-            $asda_monitor = new AsdaMonitorStores($config, $logger, $database, null);
+            $asda_monitor = new MonitorStores($config, $logger, $database, null);
             $asda_monitor->monitor_stores();
         }
 

@@ -4,11 +4,11 @@ namespace Stores\Asda;
 
 use Exception;
 use Monolog\Logger;
-use Shared\Config;
-use Shared\Database;
-use Shared\Remember;
+use Services\Config;
+use Services\Database;
+use Services\Remember;
 
-class AsdaGroceries extends Asda {
+class Groceries extends Asda {
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
@@ -21,7 +21,7 @@ class AsdaGroceries extends Asda {
         
         $groceries = $this->groceries_details();
 
-        $category = new AsdaCategories($this->config,$this->logger,$this->database,$this->remember);
+        $category = new Categories($this->config,$this->logger,$this->database,$this->remember);
         $category->categories($groceries);
         
         $this->logger->notice("------- Asda Groceries Complete --------");

@@ -9,8 +9,8 @@ use Models\Category\ParentCategoryModel;
 use Models\Product\ProductModel;
 use Models\Store\StoreTypeModel;
 use Monolog\Logger;
-use Shared\Config;
-use Shared\Database;
+use Services\Config;
+use Services\Database;
 
 // Index Documents
 class Indices extends Search {

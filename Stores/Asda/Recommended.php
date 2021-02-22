@@ -6,10 +6,10 @@ use Exception;
 use Models\Product\ProductModel;
 use Models\Product\RecommendedModel;
 use Monolog\Logger;
-use Shared\Config;
-use Shared\Database;
-use Shared\Remember;
-class AsdaRecommended extends Asda {
+use Services\Config;
+use Services\Database;
+use Services\Remember;
+class Recommended extends Asda {
 
     public $productModel;
 
@@ -92,7 +92,7 @@ class AsdaRecommended extends Asda {
                 } else {
                     $this->logger->warning('Similar Product Not Found In Database. Creating The Product, Then Setting As Recommened');
 
-                    $new_product = new AsdaProducts($this->config,$this->logger,$this->database,$this->remember);
+                    $new_product = new Products($this->config,$this->logger,$this->database,$this->remember);
                     $new_product_id = $new_product->product($item->id,null,null,null,$this->sanitize->sanitize_field($item->aisleName));
 
                     if($new_product_id){

@@ -5,8 +5,8 @@ namespace Search;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use Monolog\Logger;
-use Shared\Config;
-use Shared\Database;
+use Services\Config;
+use Services\Database;
 
 class Search {
         

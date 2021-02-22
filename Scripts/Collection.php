@@ -6,10 +6,10 @@
 
     // TODO - New Promotions
     
-    use Shared\Config;
-    use Shared\Loggers;
-    use Shared\Database;
-    use Shared\Remember;
+    use Services\Config;
+    use Services\Loggers;
+    use Services\Database;
+    use Services\Remember;
     use Stores\Asda\Asda;
 
     $config = new Config();

@@ -2,17 +2,17 @@
 
 namespace Stores\Asda;
 
-use Shared\Request;
-use Shared\Requests;
+use Services\Request;
+use Services\Requests;
 use Exception;
 use Models\Product\PriceModel;
 use Models\Product\PromotionModel;
 use Monolog\Logger;
-use Shared\Config;
-use Shared\Database;
-use Shared\Remember;
+use Services\Config;
+use Services\Database;
+use Services\Remember;
 
-class AsdaPromotions extends Asda {
+class Promotions extends Asda {
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {

@@ -10,10 +10,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Shared\\": "Shared/",
-            "Models\\": "Models/",
-            "Stores\\": "Stores/",
-            "Search\\": "Search/"
+            "Services\\": "services/",
+            "Models\\": "models/",
+            "Stores\\": "stores/",
+            "Search\\": "search/"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
     }
 }

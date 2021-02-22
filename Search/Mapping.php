@@ -4,8 +4,8 @@ namespace Search;
 
 use Elasticsearch\Client;
 use Monolog\Logger;
-use Shared\Config;
-use Shared\Database;
+use Services\Config;
+use Services\Database;
 
 // Map Documents
 class Mapping extends Search {

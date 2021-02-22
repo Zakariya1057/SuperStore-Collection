@@ -6,11 +6,11 @@ use Exception;
 use Models\Store\FacilitiesModel;
 use Models\Store\StoreModel;
 use Monolog\Logger;
-use Shared\Config;
-use Shared\Database;
-use Shared\Remember;
+use Services\Config;
+use Services\Database;
+use Services\Remember;
 
-class AsdaMonitorStores extends Asda {
+class MonitorStores extends Asda {
 
     public $store;
 
@@ -44,7 +44,7 @@ class AsdaMonitorStores extends Asda {
     }
 
     public function check_store_change($store){
-        $asda_store = new AsdaStores($this->config, $this->logger, $this->database, $this->remember);
+        $asda_store = new Stores($this->config, $this->logger, $this->database, $this->remember);
         
         $new_store = $asda_store->page_store_details($store->url);
 

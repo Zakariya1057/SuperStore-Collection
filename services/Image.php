@@ -1,6 +1,6 @@
 <?php
 
-namespace Shared;
+namespace Services;
 
 use Exception;
 use Aws\S3\S3Client; 

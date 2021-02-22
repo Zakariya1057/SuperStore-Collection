@@ -10,11 +10,11 @@ use Models\Category\ChildCategoryModel;
 use Models\Category\GrandParentCategoryModel;
 use Models\Category\ParentCategoryModel;
 use Monolog\Logger;
-use Shared\Config;
-use Shared\Database;
-use Shared\Remember;
+use Services\Config;
+use Services\Database;
+use Services\Remember;
 
-class AsdaCategories extends Asda {
+class Categories extends Asda {
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
@@ -111,7 +111,7 @@ class AsdaCategories extends Asda {
         $aisle_details->grand_parent_category_id = $grand_parent_category_id;
         $aisle_details->parent_category_id = $parent_category_id;
 
-        $shelf = new AsdaShelves($this->config,$this->logger,$this->database,$this->remember);
+        $shelf = new Shelves($this->config,$this->logger,$this->database,$this->remember);
         $shelf->details($aisle_details);
 
         //If no products for shelves found then delete this aisle.

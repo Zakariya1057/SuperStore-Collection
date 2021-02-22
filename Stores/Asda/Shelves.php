@@ -3,10 +3,10 @@
 namespace Stores\Asda;
 
 use Monolog\Logger;
-use Shared\Config;
-use Shared\Database;
-use Shared\Remember;
-class AsdaShelves extends Asda {
+use Services\Config;
+use Services\Database;
+use Services\Remember;
+class Shelves extends Asda {
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
@@ -35,7 +35,7 @@ class AsdaShelves extends Asda {
 
             $this->remember->set('product_index', $index + $last_product_index);
 
-            $product = new AsdaProducts($this->config,$this->logger,$this->database,$this->remember);
+            $product = new Products($this->config,$this->logger,$this->database,$this->remember);
             $product->product($product_item,$shelf->grand_parent_category_id, $shelf->parent_category_id,$shelf->id);
             
         }

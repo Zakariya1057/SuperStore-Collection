@@ -5,12 +5,12 @@ namespace Stores\Asda;
 use Exception;
 use Models\Store\StoreTypeModel;
 use Monolog\Logger;
-use Shared\Config;
-use Shared\Database;
-use Shared\Image;
-use Shared\Remember;
-use Shared\Requests;
-use Shared\Sanitize;
+use Services\Config;
+use Services\Database;
+use Services\Image;
+use Services\Remember;
+use Services\Requests;
+use Services\Sanitize;
 class Asda {
 
     public 

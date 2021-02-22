@@ -2,7 +2,7 @@
  
 namespace Models\Store;
 
-use Shared\Loggers;
+use Services\Loggers;
 use Models\Model;
 
 class StoreModel extends Model {

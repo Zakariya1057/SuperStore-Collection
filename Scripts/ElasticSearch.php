@@ -3,9 +3,9 @@
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Search\Search;
-use Shared\Config;
-use Shared\Loggers;
-use Shared\Database;
+use Services\Config;
+use Services\Loggers;
+use Services\Database;
 
 $config = new Config();
 

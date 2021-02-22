@@ -5,9 +5,9 @@ namespace Models;
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Exception;
-use Shared\Loggers;
-use Shared\Sanitize;
-use Shared\Validator;
+use Services\Loggers;
+use Services\Sanitize;
+use Services\Validator;
 
 class Model {
 

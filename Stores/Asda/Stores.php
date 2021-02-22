@@ -8,11 +8,11 @@ use Models\Store\LocationModel;
 use Models\Store\OpeningHoursModel;
 use Models\Store\StoreModel;
 use Monolog\Logger;
-use Shared\Config;
-use Shared\Database;
-use Shared\Remember;
+use Services\Config;
+use Services\Database;
+use Services\Remember;
 
-class AsdaStores extends Asda {
+class Stores extends Asda {
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {

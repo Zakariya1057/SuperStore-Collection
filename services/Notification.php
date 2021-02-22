@@ -1,6 +1,6 @@
 <?php
 
-namespace Shared;
+namespace Services;
 
 use Exception;
 use Models\Product\ProductModel;

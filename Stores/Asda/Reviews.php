@@ -6,18 +6,18 @@ use Models\Product\ProductModel;
 use Models\Product\ReviewModel;
 use Exception;
 use Monolog\Logger;
-use Shared\Config;
-use Shared\Database;
-use Shared\Remember;
+use Services\Config;
+use Services\Database;
+use Services\Remember;
 
-class AsdaReviews extends Asda {
+class Reviews extends Asda {
 
     public $productModel,$promotions;
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
-        $this->promotions = new AsdaPromotions($this->config,$this->logger,$this->database,$this->remember);
+        $this->promotions = new Promotions($this->config,$this->logger,$this->database,$this->remember);
         $this->productModel = new ProductModel($this->database);
     }
 
