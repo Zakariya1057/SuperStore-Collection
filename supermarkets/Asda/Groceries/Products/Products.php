@@ -152,7 +152,6 @@ class Products extends Asda {
         $item = $product_details->item;
         $name = $item->name;
         $item_enrichment = $product_details->item_enrichment->enrichment_info;
-        $rating_review = $item->rating_review;
 
         $is_bundle_product = $product_details->is_bundle ?? false;
         if($is_bundle_product){
@@ -170,129 +169,26 @@ class Products extends Asda {
             $this->logger->notice('Product Not Available. No Price Details Found.');
             return null;
         }
-        
-        if(property_exists($item_enrichment,'alcohol') && $item_enrichment->alcohol != ""){
-            $this->logger->debug('Haram Alcholol Product Found: '. $name);
-            return null;
-        }
 
-        if(!$this->exclude_service->exclude_product($name)){
-            $this->logger->debug('Stage 1. Product Not Exluded: '. $name);
-        } else {
-            $this->logger->debug('Stage 1. Product Exluded: '. $name);
-            return null;
-        }
-
-        preg_match("/halal/i",$product->dietary_info,$halal_matches);
-        preg_match("/vegetarian|vegan/i",$product->dietary_info,$vegan_matches);
-
-        //Check product name, if matches possible haram then double check
-        if(!$this->exclude_service->product_possible_haram($name)){
-            $this->logger->debug('Stage 2. Product Halal '. $name);
-        } else {
-            
-            $this->logger->debug('Stage 2. Product Maybe Haram. Halal/Vegan/Vegetarian Check');
-
-            if(!is_null($product->dietary_info)){
-                if($halal_matches || $vegan_matches){
-                    $this->logger->debug('Stage 2A. Product Halal');
-                } else {
-                    $this->logger->debug('Stage 2. Product Haram: '. $name);
-                    return null;
-                }
+        if($this->is_haram($product,  $item_enrichment, $product_details)){
+            if(is_null($item_enrichment->nutritional_values)){
+                $this->logger->notice('Product Not Eatable. Continue');
             } else {
-                $this->logger->debug('Stage 2. Product Haram: '. $name);
-                return null;
-            }
-           
-        }
-
-        if(!$halal_matches){
-            //Check product ingredients, if pork/alcohol found then exlucde.
-            $ingredients = $this->ingredients_list($product_details);
-            if($this->exclude_service->haram_ingredients($ingredients)){
-                $this->logger->debug('Stage 3. Haram Ingredients Found: '. $name);
-                return null;
-            } else {
-                $this->logger->debug('Stage 3. No Haram Ingredients Found: '. $name);
-            }
-        } else {
-            $this->logger->debug('Halal/Vegan/Vegetarian Found In Product Name');
-        }
-
-        // $product->store_type_id = $this->store_type_id;
-        $product->description = $item->description == '.' ? NULL : $item->description;
-        
-        if(!is_null($product->description)){
-            preg_match('/Twitter|YouTube|Instagram|Follow|Facebook|Snapchat|Shop online at asda.com/i',$product->description,$social_matches);
-
-            // If product description like follow us on instagram then remove it. No need for such nonsense here
-            if($social_matches){
-                $product->description = NULL;
-            }
-        } else {
-            if(property_exists($product,'additional_info') && $product->additional_info != ""){
-                $product->description = $product->additional_info;
+                $this->logger->notice('Product Contains Haram Ingredients And Eatable. Skipping');
             }
         }
 
-        $product_site_id = $item->sku_id;
-        $product->site_product_id = $product_site_id;
-        $product->store_type_id = $this->store_type_id;
+        $this->set_product_description($product, $item);
 
-        $product->total_reviews_count = $rating_review->total_review_count;
-        $product->avg_rating          = $rating_review->avg_star_rating;
+        $this->set_product_details($product, $item_enrichment, $item, $ignore_image);
 
-        $product->url = "https://groceries.asda.com/product/{$item->sku_id}";
-
-        $image_id = $item->images->scene7_id;
-
-        if(!$ignore_image){
-            $product->large_image = $this->product_image($product_site_id, $image_id,400,'large');
-            if(!is_null($product->large_image)){
-                $product->small_image = $this->product_image($product_site_id, $image_id,200,'small');
-            }
-        }
-
-        $product->brand = $item->brand;
-        $product->allergen_info = $item_enrichment->allergy_info_formatted_web ?? NULL;
-
-        $product->storage = $item_enrichment->storage ?? NULL;
-
-        if($item->extended_item_info->weight){
-            $product->weight = $item->extended_item_info->weight;
-        }
-
-        // Promotion Types:
-        // 1. 2 for £10. Product Grouped
-        // 2. Rollback
-        // 3. Sale.
-
-        if(!$ignore_promotion){
-            //This will get product price, regardless of promotions or not
-            $product_prices = $this->promotions->product_prices($product_details);
-
-            $product->price = $product_prices->price;
-            $product->old_price = $product_prices->old_price ?? null;
-            $product->is_on_sale = $product_prices->is_on_sale ?? null;
-            $product->promotion_id = $product_prices->promotion_id ?? null;
-            $product->promotion = $product_prices->promotion ?? null;
-            
-            // $product->promotion = null;
-            // $product->promotion_id = null;
-        }
+        $this->set_product_prices($product, $product_details, $ignore_promotion);
 
         $this->product_details = $product_details;
 
         $this->logger->notice('--- Complete Product('.$item->sku_id.'): '.$item->name .' ---');
 
         return $product;
-    }
-
-    public function product_image($product_site_id, $image_id,$size,$size_name){
-        $url = "https://ui.assets-asda.com/dm/asdagroceries/{$image_id}?defaultImage=asdagroceries/noImage&resMode=sharp2&id=8daSB3&fmt=jpg&fit=constrain,1&wid={$size}&hei={$size}";
-        $file_name = $this->image->save($product_site_id,$url,$size_name);
-        return $file_name;
     }
 
     public function ingredients($product_id, $product_data){
@@ -328,9 +224,143 @@ class Products extends Asda {
         return array_unique($list);
     }
 
+    public function product_image($product_site_id, $image_id,$size,$size_name){
+        $url = "https://ui.assets-asda.com/dm/asdagroceries/{$image_id}?defaultImage=asdagroceries/noImage&resMode=sharp2&id=8daSB3&fmt=jpg&fit=constrain,1&wid={$size}&hei={$size}";
+        $file_name = $this->image->save($product_site_id,$url,$size_name);
+        return $file_name;
+    }
+    
     private function clean_product_name($name){
         $name = preg_replace('/\s\s/',' ',$name);
         return preg_replace('/\s*\(.+/','',$name);
+    }
+
+    private function is_haram($product, $item_enrichment, $product_details): bool {
+                
+        $name = $product->name;
+
+        if(property_exists($item_enrichment,'alcohol') && $item_enrichment->alcohol != ""){
+            $this->logger->debug('Haram Alcholol Product Found: '. $name);
+            return true;
+        }
+
+        if(!$this->exclude_service->exclude_product($name)){
+            $this->logger->debug('Stage 1. Product Not Exluded: '. $name);
+        } else {
+            $this->logger->debug('Stage 1. Product Exluded: '. $name);
+            return true;
+        }
+
+        preg_match("/halal/i",$product->dietary_info,$halal_matches);
+        preg_match("/vegetarian|vegan/i",$product->dietary_info,$vegan_matches);
+
+        //Check product name, if matches possible haram then double check
+        if(!$this->exclude_service->product_possible_haram($name)){
+            $this->logger->debug('Stage 2. Product Halal '. $name);
+        } else {
+            
+            $this->logger->debug('Stage 2. Product Maybe Haram. Halal/Vegan/Vegetarian Check');
+
+            if(!is_null($product->dietary_info)){
+                if($halal_matches || $vegan_matches){
+                    $this->logger->debug('Stage 2A. Product Halal');
+                } else {
+                    $this->logger->debug('Stage 2. Product Haram: '. $name);
+                    return true;
+                }
+            } else {
+                $this->logger->debug('Stage 2. Product Haram: '. $name);
+                return true;
+            }
+           
+        }
+
+        if(!$halal_matches){
+            //Check product ingredients, if pork/alcohol found then exlucde.
+            $ingredients = $this->ingredients_list($product_details);
+            if($this->exclude_service->haram_ingredients($ingredients)){
+                $this->logger->debug('Stage 3. Haram Ingredients Found: '. $name);
+                return true;
+            } else {
+                $this->logger->debug('Stage 3. No Haram Ingredients Found: '. $name);
+            }
+        } else {
+            $this->logger->debug('Halal/Vegan/Vegetarian Found In Product Name');
+        }
+
+    }
+
+
+    private function set_product_description($product, $item){
+        // $product->store_type_id = $this->store_type_id;
+        $product->description = $item->description == '.' ? NULL : $item->description;
+
+        if(!is_null($product->description)){
+            preg_match('/Twitter|YouTube|Instagram|Follow|Facebook|Snapchat|Shop online at asda.com/i',$product->description,$social_matches);
+
+            // If product description like follow us on instagram then remove it. No need for such nonsense here
+            if($social_matches){
+                $product->description = NULL;
+            }
+        } else {
+            if(property_exists($product,'additional_info') && $product->additional_info != ""){
+                $product->description = $product->additional_info;
+            }
+        }
+    }
+
+    private function set_product_prices($product, $product_details, $ignore_promotion){
+        // Promotion Types:
+        // 1. 2 for £10. Product Grouped
+        // 2. Rollback
+        // 3. Sale.
+
+        if(!$ignore_promotion){
+            //This will get product price, regardless of promotions or not
+            $product_prices = $this->promotions->product_prices($product_details);
+
+            $product->price = $product_prices->price;
+            $product->old_price = $product_prices->old_price ?? null;
+            $product->is_on_sale = $product_prices->is_on_sale ?? null;
+            $product->promotion_id = $product_prices->promotion_id ?? null;
+            $product->promotion = $product_prices->promotion ?? null;
+            
+            // $product->promotion = null;
+            // $product->promotion_id = null;
+        }
+    }
+
+    private function set_product_details($product, $item_enrichment, $item, $ignore_image){
+
+        $rating_review = $item->rating_review;
+
+        $product_site_id = $item->sku_id;
+        $product->site_product_id = $product_site_id;
+        $product->store_type_id = $this->store_type_id;
+
+        $product->total_reviews_count = $rating_review->total_review_count;
+        $product->avg_rating          = $rating_review->avg_star_rating;
+
+        $product->url = "https://groceries.asda.com/product/{$item->sku_id}";
+
+        $image_id = $item->images->scene7_id;
+
+        if(!$ignore_image){
+            $product->large_image = $this->product_image($product_site_id, $image_id,400,'large');
+            if(!is_null($product->large_image)){
+                $product->small_image = $this->product_image($product_site_id, $image_id,200,'small');
+            }
+        }
+
+        $product->brand = $item->brand;
+        $product->allergen_info = $item_enrichment->allergy_info_formatted_web ?? NULL;
+
+        $product->storage = $item_enrichment->storage ?? NULL;
+
+        if($item->extended_item_info->weight){
+            $product->weight = $item->extended_item_info->weight;
+        }
+
     }
 
 }

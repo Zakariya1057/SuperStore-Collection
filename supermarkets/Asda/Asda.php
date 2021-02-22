@@ -3,7 +3,6 @@
 namespace Supermarkets\Asda;
 
 use Exception;
-use Illuminate\Session\Store;
 use Models\Store\StoreTypeModel;
 use Monolog\Logger;
 use Services\Config;
