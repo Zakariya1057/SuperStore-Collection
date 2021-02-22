@@ -74,6 +74,13 @@ class AsdaRecommended extends Asda {
             $recommended = new RecommendedModel($this->database);
 
             foreach($results as $item){
+
+                if($item->id == 1000197472184){
+                    // ASDA Grower's Selection 7 Bananas
+                    $this->logger->debug('Ignore banana recommened item. Return on unrelated random items so ignore from here on out');
+                    continue;
+                }
+
                 $new_prduct_details = $product->where(['site_product_id' => $item->id])->get()[0] ?? null;
 
                 if(!is_null($new_prduct_details)){
