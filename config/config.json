@@ -181,19 +181,43 @@
         }
     },
 
-    "asda": {
-        "run": 1,
+    "stores": {
 
-        "monitor": 1,
-
-        "stores": 0,
-
-        "groceries": 1,
-        "recommended": 1,
-        "reviews": 1,
+        "asda": {
         
-        "store_type_id": 1,
-        "user_id": 1
+            "name": "Asda",
+    
+            "run": 1,
+    
+            "monitor": 0,
+    
+            "stores": 1,
+    
+            "groceries": 1,
+            "recommended": 1,
+            "reviews": 1,
+            
+            "store_type_id": 1,
+            "user_id": 1
+        },
+
+        "canadian_superstore": {
+        
+            "name": "Real Canadian SuperStore",
+    
+            "run": 1,
+    
+            "monitor": 0,
+    
+            "stores": 1,
+    
+            "groceries": 1,
+            "recommended": 1,
+            "reviews": 1,
+            
+            "store_type_id": 2,
+            "user_id": 2
+        }
     },
 
     "endpoints": {
@@ -211,6 +235,10 @@
                 "https://storelocator.asda.com/?q=52.57038499999999,-1.824042&qp=Sutton%20Coldfield,%20UK&l=en",
                 "https://storelocator.asda.com/?q=52.410447,-1.819373&qp=Shirley,%20Solihull,%20UK&l=en"
             ]
+        },
+
+        "canadian_superstore": {
+
         }
 
     },

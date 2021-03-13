@@ -24,9 +24,7 @@ class Remember {
     }
 
     public function get($name){
-        //Get Details About Last Run
         $value = $this->{$name};
-        // $this->logger->debug("Getting $name: $value");
         return $value;
     }
 

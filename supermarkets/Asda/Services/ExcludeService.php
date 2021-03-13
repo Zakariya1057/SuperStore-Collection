@@ -10,7 +10,6 @@ class ExcludeService {
         $this->exclusions = $exclusions;
     }
 
-    //Shared Functionality
     public function include_category($category_name){
         $inclusion_list = join('|',$this->exclusions->categories->include);
         preg_match("/$inclusion_list/i",$category_name,$category_matches);
@@ -44,7 +43,6 @@ class ExcludeService {
     }
 
     public function product_possible_haram($product_name){
-        // $exclusions_list = join('|', $this->exclusions->products->check );
         $exclusions_list = $this->match_whole( $this->exclusions->products->check );
 
         preg_match("/$exclusions_list/i",$product_name,$product_matches);
@@ -60,7 +58,6 @@ class ExcludeService {
     public function haram_ingredients($ingredients){
 
         foreach($ingredients as $ingredient_name){
-            // $exclusions_list = join('|',$this->exclusions->ingredients->exclude);
             $exclusions_list = $this->match_whole( $this->exclusions->ingredients->exclude );
             preg_match("/$exclusions_list/i",$ingredient_name,$haram_matches);
 

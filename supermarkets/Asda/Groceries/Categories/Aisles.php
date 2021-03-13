@@ -25,10 +25,10 @@ class Aisles extends Categories {
         $aisle_details = $this->select_category($aisle,"child");
         $this->logger->notice("--- Aisle: $aisle_details->name");
 
-        if($this->exclude_service->exclude_category($aisle_details->name)){
-            $this->logger->error('Exluding Haram Category');
-            return;
-        }
+        // if($this->exclude_service->exclude_category($aisle_details->name)){
+            // $this->logger->error('Exluding Haram Category');
+            // return;
+        // }
 
         $aisle_details->grand_parent_category_id = $grand_parent_category_id;
         $aisle_details->parent_category_id = $parent_category_id;

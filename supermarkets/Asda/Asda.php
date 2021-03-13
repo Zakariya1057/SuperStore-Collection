@@ -30,11 +30,12 @@ class Asda {
         $sanitize,
         $store_type_id,
         $user_id,
+        $store_name,
         $city,
         $exclusions,
         $remember,
-        $image,
-        $exclude_service;
+        $image;
+        // $exclude_service;
     
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null){
         $this->request = new Requests($config,$logger);
@@ -42,7 +43,7 @@ class Asda {
         $this->config  = $config;
         $this->database = $database;
 
-        $asda_conf = $this->config->get('asda');
+        $asda_conf = $this->config->get('stores.asda');
 
         $this->endpoints = $this->config->get('endpoints')->asda;
         $this->env = $this->config->get('env');
@@ -51,12 +52,14 @@ class Asda {
 
         $this->store_type_id = $asda_conf->store_type_id;
         $this->user_id = $asda_conf->user_id;
+        $this->store_name = $asda_conf->store_name;
+
         $this->city = $config->get('city');
         $this->remember = $remember;
 
         $this->image = new Image($config,$logger,$this->request);
 
-        $this->exclude_service = new ExcludeService( $config->get('exclusions') );
+        // $this->exclude_service = new ExcludeService( $config->get('exclusions') );
 
     }
 
@@ -67,8 +70,8 @@ class Asda {
 
         if(is_null($store)){
             $store_type->id = $this->store_type_id;
-            $store_type->name = 'Asda';
-            $store_type->user_id = 1;
+            $store_type->name = $this->store_name;
+            $store_type->user_id = $this->user_id;
             $store_type->large_logo = $this->image->save('asda','https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','large','logos');
             $store_type->small_logo =  $this->image->save('asda','https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','small','logos');
             $store_type->save();  

@@ -78,14 +78,6 @@ class Validator extends Sanitize {
         
     }
 
-    public function field_length(){
-        
-    }
-
-    public function field_regex(){
-
-    }
-
 }
 
 ?>

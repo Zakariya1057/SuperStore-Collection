@@ -46,7 +46,7 @@ class Categories extends Asda {
     }
 
     public function create_category($category_item){
-        if($this->exclude_service->include_category($category_item->displayName)){
+        // if($this->exclude_service->include_category($category_item->displayName)){
             $this->logger->debug('Category Not Excluded: '. $category_item->displayName);
 
             $category_details = $this->select_category($category_item,'grand_parent');
@@ -69,9 +69,9 @@ class Categories extends Asda {
                 $this->remember->set('parent_category_index',0);
 
             }
-        } else {
-            $this->logger->notice('Category Excluded: '. $category_item->displayName );
-        }
+        // } else {
+        //     $this->logger->notice('Category Excluded: '. $category_item->displayName );
+        // }
 
     }
 

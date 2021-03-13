@@ -237,56 +237,58 @@ class Products extends Asda {
 
     private function is_haram($product, $item_enrichment, $product_details): bool {
                 
-        $name = $product->name;
+        // $name = $product->name;
 
-        if(property_exists($item_enrichment,'alcohol') && $item_enrichment->alcohol != ""){
-            $this->logger->debug('Haram Alcholol Product Found: '. $name);
-            return true;
-        }
+        // if(property_exists($item_enrichment,'alcohol') && $item_enrichment->alcohol != ""){
+        //     $this->logger->debug('Haram Alcholol Product Found: '. $name);
+        //     return true;
+        // }
 
-        if(!$this->exclude_service->exclude_product($name)){
-            $this->logger->debug('Stage 1. Product Not Exluded: '. $name);
-        } else {
-            $this->logger->debug('Stage 1. Product Exluded: '. $name);
-            return true;
-        }
+        // if(!$this->exclude_service->exclude_product($name)){
+        //     $this->logger->debug('Stage 1. Product Not Exluded: '. $name);
+        // } else {
+        //     $this->logger->debug('Stage 1. Product Exluded: '. $name);
+        //     return true;
+        // }
 
-        preg_match("/halal/i",$product->dietary_info,$halal_matches);
-        preg_match("/vegetarian|vegan/i",$product->dietary_info,$vegan_matches);
+        // preg_match("/halal/i",$product->dietary_info,$halal_matches);
+        // preg_match("/vegetarian|vegan/i",$product->dietary_info,$vegan_matches);
 
-        //Check product name, if matches possible haram then double check
-        if(!$this->exclude_service->product_possible_haram($name)){
-            $this->logger->debug('Stage 2. Product Halal '. $name);
-        } else {
+        // //Check product name, if matches possible haram then double check
+        // if(!$this->exclude_service->product_possible_haram($name)){
+        //     $this->logger->debug('Stage 2. Product Halal '. $name);
+        // } else {
             
-            $this->logger->debug('Stage 2. Product Maybe Haram. Halal/Vegan/Vegetarian Check');
+        //     $this->logger->debug('Stage 2. Product Maybe Haram. Halal/Vegan/Vegetarian Check');
 
-            if(!is_null($product->dietary_info)){
-                if($halal_matches || $vegan_matches){
-                    $this->logger->debug('Stage 2A. Product Halal');
-                } else {
-                    $this->logger->debug('Stage 2. Product Haram: '. $name);
-                    return true;
-                }
-            } else {
-                $this->logger->debug('Stage 2. Product Haram: '. $name);
-                return true;
-            }
+        //     if(!is_null($product->dietary_info)){
+        //         if($halal_matches || $vegan_matches){
+        //             $this->logger->debug('Stage 2A. Product Halal');
+        //         } else {
+        //             $this->logger->debug('Stage 2. Product Haram: '. $name);
+        //             return true;
+        //         }
+        //     } else {
+        //         $this->logger->debug('Stage 2. Product Haram: '. $name);
+        //         return true;
+        //     }
            
-        }
+        // }
 
-        if(!$halal_matches){
-            //Check product ingredients, if pork/alcohol found then exlucde.
-            $ingredients = $this->ingredients_list($product_details);
-            if($this->exclude_service->haram_ingredients($ingredients)){
-                $this->logger->debug('Stage 3. Haram Ingredients Found: '. $name);
-                return true;
-            } else {
-                $this->logger->debug('Stage 3. No Haram Ingredients Found: '. $name);
-            }
-        } else {
-            $this->logger->debug('Halal/Vegan/Vegetarian Found In Product Name');
-        }
+        // if(!$halal_matches){
+        //     //Check product ingredients, if pork/alcohol found then exlucde.
+        //     $ingredients = $this->ingredients_list($product_details);
+        //     if($this->exclude_service->haram_ingredients($ingredients)){
+        //         $this->logger->debug('Stage 3. Haram Ingredients Found: '. $name);
+        //         return true;
+        //     } else {
+        //         $this->logger->debug('Stage 3. No Haram Ingredients Found: '. $name);
+        //     }
+        // } else {
+        //     $this->logger->debug('Halal/Vegan/Vegetarian Found In Product Name');
+        // }
+
+        return false;
 
     }
 
