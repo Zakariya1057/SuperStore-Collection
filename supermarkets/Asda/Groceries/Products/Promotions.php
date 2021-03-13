@@ -94,7 +94,7 @@ class Promotions extends Asda {
             $promotion->name = $promotion_info->name;
             $promotion->category =$promotion_info->category;
 
-            $promotion->store_type_id = $this->config->get('asda.store_type_id');
+            $promotion->store_type_id = $this->config->get('stores.asda.store_type_id');
             $promotion->site_promotion_id = $promotion_site_id;
             $promotion->url = "https://groceries.asda.com/promotion/$promotion_name/$promotion_site_id";
             
@@ -127,7 +127,7 @@ class Promotions extends Asda {
         $promotion_url = $this->endpoints->promotions . $promotion_site_id;
 
         if($this->env == 'dev'){
-            $promotion_response = file_get_contents(__DIR__."/../../Data/Asda/Promotion.json");
+            $promotion_response = file_get_contents(__DIR__."/../../data/Asda/Promotion.json");
         } else {
             $promotion_response = $this->request->request($promotion_url);
         }

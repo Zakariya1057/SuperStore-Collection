@@ -21,7 +21,7 @@ $logger = $logging->logger_handler;
 $database = new Database($config,$logger);
 $notification = new Notification($config, $logger);
 
-$asda_conf = $config->get('asda');
+$asda_conf = $config->get('stores.asda');
 
 $logger->notice("---------------------------- Monitor Script Start ----------------------------");
 

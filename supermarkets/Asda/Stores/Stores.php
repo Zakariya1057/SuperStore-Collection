@@ -29,7 +29,7 @@ class Stores extends Asda {
             $this->logger->notice("Finding All Stores In: $this->city");
     
             if($this->env == 'dev'){
-                $stores_response = file_get_contents(__DIR__."/../../Data/Asda/Stores.json");
+                $stores_response = file_get_contents(__DIR__."/../../data/Asda/Stores.json");
             } else {
                 $stores_response = $this->request->request($stores_endpoint,'GET',[],['accept' => 'application/json']);
             }

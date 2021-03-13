@@ -68,19 +68,22 @@ try {
         $logger->notice("---------- Asda Scraping Complete ---------- ");
     }
 
-    $asda_conf = $config->get('stores.canadian_superstore');
+    // $canadian_superstore_conf = $config->get('stores.canadian_superstore');
 
-    if($asda_conf->run){
+    // if($canadian_superstore_conf->run){
 
-        $remember->store_type_id = $asda_conf->store_type_id;
-        $remember->retrieve_data();
+    //     $remember->store_type_id = $canadian_superstore_conf->store_type_id;
+    //     $remember->retrieve_data();
 
-        $logger->notice("----------  Real Canadian Superstore Scraping Start ----------");
+    //     $logger->notice("----------  Real Canadian Superstore Scraping Start ----------");
         
-        $canadian_superstore = new CanadianSuperstore($config,$logger,$database,$remember);
 
-        $logger->notice("---------- Real Canadian Superstore Scraping Complete ---------- ");
-    }
+    //     $canadian_superstore = new CanadianSuperstore($config,$logger,$database,$remember);
+
+    //     $canadian_superstore->groceries();
+
+    //     $logger->notice("---------- Real Canadian Superstore Scraping Complete ---------- ");
+    // }
 
 } catch(Exception $e){
     $error_message = $e->getMessage();

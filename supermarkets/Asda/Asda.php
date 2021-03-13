@@ -52,7 +52,7 @@ class Asda {
 
         $this->store_type_id = $asda_conf->store_type_id;
         $this->user_id = $asda_conf->user_id;
-        $this->store_name = $asda_conf->store_name;
+        $this->store_name = $asda_conf->name;
 
         $this->city = $config->get('city');
         $this->remember = $remember;

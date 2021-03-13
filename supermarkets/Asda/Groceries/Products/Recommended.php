@@ -58,7 +58,7 @@ class Recommended extends Asda {
         $recommendation_endpoint = $this->endpoints->recommended . $site_product_id;
 
         if($this->env == 'dev'){
-            $recommended_response = file_get_contents(__DIR__."/../../Data/Asda/Recommendations.json");
+            $recommended_response = file_get_contents(__DIR__."/../../data/Asda/Recommendations.json");
         } else {
             $recommended_response = $this->request->request($recommendation_endpoint);
         }

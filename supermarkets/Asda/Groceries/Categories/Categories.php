@@ -4,75 +4,16 @@ namespace Supermarkets\Asda\Groceries\Categories;
 
 use Exception;
 use Models\Category\CategoryModel;
-use Models\Category\CategoryProductModel;
 use Models\Category\ChildCategoryModel;
 use Models\Category\GrandParentCategoryModel;
 use Models\Category\ParentCategoryModel;
-use Monolog\Logger;
-use Services\Config;
-use Services\Database;
-use Services\Remember;
 use Supermarkets\Asda\Asda;
 
 class Categories extends Asda {
 
-    public $departments;
-
-    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null){
-        parent::__construct($config,$logger,$database,$remember);
-    }
-
     public function categories($categories){
-
-        $this->departments = new Departments($this->config,$this->logger,$this->database,$this->remember);
-
-        $last_category_index = $this->remember->get('grand_parent_category_index') ?? 0;
-        
-        $categories_list = array_slice($categories->categories,$last_category_index);
-
-        if(count($categories_list) != 0){
-
-            $first_category = $categories_list[0];
-            $this->logger->notice("Starting With Grand Parent Category: [$last_category_index] " . $first_category->displayName);
-    
-            foreach($categories_list as $index => $category_item){
-                $this->remember->set('grand_parent_category_index',$index + $last_category_index);
-                $this->create_category($category_item);
-            }
-
-            $this->remember->set('grand_parent_category_index',0);
-        }
-
-    }
-
-    public function create_category($category_item){
-        // if($this->exclude_service->include_category($category_item->displayName)){
-            $this->logger->debug('Category Not Excluded: '. $category_item->displayName);
-
-            $category_details = $this->select_category($category_item,'grand_parent');
-            $this->logger->notice("- Category: $category_details->name");
-            
-            $last_category_index = $this->remember->get('parent_category_index') ?? 0;
-
-            $categories_list = array_slice($category_item->subcategories,$last_category_index);
-
-            if(count($categories_list) != 0){
-                $first_category = $categories_list[0];
-                $this->logger->notice("Starting With Parent Category: [$last_category_index] " . $first_category->displayName);
-    
-                foreach($categories_list as $index => $department){
-                    $this->remember->set('parent_category_index',$index + $last_category_index);
-                    // $this->create_department($department,$category_details->id);
-                    $this->departments->create($department,$category_details->id);
-                }
-                
-                $this->remember->set('parent_category_index',0);
-
-            }
-        // } else {
-        //     $this->logger->notice('Category Excluded: '. $category_item->displayName );
-        // }
-
+        $grand_parent_categories = new GrandParentCategories($this->config, $this->logger, $this->database, $this->remember);
+        $grand_parent_categories->create_categories($categories);
     }
 
     public function select_category($category,$type){

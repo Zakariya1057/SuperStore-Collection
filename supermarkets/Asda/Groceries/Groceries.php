@@ -34,7 +34,7 @@ class Groceries extends Asda {
         $groceries_endpoint = $this->endpoints->groceries;
 
         if($this->env == 'dev'){
-            $groceries_response = file_get_contents(__DIR__."/../../Data/Asda/Groceries.json");
+            $groceries_response = file_get_contents(__DIR__."/../../data/Asda/Groceries.json");
         } else {
             $groceries_response = $this->request->request($groceries_endpoint);
         }
