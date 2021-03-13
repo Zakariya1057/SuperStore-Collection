@@ -25,7 +25,7 @@ class Loggers {
     private function create_day_directory(){
 
         $date = date('d-m-Y');
-        $logs_directory = __DIR__."/../Logs/$date";
+        $logs_directory = __DIR__."/../logs/$date";
 
         if(!file_exists($logs_directory)){
             $oldmask = umask(0);
