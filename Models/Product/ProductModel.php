@@ -12,6 +12,7 @@ class ProductModel extends Model {
         $large_image,
         $small_image, 
         $price,
+        $currency,
         $old_price,
         $is_on_sale,
         $weight,
@@ -50,6 +51,10 @@ class ProductModel extends Model {
                 'nullable' => true
             ],
 
+            'currency' => [
+                'nullable' => true
+            ],
+
             'price' => [
                 'type' => 'price'
             ],
@@ -66,7 +71,9 @@ class ProductModel extends Model {
                 'nullable' => true
             ],
 
-            'brand' => [],
+            'brand' => [
+                'nullable' => true
+            ],
 
             'dietary_info' => [
                 'nullable' => true

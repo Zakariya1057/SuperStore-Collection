@@ -12,11 +12,6 @@ use Supermarkets\Asda\Groceries\Categories\Categories;
 
 class Groceries extends Asda {
 
-    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
-    {
-        parent::__construct($config,$logger,$database,$remember);
-    }
-
     public function groceries(){
         // Go to asda page get all categories and pass to categories
         $this->logger->notice("------- Asda Groceries Start --------");

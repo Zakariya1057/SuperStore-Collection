@@ -63,7 +63,7 @@ class ChildCategories extends Categories {
             $this->remember->set('product_index', $index + $last_product_index);
 
             $product = new Products($this->config,$this->logger,$this->database,$this->remember);
-            $product->product($product_item, $grand_parent_category_id, $category_details->parent_category_id, $category_details->id);
+            $product->create_product($product_item, $grand_parent_category_id, $category_details->parent_category_id, $category_details->id);
 
             //Between Each Products. Wait 1 Second
             sleep(1);

@@ -17,7 +17,7 @@ class Requests {
         $this->validator = new Validator();
     }
 
-    public function request($url, $method='GET',$data=[],$headers=[],$timeout=300){
+    public function request($url, $method='GET', $data=[], $headers=[], $timeout=300, $retry_attempts = null){
 
         $client = HttpClient::create();
         
@@ -30,7 +30,6 @@ class Requests {
         } else {
 
             if($method == "GET"){
-
                 $request_data = [ 'headers' => $headers,'timeout' => $timeout, 'query' => $data];
             } else {
                 $request_data = [ 'headers' => $headers,'json' => $data, 'timeout' => $timeout];
@@ -40,7 +39,7 @@ class Requests {
 
         $request_send_success = false;
 
-        $retry =  $retry_config->attempts;
+        $retry = $retry_attempts ?? $retry_config->attempts;
         
         $ignore_response = false;
 
@@ -68,6 +67,14 @@ class Requests {
                 } 
 
             } catch(Exception $e){
+
+                $this->logger->error('Times: ' . $retry);
+                // print_r($retry);
+
+                if($retry == 1){
+                    break;
+                }
+
                 $this->logger->error('Request Error: '.$e->getMessage() );
                 $this->logger->error("Waiting $wait Seconds");
                 sleep( $wait );

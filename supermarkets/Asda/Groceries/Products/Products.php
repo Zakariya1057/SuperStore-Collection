@@ -23,7 +23,7 @@ class Products extends Asda {
         $this->promotions = new Promotions($this->config,$this->logger,$this->database,$this->remember);
     }
 
-    public function product($product_site_id,$grand_parent_category_id=null, $parent_category_id=null, $child_category_id=null,$parent_site_category_name=null){
+    public function create_product($product_site_id, $grand_parent_category_id=null, $parent_category_id=null, $child_category_id=null,$parent_site_category_name=null){
         //Get product details for each product and insert into database.
 
         $this->logger->info("Product ID: $product_site_id");

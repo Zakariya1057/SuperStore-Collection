@@ -186,7 +186,7 @@
         "asda": {
         
             "name": "Asda",
-    
+
             "run": 1,
     
             "monitor": 0,
@@ -205,6 +205,8 @@
         
             "name": "Real Canadian SuperStore",
     
+            "currency": "Canadian Dollar",
+
             "run": 1,
     
             "monitor": 0,
@@ -238,7 +240,17 @@
         },
 
         "canadian_superstore": {
+            "groceries": "https://cdn.contentful.com/spaces/0dlg9rxz8nvy/environments/master/entries?content_type=navigationList&include=3",
+            
+            "categories": {
+                "v2": "https://api.pcexpress.ca/marketplace/v2/banners/superstore/products?pageSize=50&sorts=relevance&filter.category=",
+                "v3": "https://api.pcexpress.ca/v3/products/category/listing"
+            },
 
+            "products": {
+                "v2": "https://api.pcexpress.ca/marketplace/v2/banners/superstore/products/",
+                "v3": "https://api.pcexpress.ca/v3/products/"
+            }
         }
 
     },

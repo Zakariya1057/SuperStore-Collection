@@ -13,12 +13,6 @@ use Supermarkets\Asda\Asda;
 
 class Promotions extends Asda {
 
-    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
-    {
-        parent::__construct($config,$logger,$database,$remember);
-    }
-
-
     public function product_prices($product_data){
 
         $promotion_info = $product_data->promotion_info[0];

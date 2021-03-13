@@ -15,11 +15,6 @@ use Supermarkets\Asda\Asda;
 
 class Stores extends Asda {
 
-    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
-    {
-        parent::__construct($config,$logger,$database,$remember);
-    }
-
     public function stores(){
 
         foreach($this->endpoints->stores as $store_url ){

@@ -32,58 +32,59 @@ if($config->get('env') == 'dev'){
 
 try {
 
-    $asda_conf = $config->get('stores.asda');
+    // $asda_conf = $config->get('stores.asda');
 
-    if($asda_conf->run){
+    // if($asda_conf->run){
 
-        $remember->store_type_id = $asda_conf->store_type_id;
-        $remember->retrieve_data();
-
-        $logger->notice("----------  Asda Scraping Start ----------");
-        
-        $asda = new Asda($config,$logger,$database,$remember);
-    
-        // Generate Asda Store Type
-        $asda->store_type();
-
-        if($asda_conf->stores){
-            //Get all stores in given city
-            $asda->stores();
-        }
-    
-        if($asda_conf->groceries){
-            //Get all product sold on site
-            $asda->groceries();
-        }
-    
-        if($asda_conf->recommended){
-            //Get all similar Products.
-            $asda->recommended();
-        }
-
-        if($asda_conf->reviews){
-            $asda->reviews();
-        }
-
-        $logger->notice("---------- Asda Scraping Complete ---------- ");
-    }
-
-    // $canadian_superstore_conf = $config->get('stores.canadian_superstore');
-
-    // if($canadian_superstore_conf->run){
-
-    //     $remember->store_type_id = $canadian_superstore_conf->store_type_id;
+    //     $remember->store_type_id = $asda_conf->store_type_id;
     //     $remember->retrieve_data();
 
-    //     $logger->notice("----------  Real Canadian Superstore Scraping Start ----------");
+    //     $logger->notice("----------  Asda Scraping Start ----------");
         
+    //     $asda = new Asda($config,$logger,$database,$remember);
+    
+    //     // Generate Asda Store Type
+    //     $asda->store_type();
 
-    //     $canadian_superstore = new CanadianSuperstore($config,$logger,$database,$remember);
+    //     if($asda_conf->stores){
+    //         //Get all stores in given city
+    //         $asda->stores();
+    //     }
+    
+    //     if($asda_conf->groceries){
+    //         //Get all product sold on site
+    //         $asda->groceries();
+    //     }
+    
+    //     if($asda_conf->recommended){
+    //         //Get all similar Products.
+    //         $asda->recommended();
+    //     }
 
-    //     $canadian_superstore->groceries();
+    //     if($asda_conf->reviews){
+    //         $asda->reviews();
+    //     }
 
-    //     $logger->notice("---------- Real Canadian Superstore Scraping Complete ---------- ");
+    //     $logger->notice("---------- Asda Scraping Complete ---------- ");
     // }
+
+    $canadian_superstore_conf = $config->get('stores.canadian_superstore');
+
+    if($canadian_superstore_conf->run){
+
+        $remember->store_type_id = $canadian_superstore_conf->store_type_id;
+        $remember->retrieve_data();
+
+        $logger->notice("----------  Real Canadian Superstore Scraping Start ----------");
+
+        $canadian_superstore = new CanadianSuperstore($config,$logger,$database,$remember);
+
+        $canadian_superstore->store_type();
+
+        $canadian_superstore->groceries();
+
+        $logger->notice("---------- Real Canadian Superstore Scraping Complete ---------- ");
+    }
 
 } catch(Exception $e){
     $error_message = $e->getMessage();

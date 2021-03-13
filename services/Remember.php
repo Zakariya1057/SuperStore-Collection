@@ -61,7 +61,6 @@ class Remember {
                 $this->child_category_index = $details->child_category_index;
                 $this->product_index = $details->product_index;
             }
-
         }
 
     }
