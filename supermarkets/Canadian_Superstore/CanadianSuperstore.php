@@ -14,6 +14,7 @@ use Services\Sanitize;
 
 use Supermarkets\Canadian_Superstore\Groceries\Groceries;
 use Supermarkets\Canadian_Superstore\Groceries\Products\Recommended;
+use Supermarkets\Canadian_Superstore\Stores\Stores;
 
 class CanadianSuperstore {
 
@@ -69,8 +70,8 @@ class CanadianSuperstore {
             $store_type->id = $this->store_type_id;
             $store_type->name = $this->store_name;
             $store_type->user_id = $this->user_id;
-            $store_type->large_logo = $this->image->save($this->store_name,'https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','large','logos',$this->store_name);
-            $store_type->small_logo =  $this->image->save($this->store_name,'https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','small','logos',$this->store_name);
+            $store_type->large_logo = $this->image->save('logo','https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','large','logos',$this->store_name);
+            $store_type->small_logo =  $this->image->save('logo','https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','small','logos',$this->store_name);
             $store_type->save();  
         }
  
@@ -78,12 +79,17 @@ class CanadianSuperstore {
 
     public function groceries(){
         $groceries = new Groceries($this->config,$this->logger,$this->database,$this->remember);
-        $groceries->groceries();
+        $groceries->create_groceries();
     }
 
     public function recommended(){
         $groceries = new Recommended($this->config,$this->logger,$this->database,$this->remember);
         $groceries->create_recommended();
+    }
+
+    public function stores(){
+        $groceries = new Stores($this->config,$this->logger,$this->database,$this->remember);
+        $groceries->create_stores();
     }
 }
 

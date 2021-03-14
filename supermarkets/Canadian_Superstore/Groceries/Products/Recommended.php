@@ -3,27 +3,29 @@
 namespace Supermarkets\Canadian_Superstore\Groceries\Products;
 
 use Exception;
+use Models\Category\Childcategory_model;
 use Models\Category\ChildCategoryModel;
 use Models\Product\product;
+use Models\Product\product_model;
 use Models\Product\ProductModel;
 use Models\Product\RecommendedModel;
 use Supermarkets\Canadian_Superstore\CanadianSuperstore;
 
 class Recommended extends CanadianSuperstore {
 
-    private $productModel, $categoryModel, $product;
+    private $product_model, $category_model, $product;
     
     public function create_recommended(){
         
-        $this->productModel = new ProductModel($this->database);
-        $this->categoryModel = new ChildCategoryModel($this->database);
+        $this->product_model = new ProductModel($this->database);
+        $this->category_model = new ChildCategoryModel($this->database);
 
         $this->product = new Products($this->config,$this->logger,$this->database,$this->remember);
 
         // Loop through all product in database without related products and set their related products.
         $this->logger->notice('------ Product Recommended Start ---------');
 
-        $products_without_recommended = $this->productModel->select(['id','site_product_id','name'])->where(['store_type_id' => $this->store_type_id, 'recommended_searched' => null])->order_by('id','ASC')->get();
+        $products_without_recommended = $this->product_model->select(['id','site_product_id','name'])->where(['store_type_id' => $this->store_type_id, 'recommended_searched' => null])->order_by('id','ASC')->get();
         
         if($products_without_recommended){
 
@@ -76,7 +78,7 @@ class Recommended extends CanadianSuperstore {
             foreach($recommended_products as $product_data){
                 $recommended = new RecommendedModel($this->database);
 
-                $product_results = $this->productModel->where(['site_product_id' => $product_data->code])->get()[0] ?? null;
+                $product_results = $this->product_model->where(['site_product_id' => $product_data->code])->get()[0] ?? null;
 
                 if(is_null($product_results)){
                     // New product, check to see if any existing categories found. For each found category, create it under.
@@ -93,7 +95,7 @@ class Recommended extends CanadianSuperstore {
                         continue;
                     }
 
-                    $category_results = $this->categoryModel
+                    $category_results = $this->category_model
                     ->select([
                         'child_categories.id as id', 
                         'parent_categories.parent_category_id as parent_category_id', 
@@ -146,7 +148,7 @@ class Recommended extends CanadianSuperstore {
             $this->logger->error('No Related Products Found: ' . $site_product_id);
         }
 
-        $this->productModel->where(['id' => $product_id])->update(['recommended_searched' => 1]);
+        $this->product_model->where(['id' => $product_id])->update(['recommended_searched' => 1]);
 
     }
     

@@ -11,7 +11,7 @@ class Groceries extends CanadianSuperstore {
 
     private $header_token = "JoEeGjT-gSp5ExLPhRnA1o-ARRuF3gcp2kSAGqGk7D0";
 
-    public function groceries(){
+    public function create_groceries(){
         // Go to superstore page get all categories and pass to categories
         $this->logger->notice("------- Real Canadian Superstore Groceries Start --------");
         

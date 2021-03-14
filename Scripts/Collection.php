@@ -89,6 +89,10 @@ try {
             $canadian_superstore->recommended();
         }
 
+        if($canadian_superstore_conf->stores){
+            $canadian_superstore->stores();
+        }
+
         $logger->notice("---------- Real Canadian Superstore Scraping Complete ---------- ");
     }
 

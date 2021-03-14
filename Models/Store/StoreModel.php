@@ -7,7 +7,7 @@ use Models\Model;
 
 class StoreModel extends Model {
 
-    public $name, $description, $store_image, $uber_url, $google_url, $url, $store_site_id, $store_type_id;
+    public $name, $description, $manager, $telephone, $store_image, $uber_url, $google_url, $url, $site_store_id, $store_type_id;
 
     function __construct($database=null){
 
@@ -58,9 +58,16 @@ class StoreModel extends Model {
                 ]
             ],
 
-
-            'store_site_id' => [
+            'site_store_id' => [
                 'type' => 'int',
+            ],
+
+            'manager' => [
+                'nullable' => true,
+            ],
+
+            'telephone' => [
+                'nullable' => true,
             ],
 
             'store_type_id' => [

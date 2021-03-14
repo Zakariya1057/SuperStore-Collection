@@ -70,14 +70,14 @@ class Stores extends Asda {
         $uber_url = $store_item->derivedData->uber->url ?? NULL;
         $google_url = $store_item->listings->googleMyBusiness->url ?? NULL;
 
-        $store_results = $store->where(['store_site_id' => $id])->get()[0] ?? null;
+        $store_results = $store->where(['site_store_id' => $id])->get()[0] ?? null;
 
         if(is_null($store_results) || $retrieve){
             $this->logger->debug("New Store: $name ($id)");
 
             $new_store = $store;
             $new_store->name = $name;
-            $new_store->store_site_id = $id;
+            $new_store->site_store_id = $id;
             $new_store->store_type_id = $this->store_type_id;
             $new_store->description = $description;
             $new_store->store_image = 

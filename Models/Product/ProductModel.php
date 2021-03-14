@@ -50,6 +50,7 @@ class ProductModel extends Model {
                 'nullable' => true,
                 'exclude_sanitize' => true
             ],
+            
             'dimensions' => [
                 'nullable' => true,
                 'exclude_sanitize' => true
