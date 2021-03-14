@@ -23,11 +23,11 @@ class Categories extends CanadianSuperstore {
         $category_store_id = $category->id;
         $category_name = $category->name;
         $parent_category_id = $category->parent_category_id ?? null;
-        $category_number = $category->category_number ?? null;
+        $category_number = $category->number ?? null;
 
         $insert_fields = [
             'name' => $category_name,
-            'site_category_id' => $category_store_id,
+            'site_category_id' => $category_number,
             'parent_category_id' => $parent_category_id,
             'store_type_id' => $this->store_type_id 
         ];
@@ -55,7 +55,7 @@ class Categories extends CanadianSuperstore {
             $category_item = new CategoryModel();
             $category_item->id = $category_insert_id;
             $category_item->name = $category_name;
-            $category_item->site_category_id = $category_store_id;
+            $category_item->site_category_id = $category_number;
             $category_item->parent_category_id = $parent_category_id;
 
             return $category_item;

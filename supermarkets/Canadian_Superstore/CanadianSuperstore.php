@@ -13,6 +13,7 @@ use Services\Requests;
 use Services\Sanitize;
 
 use Supermarkets\Canadian_Superstore\Groceries\Groceries;
+use Supermarkets\Canadian_Superstore\Groceries\Products\Recommended;
 
 class CanadianSuperstore {
 
@@ -78,6 +79,11 @@ class CanadianSuperstore {
     public function groceries(){
         $groceries = new Groceries($this->config,$this->logger,$this->database,$this->remember);
         $groceries->groceries();
+    }
+
+    public function recommended(){
+        $groceries = new Recommended($this->config,$this->logger,$this->database,$this->remember);
+        $groceries->create_recommended();
     }
 }
 

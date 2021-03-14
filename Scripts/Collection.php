@@ -81,7 +81,13 @@ try {
 
         $canadian_superstore->store_type();
 
-        $canadian_superstore->groceries();
+        if($canadian_superstore_conf->groceries){
+            $canadian_superstore->groceries();
+        }
+        
+        if($canadian_superstore_conf->recommended){
+            $canadian_superstore->recommended();
+        }
 
         $logger->notice("---------- Real Canadian Superstore Scraping Complete ---------- ");
     }

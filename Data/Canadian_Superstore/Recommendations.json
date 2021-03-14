@@ -1,0 +1,265 @@
+{
+    "popularProducts": [],
+    "relatedProducts": [
+        {
+            "code": "21290707_EA",
+            "name": "Fsan Tofu Extra Firm Plain",
+            "description": "",
+            "brand": "Fontaine Sante",
+            "subBrand": null,
+            "link": "/Food/Deli/Vegan-%26-Vegetarian/Meat-Alternatives/Fontaine-Sante-Fsan-Tofu-Extra-Firm-Plain/p/21290707_EA",
+            "imageAssets": [
+                {
+                    "smallUrl": "https://assets.shop.loblaws.ca/products/21290707/b1/en/front/21290707_front_a01.png",
+                    "mediumUrl": "https://assets.shop.loblaws.ca/products/21290707/b1/en/front/21290707_front_a01.png",
+                    "largeUrl": "https://assets.shop.loblaws.ca/products/21290707/b1/en/front/21290707_front_a01.png",
+                    "smallRetinaUrl": "https://assets.shop.loblaws.ca/products/21290707/b1/en/front/21290707_front_a01.png",
+                    "mediumRetinaUrl": "https://assets.shop.loblaws.ca/products/21290707/b1/en/front/21290707_front_a01.png",
+                    "largeRetinaUrl": "https://assets.shop.loblaws.ca/products/21290707/b1/en/front/21290707_front_a01.png",
+                    "altText": null
+                }
+            ],
+            "packageSize": "400 g",
+            "shoppable": true,
+            "prices": {
+                "price": {
+                    "value": 2.98,
+                    "unit": "ea",
+                    "quantity": 1
+                },
+                "wasPrice": null,
+                "comparisonPrices": [
+                    {
+                        "value": 0.75,
+                        "unit": "g",
+                        "quantity": 100
+                    }
+                ]
+            },
+            "pricingUnits": {
+                "type": "SOLD_BY_EACH",
+                "unit": "ea",
+                "interval": 1.0,
+                "minOrderQuantity": 1,
+                "maxOrderQuantity": 999,
+                "weighted": false
+            },
+            "badges": {
+                "textBadge": {
+                    "type": "TEXT",
+                    "text": "New",
+                    "expiryDate": null
+                },
+                "loyaltyBadge": null,
+                "dealBadge": null
+            },
+            "loyaltyPoints": null,
+            "loyaltyExpirationDate": null,
+            "promotions": [],
+            "countryOfOrigin": null,
+            "ingredients": null,
+            "nutritionFacts": null,
+            "nutritionFactsList": null,
+            "healthTips": null,
+            "safetyTips": null,
+            "breadcrumbs": null,
+            "upcs": [],
+            "limitPrices": null,
+            "averageWeight": null,
+            "productNutritionDisclaimer": null,
+            "stockStatus": null
+        },
+        {
+            "code": "21042731_EA",
+            "name": "Bacon Maple Flavour Tempeh",
+            "description": "A great option for vegetarians, this fermented soy bean cake is firm yet tender, with a mild, nutty flavour. It comes pre-sliced and marinated in sauce for a delightful smoky-sweet taste throughout. Ideal for easy, speedy meals, simply pan-fry and enjoy with eggs for breakfast, in a wrap at lunch, or add to stir-fries for dinner. A source of protein, iron and calcium.",
+            "brand": "PC Blue Menu",
+            "subBrand": null,
+            "link": "/Food/Deli/Vegan-%26-Vegetarian/Vegan-or-Vegetarian-Cheese/PC-Blue-Menu-Bacon-Maple-Flavour-Tempeh/p/21042731_EA",
+            "imageAssets": [
+                {
+                    "smallUrl": "https://assets.shop.loblaws.ca/products/21042731/b1/en/front/21042731_front_a01.png",
+                    "mediumUrl": "https://assets.shop.loblaws.ca/products/21042731/b1/en/front/21042731_front_a01.png",
+                    "largeUrl": "https://assets.shop.loblaws.ca/products/21042731/b1/en/front/21042731_front_a01.png",
+                    "smallRetinaUrl": "https://assets.shop.loblaws.ca/products/21042731/b1/en/front/21042731_front_a01.png",
+                    "mediumRetinaUrl": "https://assets.shop.loblaws.ca/products/21042731/b1/en/front/21042731_front_a01.png",
+                    "largeRetinaUrl": "https://assets.shop.loblaws.ca/products/21042731/b1/en/front/21042731_front_a01.png",
+                    "altText": null
+                }
+            ],
+            "packageSize": "198 g",
+            "shoppable": true,
+            "prices": {
+                "price": {
+                    "value": 4.68,
+                    "unit": "ea",
+                    "quantity": 1
+                },
+                "wasPrice": null,
+                "comparisonPrices": [
+                    {
+                        "value": 2.36,
+                        "unit": "g",
+                        "quantity": 100
+                    }
+                ]
+            },
+            "pricingUnits": {
+                "type": "SOLD_BY_EACH",
+                "unit": "ea",
+                "interval": 1.0,
+                "minOrderQuantity": 1,
+                "maxOrderQuantity": 999,
+                "weighted": false
+            },
+            "badges": {
+                "textBadge": null,
+                "loyaltyBadge": null,
+                "dealBadge": null
+            },
+            "loyaltyPoints": null,
+            "loyaltyExpirationDate": null,
+            "promotions": [],
+            "countryOfOrigin": null,
+            "ingredients": null,
+            "nutritionFacts": null,
+            "nutritionFactsList": null,
+            "healthTips": null,
+            "safetyTips": null,
+            "breadcrumbs": null,
+            "upcs": [],
+            "limitPrices": null,
+            "averageWeight": null,
+            "productNutritionDisclaimer": null,
+            "stockStatus": null
+        },
+        {
+            "code": "20507160_EA",
+            "name": "Veggie Ground Round, Italian",
+            "description": "Flavoured with Italian spices and perfect for pasta sauces, lasagna, and other Italian dishes.",
+            "brand": "Yves",
+            "subBrand": null,
+            "link": "/Food/Deli/Vegan-%26-Vegetarian/Meat-Alternatives/Veggie-Ground-Round%2C-Italian/p/20507160_EA",
+            "imageAssets": [
+                {
+                    "smallUrl": "https://assets.shop.loblaws.ca/products/20507160/b1/en/front/20507160_front_a01.png",
+                    "mediumUrl": "https://assets.shop.loblaws.ca/products/20507160/b1/en/front/20507160_front_a01.png",
+                    "largeUrl": "https://assets.shop.loblaws.ca/products/20507160/b1/en/front/20507160_front_a01.png",
+                    "smallRetinaUrl": "https://assets.shop.loblaws.ca/products/20507160/b1/en/front/20507160_front_a01.png",
+                    "mediumRetinaUrl": "https://assets.shop.loblaws.ca/products/20507160/b1/en/front/20507160_front_a01.png",
+                    "largeRetinaUrl": "https://assets.shop.loblaws.ca/products/20507160/b1/en/front/20507160_front_a01.png",
+                    "altText": null
+                }
+            ],
+            "packageSize": "340 g",
+            "shoppable": true,
+            "prices": {
+                "price": {
+                    "value": 3.98,
+                    "unit": "ea",
+                    "quantity": 1
+                },
+                "wasPrice": null,
+                "comparisonPrices": [
+                    {
+                        "value": 1.17,
+                        "unit": "g",
+                        "quantity": 100
+                    }
+                ]
+            },
+            "pricingUnits": {
+                "type": "SOLD_BY_EACH",
+                "unit": "ea",
+                "interval": 1.0,
+                "minOrderQuantity": 1,
+                "maxOrderQuantity": 999,
+                "weighted": false
+            },
+            "badges": {
+                "textBadge": null,
+                "loyaltyBadge": null,
+                "dealBadge": null
+            },
+            "loyaltyPoints": null,
+            "loyaltyExpirationDate": null,
+            "promotions": [],
+            "countryOfOrigin": null,
+            "ingredients": null,
+            "nutritionFacts": null,
+            "nutritionFactsList": null,
+            "healthTips": null,
+            "safetyTips": null,
+            "breadcrumbs": null,
+            "upcs": [],
+            "limitPrices": null,
+            "averageWeight": null,
+            "productNutritionDisclaimer": null,
+            "stockStatus": null
+        },
+        {
+            "code": "21188659_EA",
+            "name": "Ll Italian Ground Canada",
+            "description": "",
+            "brand": null,
+            "subBrand": null,
+            "link": "/Food/Deli/Vegan-%26-Vegetarian/Meat-Alternatives/Lightlife-Ll-Italian-Ground-Canada/p/21188659_EA",
+            "imageAssets": [
+                {
+                    "smallUrl": "https://assets.shop.loblaws.ca/products/21188659/b1/en/front/21188659_front_a01.png",
+                    "mediumUrl": "https://assets.shop.loblaws.ca/products/21188659/b1/en/front/21188659_front_a01.png",
+                    "largeUrl": "https://assets.shop.loblaws.ca/products/21188659/b1/en/front/21188659_front_a01.png",
+                    "smallRetinaUrl": "https://assets.shop.loblaws.ca/products/21188659/b1/en/front/21188659_front_a01.png",
+                    "mediumRetinaUrl": "https://assets.shop.loblaws.ca/products/21188659/b1/en/front/21188659_front_a01.png",
+                    "largeRetinaUrl": "https://assets.shop.loblaws.ca/products/21188659/b1/en/front/21188659_front_a01.png",
+                    "altText": null
+                }
+            ],
+            "packageSize": "340 g",
+            "shoppable": true,
+            "prices": {
+                "price": {
+                    "value": 4.18,
+                    "unit": "ea",
+                    "quantity": 1
+                },
+                "wasPrice": null,
+                "comparisonPrices": [
+                    {
+                        "value": 1.23,
+                        "unit": "g",
+                        "quantity": 100
+                    }
+                ]
+            },
+            "pricingUnits": {
+                "type": "SOLD_BY_EACH",
+                "unit": "ea",
+                "interval": 1.0,
+                "minOrderQuantity": 1,
+                "maxOrderQuantity": 999,
+                "weighted": false
+            },
+            "badges": {
+                "textBadge": null,
+                "loyaltyBadge": null,
+                "dealBadge": null
+            },
+            "loyaltyPoints": null,
+            "loyaltyExpirationDate": null,
+            "promotions": [],
+            "countryOfOrigin": null,
+            "ingredients": null,
+            "nutritionFacts": null,
+            "nutritionFactsList": null,
+            "healthTips": null,
+            "safetyTips": null,
+            "breadcrumbs": null,
+            "upcs": [],
+            "limitPrices": null,
+            "averageWeight": null,
+            "productNutritionDisclaimer": null,
+            "stockStatus": null
+        }
+    ]
+}

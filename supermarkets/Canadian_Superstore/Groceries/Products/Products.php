@@ -12,38 +12,44 @@ use Supermarkets\Canadian_Superstore\CanadianSuperstore;
 
 class Products extends CanadianSuperstore {
 
-    public function create_product($product_data, $category_details, $request_type = 'v2'){
+    public function create_product($site_product_id, $category_details, $request_type = 'v2', $product_item = null){
 
-        $product = new ProductModel($this->database);
+        $this->database->start_transaction();
 
-        if($request_type == 'v2'){
-            $product = $this->parse_product_v2($product_data);
-        } else {
-            $product = $this->parse_product_v3($product_data);
-        }
-            
-        // $product = $this->product_details('1093-921-206');
+        $product = $this->product_details($site_product_id,);
 
         if(!is_null($product)){
+            $this->logger->debug("Start Creating Product: [{$product->site_product_id}] {$product->name}");
 
             $product_results = $product->where(['site_product_id' => $product->site_product_id])->get()[0] ?? null;
             // $product_results = null;
 
             if(is_null($product_results)){
-                $this->logger->debug('New Product Found. Storing In Database: ');
+                $this->logger->debug('New Product Found. Storing In Database: ' . $product->name);
                 $product_id = $product->save();
 
                 $this->create_product_category($category_details, $product_id);
                 
-                $this->create_ingredients($product_id, $product_data);
+                $this->create_ingredients($product_id, $product);
                 $this->create_images($product_id, $product->images);
             } else {
                 $this->logger->debug('Duplicate Product Found. Inserting Category Group');
-                $this->create_product_category($category_details, $product_results->id);
+                $product_id = $product_results->id;
+                $this->create_product_category($category_details, $product_id);
             }
+
+            $this->logger->debug("Complete Creating Product: [{$product->site_product_id}] {$product->name}");
+
+        } else {
+            $this->logger->debug("Product Not Found. Returning Null");
         }
 
-        // die('Complete');
+        $this->database->commit_transaction();
+
+        return $product_id;
+
+        // die('Reached: '. $product->description);
+        
     }
 
     private function create_product_category($category_details, $product_id){
@@ -58,24 +64,14 @@ class Products extends CanadianSuperstore {
         $product_categories->save();
     }
 
-    private function create_ingredients($product_id, $product_details){
-
-        $ingredients_text = $product_details->ingredients;
-
-        if(is_null($ingredients_text)){
-            return;
+    private function create_ingredients($product_id, $product){
+        if(count($product->ingredients) > 0){
+            foreach($product->ingredients as $ingredient){
+                $ingredient->product_id = $product_id;
+                $ingredient->insert_ignore = true;
+                $ingredient->save();
+            }
         }
-
-        $ingredients = preg_split('/,|\./', trim($ingredients_text));
-
-        foreach($ingredients as $ingredient_name){
-            $ingredient = new IngredientModel($this->database);
-            $ingredient->name = ucwords(strtolower($ingredient_name));
-            $ingredient->product_id = $product_id;
-            $ingredient->insert_ignore = true;
-            $ingredient->save();
-        }
-
     }
 
     private function create_images($product_id, $images){
@@ -99,16 +95,23 @@ class Products extends CanadianSuperstore {
         try {
             $product_response = $this->request->request($endpoint_v3, 'GET', [], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, 1);
             $product_details = $this->request->parse_json($product_response);
-
             $product = $this->parse_product_v3($product_details);
+
         } catch (Exception $e){
             $this->logger->debug('Product V3 Endpoint Error: ' . $product_site_id . ' -> ' . $e->getMessage());
         }
         
         if(is_null($product_response)){
-            $product_response = $this->request->request($endpoint_v2, 'GET', [], [], 300, 1);
-            $product_details = $this->request->parse_json($product_response);
-            $product = $this->parse_product_v2($product_details);
+
+            try {
+                $product_response = $this->request->request($endpoint_v2, 'GET', [], [], 300, 1);
+                $product_details = $this->request->parse_json($product_response);
+                $product = $this->parse_product_v2($product_details);
+            } catch(Exception $e){
+                $this->logger->error('Product Not Found On Either Endpoints: ' . $e->getMessage());
+                return null;
+            }
+
         }
         
         return $product;
@@ -119,7 +122,7 @@ class Products extends CanadianSuperstore {
         $product = new ProductModel($this->database);
 
         $product->name = $product_details->title;
-        $product->description = $this->set_description($product, $product_details->longDescription);
+        $this->set_description($product, $product_details->longDescription);
         $product->brand = $product_details->brand;
 
         $variant = $product_details->variants[0];
@@ -139,18 +142,19 @@ class Products extends CanadianSuperstore {
         $product->site_product_id = $product_details->productId;
 
         $product->images = [];
+        $product->ingredients = [];
 
-        foreach($price_details->media->images as $index => $image_url){
-            if($index == 0){
-                $product->small_image = $this->create_image($product->site_product_id, $image_url, 'small');
-                $product->large_image = $this->create_image($product->site_product_id, $image_url, 'large');
-            } else {
-                $image = new ProductImageModel($this->database);
-                $image->name = $this->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
-                $image->size = "large"; 
-                $product->images[] = $image;
-            }
-        }
+        // foreach($price_details->media->images as $index => $image_url){
+        //     if($index == 0){
+        //         $product->small_image = $this->create_image($product->site_product_id, $image_url, 'small');
+        //         $product->large_image = $this->create_image($product->site_product_id, $image_url, 'large');
+        //     } else {
+        //         $image = new ProductImageModel($this->database);
+        //         $image->name = $this->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
+        //         $image->size = "large"; 
+        //         $product->images[] = $image;
+        //     }
+        // }
         
         $product->currency = $this->currency;
 
@@ -171,23 +175,48 @@ class Products extends CanadianSuperstore {
         
         $product->price = $product_details->prices->price->value;
 
-        $product->description = $this->set_description($product, $product_details->description);
+        $this->set_description($product, $product_details->description);
+
         $product->brand = $product_details->brand;
         $product->url = "https://www.realcanadiansuperstore.ca" . $product_details->link;
 
         $product->images = [];
+        $product->categories = [];
 
-        foreach($product_details->imageAssets as $index => $image_asset){
-            if($index == 0){
-                $product->small_image = $this->create_image($product->site_product_id, $image_asset->smallUrl, 'small');
-                $product->large_image = $this->create_image($product->site_product_id, $image_asset->smallUrl, 'large');
-            } else {
-                $image = new ProductImageModel($this->database);
-                $image->name = $this->create_image($product->site_product_id . '_' . $index, $image_asset->smallUrl, 'large');
-                $image->size = "large"; 
-                $product->images[] = $image;
+        foreach($product_details->breadcrumbs ?? [] as $category_data){
+            $product->categories[] = $category_data->categoryCode;
+        }
+
+        $product->ingredients = [];
+
+        $ingredients_text = $product_details->ingredients;
+        if(!is_null($ingredients_text)){
+            $ingredients = preg_split('/,|\./', trim($ingredients_text));
+
+            foreach($ingredients as $ingredient_name){
+                $ingredient = new IngredientModel($this->database);
+                $name = trim(ucwords(strtolower($ingredient_name)));
+
+                if($name != ''){
+                    $ingredient->name = trim(ucwords(strtolower($ingredient_name)));
+                    $product->ingredients[] = $ingredient;
+                }
+
             }
         }
+
+
+        // foreach($product_details->imageAssets as $index => $image_asset){
+        //     if($index == 0){
+        //         $product->small_image = $this->create_image($product->site_product_id, $image_asset->smallUrl, 'small');
+        //         $product->large_image = $this->create_image($product->site_product_id, $image_asset->smallUrl, 'large');
+        //     } else {
+        //         $image = new ProductImageModel($this->database);
+        //         $image->name = $this->create_image($product->site_product_id . '_' . $index, $image_asset->smallUrl, 'large');
+        //         $image->size = "large"; 
+        //         $product->images[] = $image;
+        //     }
+        // }
 
         return $product;
     }
@@ -206,8 +235,7 @@ class Products extends CanadianSuperstore {
             
             $product->features = $this->create_description($features);
             $product->dimensions = $this->create_description($dimensions);
-
-            $product->description = $this->create_description($start_description);
+            $product->description = $this->clean_description_name($start_description);
         } else {
             $product->description = $description;
         }
@@ -215,7 +243,7 @@ class Products extends CanadianSuperstore {
     }
 
     private function create_description($description){
-        $description_list = $this->seperate_description($description);
+        $description_list = $this->seperate_description($description) ?? [$description];
 
         $description_output = [];
 

@@ -28,7 +28,7 @@ class Groceries extends CanadianSuperstore {
         $groceries_endpoint = $this->endpoints->groceries;
 
         // if($this->env == 'dev'){
-            $groceries_response = file_get_contents(__DIR__."/../../../data/Canadian_Superstore/Groceries2.json");
+            $groceries_response = file_get_contents(__DIR__."/../../../data/Canadian_Superstore/Groceries.json");
         // } else {
         //     $groceries_response = $this->request->request($groceries_endpoint, 'GET', [], ['authorization' => 'Bearer ' . $this->header_token]);
         // }

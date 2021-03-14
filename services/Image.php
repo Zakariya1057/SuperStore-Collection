@@ -106,9 +106,9 @@ class Image {
 
     private function get_image($url){
         try {
-            return $this->request->request($url);
+            return $this->request->request($url, 'GET', [], [], 300, 1);
         } catch (Exception $e){
-            $this->logger->error('Failed To Get Image');
+            $this->logger->error('Failed To Get Image: '. $e->getMessage());
             return;
         }
     }
