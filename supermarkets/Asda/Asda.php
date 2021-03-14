@@ -34,6 +34,7 @@ class Asda {
         $city,
         $exclusions,
         $remember,
+        $currency,
         $image;
         // $exclude_service;
     
@@ -59,7 +60,7 @@ class Asda {
 
         $this->image = new Image($config,$logger,$this->request);
 
-        // $this->exclude_service = new ExcludeService( $config->get('exclusions') );
+        $this->currency = $asda_conf->currency;
 
     }
 
@@ -72,8 +73,8 @@ class Asda {
             $store_type->id = $this->store_type_id;
             $store_type->name = $this->store_name;
             $store_type->user_id = $this->user_id;
-            $store_type->large_logo = $this->image->save('asda','https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','large','logos');
-            $store_type->small_logo =  $this->image->save('asda','https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','small','logos');
+            $store_type->large_logo = $this->image->save('Asda','https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','large','logos');
+            $store_type->small_logo =  $this->image->save('Asda','https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','small','logos');
             $store_type->save();  
         }
  

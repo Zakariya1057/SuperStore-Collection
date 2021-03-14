@@ -30,9 +30,10 @@ class ChildCategories extends Categories {
                 $child_category_details = $this->select_category($child_category, "child");
 
                 $child_category_details->number = $child_category->number;
+                $child_category_details->grand_parent_category_id = $grand_parent_category_id;
 
                 $this->remember->set('child_category_index',$index + $last_category_index);
-                $this->category_products($child_category_details, $grand_parent_category_id);
+                $this->category_products($child_category_details);
             }
 
             $this->remember->set('child_category_index',0);
@@ -42,7 +43,7 @@ class ChildCategories extends Categories {
     }
 
 
-    public function category_products($category_details, $grand_parent_category_id){
+    public function category_products($category_details){
 
         // Get list of all product sold on shelf. Insert new products
         $products_data = $this->create_products($category_details);
@@ -70,7 +71,7 @@ class ChildCategories extends Categories {
                 $this->remember->set('product_index', $index + $last_product_index);
     
                 $product = new Products($this->config,$this->logger,$this->database,$this->remember);
-                $product->create_product($product_details, $request_type);
+                $product->create_product($product_details, $category_details, $request_type);
     
                 // Between Each Products. Wait 1 Second
                 sleep(1);

@@ -22,7 +22,9 @@ class Image {
         $this->request = $request;
     }
 
-    public function save($name, $image_url,$size='',$type='products'){
+    public function save($name, $image_url,$size='',$type='products', $store='Asda'){
+
+        $store = str_replace(' ', '_', $store);
 
         $name = "{$name}_{$size}.jpg";
         $type = $this->type_directories($type);
@@ -36,10 +38,10 @@ class Image {
 
         if($this->img_config->saving_location == 'local'){
             $this->logger->debug('Saving Images On Local Machine');
-            $file_location = $this->store_local($name, $image,$type);
+            $file_location = $this->store_local($name, $image,$type,$store);
         } else {
             $this->logger->debug('Saving Images On AWS S3 Bucket');
-            $file_location = $this->store_aws($name, $image,$type);
+            $file_location = $this->store_aws($name, $image,$type,$store);
         }
 
         $this->logger->debug("Saving $type Images To $file_location");
@@ -47,7 +49,7 @@ class Image {
         return $file_location;
     }
 
-    private function store_local($name, $image,$type){
+    private function store_local($name, $image, $type, $store){
         //Store On Local Server
 
         $dir = __DIR__ .'/../' . $this->img_config->local->location;
@@ -57,7 +59,7 @@ class Image {
             mkdir($dir . '/' . $type, 0777, true);
         }
 
-        $relative_file_location = "$type/$name";
+        $relative_file_location = "$type/{$store}_{$name}";
 
         $file_location = "$dir/$relative_file_location";
 
@@ -68,11 +70,11 @@ class Image {
         return $relative_file_location;
     }
 
-    private function store_aws($name, $image,$type){
+    private function store_aws($name, $image, $type, $store){
         // Store On S3 Bucket
         $aws = $this->img_config->aws;
 
-        $file_location = "$type/$name";
+        $file_location = "$type/{$store}_{$name}";
 
         //Create a S3Client
         $s3Client = new S3Client([

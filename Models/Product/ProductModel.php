@@ -9,6 +9,8 @@ class ProductModel extends Model {
     public 
         $name,
         $description,
+        $features,
+        $dimensions,
         $large_image,
         $small_image, 
         $price,
@@ -41,9 +43,18 @@ class ProductModel extends Model {
             'name' => [],
 
             'description' => [
-                'nullable'=> true
+                'nullable'=> true,
             ],
             
+            'features' => [
+                'nullable' => true,
+                'exclude_sanitize' => true
+            ],
+            'dimensions' => [
+                'nullable' => true,
+                'exclude_sanitize' => true
+            ],
+
             'large_image' => [
                 'nullable' => true
             ],

@@ -32,27 +32,28 @@ class Model {
     
     public function create($data){
         $data = $this->convert_string_to_array($data);
-        // print_r($data);
 
         $table_fields_list = [];
         $insert_fields_list = [];
 
-        $data = $this->sanitize->sanitize_fields($data);
+        $sanitized_data = $this->sanitize->sanitize_fields($data);
 
-        foreach($data as $key => $value){
+        foreach($sanitized_data as $key => $value){
             $table_fields_list[] = "`$key`";
 
+            if( key_exists('exclude_sanitize', $this->table_fields[$key]) && $this->table_fields[$key]['exclude_sanitize'] ){
+                $value = $data[$key]; 
+            } 
+            
             if(is_null($value)){
                 $insert_fields_list[] = "NULL";
             } else {
                 $insert_fields_list[] = "'$value'";
             }
-            
-            $values_list[] = $value;
         }
 
         try {
-            $this->validator->validate_fields($this->table_fields,$data);
+            $this->validator->validate_fields($this->table_fields,$sanitized_data);
         } catch(Exception $e) {
             $this->logger->error("Table $this->table Validation Error: ".$e->getMessage());
             throw new Exception($e);

@@ -87,7 +87,7 @@ class Products extends Asda {
 
                 $product_categories->save();
 
-                $this->ingredients($product_id,$this->product_details);
+                $this->create_ingredients($product_id,$this->product_details);
 
                 $this->logger->notice("Complete Product Added: " . $product_details->name);
 
@@ -144,7 +144,6 @@ class Products extends Asda {
         // file_put_contents(__DIR__.'/../../ProductDetails.json',$product_response);
         // $this->logger->debug('Saving File and Parse Json Response');
 
-        //Get all product details and set them accordingly
         $product_results = $this->request->parse_json($product_response);
 
         $product_details = $product_results->data->uber_item->items[0];
@@ -170,14 +169,6 @@ class Products extends Asda {
             return null;
         }
 
-        if($this->is_haram($product,  $item_enrichment, $product_details)){
-            if(is_null($item_enrichment->nutritional_values)){
-                $this->logger->notice('Product Not Eatable. Continue');
-            } else {
-                $this->logger->notice('Product Contains Haram Ingredients And Eatable. Skipping');
-            }
-        }
-
         $this->set_product_description($product, $item);
 
         $this->set_product_details($product, $item_enrichment, $item, $ignore_image);
@@ -191,7 +182,7 @@ class Products extends Asda {
         return $product;
     }
 
-    public function ingredients($product_id, $product_data){
+    public function create_ingredients($product_id, $product_data){
         //Store Product Ingredients
         $ingredients_list = $this->ingredients_list($product_data);
 
@@ -235,64 +226,6 @@ class Products extends Asda {
         return preg_replace('/\s*\(.+/','',$name);
     }
 
-    private function is_haram($product, $item_enrichment, $product_details): bool {
-                
-        // $name = $product->name;
-
-        // if(property_exists($item_enrichment,'alcohol') && $item_enrichment->alcohol != ""){
-        //     $this->logger->debug('Haram Alcholol Product Found: '. $name);
-        //     return true;
-        // }
-
-        // if(!$this->exclude_service->exclude_product($name)){
-        //     $this->logger->debug('Stage 1. Product Not Exluded: '. $name);
-        // } else {
-        //     $this->logger->debug('Stage 1. Product Exluded: '. $name);
-        //     return true;
-        // }
-
-        // preg_match("/halal/i",$product->dietary_info,$halal_matches);
-        // preg_match("/vegetarian|vegan/i",$product->dietary_info,$vegan_matches);
-
-        // //Check product name, if matches possible haram then double check
-        // if(!$this->exclude_service->product_possible_haram($name)){
-        //     $this->logger->debug('Stage 2. Product Halal '. $name);
-        // } else {
-            
-        //     $this->logger->debug('Stage 2. Product Maybe Haram. Halal/Vegan/Vegetarian Check');
-
-        //     if(!is_null($product->dietary_info)){
-        //         if($halal_matches || $vegan_matches){
-        //             $this->logger->debug('Stage 2A. Product Halal');
-        //         } else {
-        //             $this->logger->debug('Stage 2. Product Haram: '. $name);
-        //             return true;
-        //         }
-        //     } else {
-        //         $this->logger->debug('Stage 2. Product Haram: '. $name);
-        //         return true;
-        //     }
-           
-        // }
-
-        // if(!$halal_matches){
-        //     //Check product ingredients, if pork/alcohol found then exlucde.
-        //     $ingredients = $this->ingredients_list($product_details);
-        //     if($this->exclude_service->haram_ingredients($ingredients)){
-        //         $this->logger->debug('Stage 3. Haram Ingredients Found: '. $name);
-        //         return true;
-        //     } else {
-        //         $this->logger->debug('Stage 3. No Haram Ingredients Found: '. $name);
-        //     }
-        // } else {
-        //     $this->logger->debug('Halal/Vegan/Vegetarian Found In Product Name');
-        // }
-
-        return false;
-
-    }
-
-
     private function set_product_description($product, $item){
         // $product->store_type_id = $this->store_type_id;
         $product->description = $item->description == '.' ? NULL : $item->description;
@@ -332,13 +265,15 @@ class Products extends Asda {
         }
     }
 
-    private function set_product_details($product, $item_enrichment, $item, $ignore_image){
+    private function set_product_details(ProductModel $product, $item_enrichment, $item, $ignore_image){
 
         $rating_review = $item->rating_review;
 
         $product_site_id = $item->sku_id;
         $product->site_product_id = $product_site_id;
         $product->store_type_id = $this->store_type_id;
+
+        $product->currency = $this->currency;
 
         $product->total_reviews_count = $rating_review->total_review_count;
         $product->avg_rating          = $rating_review->avg_star_rating;
@@ -348,9 +283,9 @@ class Products extends Asda {
         $image_id = $item->images->scene7_id;
 
         if(!$ignore_image){
-            $product->large_image = $this->product_image($product_site_id, $image_id,400,'large');
+            $product->large_image = $this->product_image($product_site_id, $image_id, 400,'large');
             if(!is_null($product->large_image)){
-                $product->small_image = $this->product_image($product_site_id, $image_id,200,'small');
+                $product->small_image = $this->product_image($product_site_id, $image_id, 200, 'small');
             }
         }
 
