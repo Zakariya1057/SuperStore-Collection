@@ -69,6 +69,7 @@ class Indices extends Search {
 
             $params['body'][] = [
                 'id' => (int)$store->id,
+                'store_type_id' => (int)$store->id,
                 'name' => $store->name,
             ];
         }
@@ -102,6 +103,7 @@ class Indices extends Search {
       
             $params['body'][] = [
               'id'   => (int)$category->id,
+              'store_type_id' => (int)$category->store_type_id,
               'name' => $category->name,
               'type' => $category->type
             ];
@@ -126,6 +128,7 @@ class Indices extends Search {
             $params['body'][] = [
                 'id' => (int)$product->id,
                 'name'     => $product->name,
+                'store_type_id' => (int)$product->store_type_id,
                 'description' => $product->description,
                 'price' => (float)$product->price,
                 'weight' => $product->weight,
