@@ -7,7 +7,7 @@ use Models\Model;
 //Each store location.
 class StoreTypeModel extends Model {
     
-    public $name, $description, $large_logo, $small_logo, $user_id;
+    public $name, $currency, $description, $large_logo, $small_logo, $user_id;
     
     // Name, Logo Small, Logo Big
     function __construct($database=null){
@@ -17,11 +17,10 @@ class StoreTypeModel extends Model {
         $this->table("store_types");
 
         $fields = [
-            'id' => [
-                'type' => 'int'
-            ],
-            
             'name' => [],
+
+            'currency' => [],
+
             'description' => [
                 'nullable' => true,
                 'limit' => [

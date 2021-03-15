@@ -70,6 +70,7 @@ class CanadianSuperstore {
             $store_type->id = $this->store_type_id;
             $store_type->name = $this->store_name;
             $store_type->user_id = $this->user_id;
+            $store_type->currency = $this->currency;
             $store_type->large_logo = $this->image->save('logo','https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','large','logos',$this->store_name);
             $store_type->small_logo =  $this->image->save('logo','https://dynl.mktgcdn.com/p/uxpSIwyZRALdFsUMpGERiKVVeUVlEaMMTBvKbuOZB-E/150x150.png','small','logos',$this->store_name);
             $store_type->save();  

@@ -132,6 +132,8 @@ class Stores extends Asda {
 
             $location->city = $city;
             $location->postcode = $postcode;
+
+            $location->country = $this->store_country;
             
             if(!$retrieve){
                 $location->save();

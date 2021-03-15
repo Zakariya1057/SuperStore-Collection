@@ -44,13 +44,6 @@ class Stores extends CanadianSuperstore {
 
             $this->logger->notice("Store: [$site_store_id] $name");
 
-            $store_results = $store_model->where(['site_store_id' => $site_store_id])->get()[0] ?? null;
-
-            if(!is_null($store_results)){
-                $this->logger->error('Store Found In Database. Skipping: ' . $site_store_id);
-                continue;
-            }
-
             if(!is_numeric($site_store_id)){
                 // $this->logger->error('Site Store ID Not Number: ' . $site_store_id);
                 continue;
@@ -68,6 +61,14 @@ class Stores extends CanadianSuperstore {
 
             if($pickupType != 'store'){
                 // $this->logger->error('Incorrect Pickup Type: ' . $pickupType);
+                continue;
+            }
+
+            
+            $store_results = $store_model->where(['site_store_id' => $site_store_id])->get()[0] ?? null;
+
+            if(!is_null($store_results)){
+                $this->logger->error('Store Found In Database. Skipping: ' . $site_store_id);
                 continue;
             }
 
