@@ -283,7 +283,7 @@ class Products extends Asda {
         $image_id = $item->images->scene7_id;
 
         if(!$ignore_image){
-            $product->large_image = $this->product_image($product_site_id, $image_id, 400,'large');
+            $product->large_image = $this->product_image($product_site_id, $image_id, 600,'large');
             if(!is_null($product->large_image)){
                 $product->small_image = $this->product_image($product_site_id, $image_id, 200, 'small');
             }
