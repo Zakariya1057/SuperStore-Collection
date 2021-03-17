@@ -25,7 +25,7 @@ class MonitorStores extends Asda {
 
         $this->logger->debug('Store Monitoring');
 
-        $stores = $this->store->select_raw(['stores.*','TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) as time_difference'])
+        $stores = $this->store->where(['store_type_id' => $this->store_type_id])->select_raw(['stores.*','TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) as time_difference'])
         // ->where_raw(['TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
         ->get();
 
@@ -76,7 +76,7 @@ class MonitorStores extends Asda {
 
         if(count($found_facilities) > 0){
             $facility = new FacilitiesModel($this->database);
-            $facility->where_not_in('id', $found_facilities)->delete();
+            $facility->where(['store_id' => $store->id])->where_not_in('id', $found_facilities)->delete();
         }
 
         // Update details
