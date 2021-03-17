@@ -157,9 +157,15 @@ class Products extends CanadianSuperstore {
                 $product->large_image = $this->create_image($product->site_product_id, $image_url, 'large');
             } else {
                 $image = new ProductImageModel($this->database);
-                $image->name = $this->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
-                $image->size = "large"; 
-                $product->images[] = $image;
+
+                $image_name = $this->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
+
+                if(!is_null($image_name)){
+                    $image->name = $image_name;
+                    $image->size = "large"; 
+                    $product->images[] = $image;
+                }
+
             }
         }
         
@@ -228,9 +234,14 @@ class Products extends CanadianSuperstore {
                 $product->large_image = $this->create_image($product->site_product_id, $image_asset->mediumUrl, 'large');
             } else {
                 $image = new ProductImageModel($this->database);
-                $image->name = $this->create_image($product->site_product_id . '_' . $index, $image_asset->smallUrl, 'large');
-                $image->size = "large"; 
-                $product->images[] = $image;
+
+                $image_name = $this->create_image($product->site_product_id . '_' . $index, $image_asset->smallUrl, 'large');
+
+                if(!is_null($image_name)){
+                    $image->name = $image_name;
+                    $image->size = "large"; 
+                    $product->images[] = $image;
+                }
             }
         }
 
