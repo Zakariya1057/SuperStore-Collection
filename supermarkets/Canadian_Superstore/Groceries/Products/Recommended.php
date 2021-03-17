@@ -77,12 +77,14 @@ class Recommended extends CanadianSuperstore {
 
             foreach($recommended_products as $product_data){
                 $recommended = new RecommendedModel($this->database);
+                $product_code = $product_data->code;
 
-                $product_results = $this->product_model->where(['site_product_id' => $product_data->code])->get()[0] ?? null;
+                $product_results = $this->product_model->where(['site_product_id' => $product_code])->get()[0] ?? null;
 
                 if(is_null($product_results)){
                     // New product, check to see if any existing categories found. For each found category, create it under.
-                    $product_item = $this->product->product_details($product_data->code);
+
+                    $product_item = $this->product->product_details($product_code);
                     $this->logger->debug('New Product Found. Find Correct Category');
 
                     if(is_null($product_item)){

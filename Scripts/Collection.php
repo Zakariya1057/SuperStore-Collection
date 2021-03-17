@@ -32,41 +32,41 @@ if($config->get('env') == 'dev'){
 
 try {
 
-    // $asda_conf = $config->get('stores.asda');
+    $asda_conf = $config->get('stores.asda');
 
-    // if($asda_conf->run){
+    if($asda_conf->run){
 
-    //     $remember->store_type_id = $asda_conf->store_type_id;
-    //     $remember->retrieve_data();
+        $remember->store_type_id = $asda_conf->store_type_id;
+        $remember->retrieve_data();
 
-    //     $logger->notice("----------  Asda Scraping Start ----------");
+        $logger->notice("----------  Asda Scraping Start ----------");
         
-    //     $asda = new Asda($config,$logger,$database,$remember);
+        $asda = new Asda($config,$logger,$database,$remember);
     
     //     // Generate Asda Store Type
-    //     $asda->store_type();
+        $asda->store_type();
 
-    //     if($asda_conf->stores){
-    //         //Get all stores in given city
-    //         $asda->stores();
-    //     }
+        if($asda_conf->stores){
+            //Get all stores in given city
+            $asda->stores();
+        }
     
-    //     if($asda_conf->groceries){
-    //         //Get all product sold on site
-    //         $asda->groceries();
-    //     }
+        if($asda_conf->groceries){
+            //Get all product sold on site
+            $asda->groceries();
+        }
     
-    //     if($asda_conf->recommended){
-    //         //Get all similar Products.
-    //         $asda->recommended();
-    //     }
+        if($asda_conf->recommended){
+            //Get all similar Products.
+            $asda->recommended();
+        }
 
-    //     if($asda_conf->reviews){
-    //         $asda->reviews();
-    //     }
+        if($asda_conf->reviews){
+            $asda->reviews();
+        }
 
-    //     $logger->notice("---------- Asda Scraping Complete ---------- ");
-    // }
+        $logger->notice("---------- Asda Scraping Complete ---------- ");
+    }
 
     $canadian_superstore_conf = $config->get('stores.canadian_superstore');
 
@@ -81,16 +81,16 @@ try {
 
         $canadian_superstore->store_type();
 
+        if($canadian_superstore_conf->stores){
+            $canadian_superstore->stores();
+        }
+
         if($canadian_superstore_conf->groceries){
             $canadian_superstore->groceries();
         }
         
         if($canadian_superstore_conf->recommended){
             $canadian_superstore->recommended();
-        }
-
-        if($canadian_superstore_conf->stores){
-            $canadian_superstore->stores();
         }
 
         $logger->notice("---------- Real Canadian Superstore Scraping Complete ---------- ");
