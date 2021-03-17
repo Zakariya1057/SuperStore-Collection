@@ -353,7 +353,7 @@ class Model {
         $data = $sanitize->sanitize_fields($data);
 
         foreach($data as $key => $value){
-            if(is_null($value)){
+            if(is_null($value) || trim($value) == ''){
                 $wheres[] = "`$key` = NULL ";
             } else {
                 $wheres[] = "`$key` = '$value' ";
