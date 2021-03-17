@@ -1,0 +1,163 @@
+{
+    "code": "21122630_EA",
+    "name": "Cast Iron Mini Square FryPan",
+    "description": null,
+    "brand": "President's Choice",
+    "link": "/cast-iron-mini-square-frypan/p/21122630_EA",
+    "imageAssets": [
+        {
+            "smallUrl": "https://assets.shop.loblaws.ca/products/21122630/b1/en/front/21122630_front_a01_@2.png",
+            "mediumUrl": "https://assets.shop.loblaws.ca/products/21122630/b2/en/front/21122630_front_a06_@2.png",
+            "largeUrl": "https://assets.shop.loblaws.ca/products/21122630/b3/en/front/21122630_front_a06_@2.png",
+            "smallRetinaUrl": "https://assets.shop.loblaws.ca/products/21122630/b1/en/front/21122630_front_a01_@2.png",
+            "mediumRetinaUrl": "https://assets.shop.loblaws.ca/products/21122630/b2/en/front/21122630_front_a06_@2.png",
+            "largeRetinaUrl": "https://assets.shop.loblaws.ca/products/21122630/b3/en/front/21122630_front_a06_@2.png"
+        }
+    ],
+    "packageSize": "1.0 ea",
+    "shoppable": true,
+    "prices": {
+        "price": {
+            "value": 8.98,
+            "unit": "ea",
+            "quantity": 1
+        },
+        "wasPrice": {
+            "value": 10.98,
+            "unit": "ea",
+            "quantity": 1
+        },
+        "comparisonPrices": [
+            {
+                "value": 8.98,
+                "unit": "ea",
+                "quantity": 1
+            }
+        ]
+    },
+    "pricingUnits": {
+        "type": "SOLD_BY_EACH",
+        "unit": "ea",
+        "interval": 1.0,
+        "minOrderQuantity": 1,
+        "maxOrderQuantity": 999,
+        "weighted": false
+    },
+    "badges": {
+        "textBadge": null,
+        "loyaltyBadge": null,
+        "dealBadge": {
+            "type": "SALE",
+            "text": "SAVE $2.00",
+            "expiryDate": "2021-03-17T00:00:00Z",
+            "promoType": null
+        },
+        "newItemBadge": null
+    },
+    "breadcrumbs": [
+        {
+            "categoryCode": "27986",
+            "name": "Home And Living",
+            "url": "/home-and-living/c/27986",
+            "categoryType": null
+        },
+        {
+            "categoryCode": "28017",
+            "name": "Kitchen Dining",
+            "url": "/home-and-living/kitchen-dining/c/28017",
+            "categoryType": null
+        },
+        {
+            "categoryCode": "28362",
+            "name": "Cookware",
+            "url": "/home-and-living/kitchen-dining/cookware/c/28362",
+            "categoryType": null
+        },
+        {
+            "categoryCode": "30579",
+            "name": "Skillets",
+            "url": "/home-and-living/kitchen-dining/cookware/skillets/c/30579",
+            "categoryType": null
+        }
+    ],
+    "averageWeight": null,
+    "stockStatus": "OK",
+    "upcs": null,
+    "articleNumber": "21122630",
+    "uom": "EA",
+    "ingredients": null,
+    "promotions": null,
+    "nutritionFacts": [
+        {
+            "topNutrition": [
+                {
+                    "code": "servingSizeEN",
+                    "valueInGram": "0 g",
+                    "valuePercent": null,
+                    "subNutrients": null
+                }
+            ],
+            "calories": null,
+            "totalFat": {
+                "code": "totalFat",
+                "valueInGram": null,
+                "valuePercent": "0 %",
+                "subNutrients": []
+            },
+            "totalCarbohydrate": {
+                "code": "totalCarbohydrate",
+                "valueInGram": null,
+                "valuePercent": "0 %",
+                "subNutrients": [
+                    {
+                        "code": "sugar",
+                        "valueInGram": "0 g",
+                        "valuePercent": null,
+                        "subNutrients": null
+                    },
+                    {
+                        "code": "dietaryFiber",
+                        "valueInGram": "0 g",
+                        "valuePercent": "0 %",
+                        "subNutrients": null
+                    }
+                ]
+            },
+            "protein": null,
+            "potassium": null,
+            "microNutrition": [
+                {
+                    "code": "vitaminA",
+                    "valueInGram": null,
+                    "valuePercent": "0 %",
+                    "subNutrients": null
+                },
+                {
+                    "code": "vitaminC",
+                    "valueInGram": null,
+                    "valuePercent": "0 %",
+                    "subNutrients": null
+                },
+                {
+                    "code": "calcium",
+                    "valueInGram": null,
+                    "valuePercent": "0 %",
+                    "subNutrients": null
+                },
+                {
+                    "code": "iron",
+                    "valueInGram": null,
+                    "valuePercent": "0 %",
+                    "subNutrients": null
+                }
+            ],
+            "disclaimer": null,
+            "ingredients": null,
+            "cholesterol": null,
+            "sodium": null
+        }
+    ],
+    "taxes": null,
+    "fees": null,
+    "dietaryCallouts": null
+}

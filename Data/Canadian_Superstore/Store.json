@@ -1,0 +1,446 @@
+{
+    "id": "1043",
+    "contactNumber": "9057236580",
+    "ownerName": "Nate Bromley",
+    "name": "Oshawa",
+    "storeId": "1043",
+    "storeBannerId": "superstore",
+    "locationType": "STORE",
+    "pickupType": "STORE",
+    "bufferTimeInHours": 8,
+    "partner": null,
+    "visible": true,
+    "isShoppable": true,
+    "geoPoint": {
+        "latitude": 43.94186,
+        "longitude": -78.843717
+    },
+    "address": {
+        "country": "Canada",
+        "region": "Ontario",
+        "town": "Oshawa",
+        "line1": "1385 Harmony Rd N",
+        "line2": "",
+        "postalCode": "L1H 7K5",
+        "formattedAddress": "1385 Harmony Rd N  Oshawa, Ontario L1H 7K5"
+    },
+    "timeZone": "EST5EDT",
+    "features": [
+        "SHOP_AND_GO"
+    ],
+    "storeBannerName": "Superstore",
+    "locationDescription": null,
+    "openNowResponseData": {
+        "openNow": true,
+        "hours": "07:00 am - 11:00 pm",
+        "date": "2021/3/14/"
+    },
+    "departments": [
+        {
+            "name": "Meals To Go"
+        },
+        {
+            "name": "Joe Fresh®"
+        },
+        {
+            "name": "PC Financial® Pavilion"
+        },
+        {
+            "name": "PC Optimum"
+        },
+        {
+            "name": "Floral"
+        },
+        {
+            "name": "Passport Photos"
+        },
+        {
+            "name": "PC Financial"
+        },
+        {
+            "name": "Goodlife Fitness"
+        },
+        {
+            "name": "Click & Collect"
+        },
+        {
+            "name": "PC Financial® ATMs"
+        },
+        {
+            "name": "The Mobile Shop"
+        },
+        {
+            "name": "Gift Cards"
+        },
+        {
+            "name": "Pharmacy Delivery"
+        },
+        {
+            "name": "Prepaid/Long Distance Calling Cards"
+        },
+        {
+            "name": "PC Cooking School"
+        },
+        {
+            "name": "Lottery"
+        },
+        {
+            "name": "Dry Cleaners"
+        },
+        {
+            "name": "Optical"
+        },
+        {
+            "name": "Pharmacy"
+        },
+        {
+            "name": "Garden Centre"
+        },
+        {
+            "name": "Medical Clinic"
+        }
+    ],
+    "pickupLocationDetails": {
+        "pickupInstructions": "When you arrive at the store, park in one of the designated PC Express spots and call us at 9057236580.",
+        "howItWorks": null,
+        "totalLockers": null,
+        "maxItemsPerLocker": null
+    },
+    "storeDetails": {
+        "manager": "Nate Bromley",
+        "phoneNumber": "(905) 433-9569",
+        "orderPhoneNumber": "(905) 433-9569",
+        "curbPhoneNumber": "",
+        "storeHours": [
+            {
+                "date": null,
+                "day": "Monday",
+                "hours": "07:00 AM - 11:00 PM"
+            },
+            {
+                "date": null,
+                "day": "Tuesday",
+                "hours": "07:00 AM - 11:00 PM"
+            },
+            {
+                "date": null,
+                "day": "Wednesday",
+                "hours": "07:00 AM - 11:00 PM"
+            },
+            {
+                "date": null,
+                "day": "Thursday",
+                "hours": "07:00 AM - 11:00 PM"
+            },
+            {
+                "date": null,
+                "day": "Friday",
+                "hours": "07:00 AM - 11:00 PM"
+            },
+            {
+                "date": null,
+                "day": "Saturday",
+                "hours": "07:00 AM - 11:00 PM"
+            },
+            {
+                "date": null,
+                "day": "Sunday",
+                "hours": "07:00 AM - 11:00 PM"
+            }
+        ],
+        "holidayHours": [],
+        "departments": [
+            {
+                "name": "Meals To Go",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "MLTG",
+                "operatingHours": []
+            },
+            {
+                "name": "Joe Fresh®",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "JOFH",
+                "operatingHours": []
+            },
+            {
+                "name": "PC Financial® Pavilion",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "PCFIN",
+                "operatingHours": []
+            },
+            {
+                "name": "PC Optimum",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "PCOP",
+                "operatingHours": []
+            },
+            {
+                "name": "Floral",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "FLRL",
+                "operatingHours": []
+            },
+            {
+                "name": "Passport Photos",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "PPHT",
+                "operatingHours": []
+            },
+            {
+                "name": "PC Financial",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "PCF",
+                "operatingHours": []
+            },
+            {
+                "name": "Goodlife Fitness",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "GLFT",
+                "operatingHours": []
+            },
+            {
+                "name": "Click & Collect",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "CNC",
+                "operatingHours": []
+            },
+            {
+                "name": "PC Financial® ATMs",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "PCATM",
+                "operatingHours": []
+            },
+            {
+                "name": "The Mobile Shop",
+                "description": "null",
+                "manager": null,
+                "contactInfo": {
+                    "phoneNumber": "(905) 571-7674",
+                    "faxNumber": null
+                },
+                "thirdPartyId": "MOBSH",
+                "operatingHours": []
+            },
+            {
+                "name": "Gift Cards",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "GCRD",
+                "operatingHours": []
+            },
+            {
+                "name": "Pharmacy Delivery",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "PHADL",
+                "operatingHours": []
+            },
+            {
+                "name": "Prepaid/Long Distance Calling Cards",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "LDCC",
+                "operatingHours": []
+            },
+            {
+                "name": "PC Cooking School",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "PCCS",
+                "operatingHours": []
+            },
+            {
+                "name": "Lottery",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "LOTT",
+                "operatingHours": []
+            },
+            {
+                "name": "Dry Cleaners",
+                "description": null,
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "DCLNR",
+                "operatingHours": []
+            },
+            {
+                "name": "Optical",
+                "description": "Our optical team is committed to providing personalized care and quality service. There are many reasons to buy from our optical department: licensed opticians; over 700 frames to choose from; prescription safety, sport and sunglasses available.",
+                "manager": null,
+                "contactInfo": {
+                    "phoneNumber": null,
+                    "faxNumber": "9054338957"
+                },
+                "thirdPartyId": "OPTL",
+                "operatingHours": [
+                    {
+                        "date": null,
+                        "day": "Monday",
+                        "hours": "10:00 AM - 06:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Tuesday",
+                        "hours": "10:00 AM - 06:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Wednesday",
+                        "hours": "10:00 AM - 06:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Thursday",
+                        "hours": "10:00 AM - 06:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Friday",
+                        "hours": "10:00 AM - 06:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Saturday",
+                        "hours": "10:00 AM - 06:00 PM"
+                    }
+                ]
+            },
+            {
+                "name": "Pharmacy",
+                "description": "Our Pharmacists offer patient education programs and work closely with in-store Dietitians (Where available in select stores) to help patients achieve their health goals. Our pharmacy team is committed to providing personalized care and quality service. With convenient hours of operation, we're always available and strive to provide you with the highest level of service.",
+                "manager": "Neha Dengre",
+                "contactInfo": {
+                    "phoneNumber": "905 433 9503",
+                    "faxNumber": "905 433 8968"
+                },
+                "thirdPartyId": "PHARM",
+                "operatingHours": [
+                    {
+                        "date": null,
+                        "day": "Monday",
+                        "hours": "08:00 AM - 08:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Tuesday",
+                        "hours": "08:00 AM - 08:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Wednesday",
+                        "hours": "08:00 AM - 08:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Thursday",
+                        "hours": "08:00 AM - 08:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Friday",
+                        "hours": "08:00 AM - 08:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Saturday",
+                        "hours": "09:00 AM - 06:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Sunday",
+                        "hours": "09:00 AM - 06:00 PM"
+                    }
+                ],
+                "pharmacyDetails": {
+                    "accreditationNumber": "300623",
+                    "licensingCollege": {
+                        "name": "Ontario College of Pharmacists",
+                        "url": "https://www.ocpinfo.com/",
+                        "contactInfo": {
+                            "phoneNumber": "4169624861",
+                            "faxNumber": "4167033100"
+                        },
+                        "address": {
+                            "country": null,
+                            "region": "ON",
+                            "town": "Toronto",
+                            "line1": "483 Huron Street",
+                            "line2": null,
+                            "postalCode": "M5R2R4",
+                            "formattedAddress": null
+                        },
+                        "logo": "wk"
+                    }
+                }
+            },
+            {
+                "name": "Garden Centre",
+                "description": "null",
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "GARCEN",
+                "operatingHours": []
+            },
+            {
+                "name": "Medical Clinic",
+                "description": "Need to see a doctor? With convenient hours of operation, we're always available and strive to provide you with the highest level of service. Hours are subject to change without prior notice. Please call the clinic before your visit in order to determine the best method to address your healthcare concerns or www.primacyclinics.ca for more information.",
+                "manager": null,
+                "contactInfo": null,
+                "thirdPartyId": "MEDC",
+                "operatingHours": [
+                    {
+                        "date": null,
+                        "day": "Monday",
+                        "hours": "10:00 AM - 03:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Tuesday",
+                        "hours": "10:00 AM - 03:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Wednesday",
+                        "hours": "10:00 AM - 03:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Thursday",
+                        "hours": "10:00 AM - 03:00 PM"
+                    },
+                    {
+                        "date": null,
+                        "day": "Friday",
+                        "hours": "10:00 AM - 03:00 PM"
+                    }
+                ]
+            }
+        ]
+    }
+}
