@@ -13,20 +13,20 @@ use Supermarkets\Asda\Asda;
 
 class Reviews extends Asda {
 
-    public $productModel,$promotions;
+    public $product_model,$promotions;
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
         $this->promotions = new Promotions($this->config,$this->logger,$this->database,$this->remember);
-        $this->productModel = new ProductModel($this->database);
+        $this->product_model = new ProductModel($this->database);
     }
 
     public function reviews(){
         //Get all products without reviews, get matching reviews
         $this->logger->notice('------ Product Reviews Start ---------');
 
-        $products_without_reviews = $this->productModel->select(['id','site_product_id','name'])->where(['reviews_searched' => null])->get() ?? null;
+        $products_without_reviews = $this->product_model->select(['id','site_product_id','name'])->where(['reviews_searched' => null])->get() ?? null;
 
         if($products_without_reviews){
 
@@ -91,7 +91,7 @@ class Reviews extends Asda {
 
             $this->logger->debug('Updating Product Review_Searched');
 
-            $this->productModel->where(['id' => $product_id])->update(['reviews_searched' => 1]);
+            $this->product_model->where(['id' => $product_id])->update(['reviews_searched' => 1]);
             
         }
 

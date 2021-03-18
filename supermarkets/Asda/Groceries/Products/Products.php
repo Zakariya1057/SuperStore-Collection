@@ -2,18 +2,24 @@
 
 namespace Supermarkets\Asda\Groceries\Products;
 
+use Exception;
+
+use Supermarkets\Asda\Asda;
+
 use Models\Category\ChildCategoryModel;
 use Models\Product\ProductModel;
 use Models\Product\IngredientModel;
-use Exception;
 use Models\Category\CategoryProductModel;
+
 use Monolog\Logger;
+
 use Services\Config;
 use Services\Database;
 use Services\Remember;
-use Supermarkets\Asda\Asda;
 
-class Products extends Asda {
+use Interfaces\ProductInterface;
+
+class Products extends Asda implements ProductInterface {
 
     public $product_details,$promotions,$image;
 
@@ -162,10 +168,12 @@ class Products extends Asda {
 
         $product = new ProductModel();
         $product->name = $this->clean_product_name($name);
+        $product->available = 1;
         $product->dietary_info = $item_enrichment->dietary_info_formatted ?? NULL;
 
         if(is_null($product_details->price)){
             $this->logger->notice('Product Not Available. No Price Details Found.');
+            $product->available = 0;
             return null;
         }
 

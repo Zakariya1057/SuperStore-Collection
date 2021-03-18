@@ -15,7 +15,7 @@ class GrandParentCategories extends Categories {
         if(count($categories_list) != 0){
 
             $first_category = $categories_list[0];
-            $this->logger->notice("Starting With Grand Parent Category: [$last_category_index] " . $first_category->displayName);
+            $this->logger->notice("Starting With Grand Parent Category: [$last_category_index] " . $first_category->taxonomy_name);
     
             foreach($categories_list as $index => $category_item){
                 $this->remember->set('grand_parent_category_index',$index + $last_category_index);

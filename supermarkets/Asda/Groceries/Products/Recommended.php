@@ -3,6 +3,7 @@
 namespace Supermarkets\Asda\Groceries\Products;
 
 use Exception;
+use Models\Product\product_model;
 use Models\Product\ProductModel;
 use Models\Product\RecommendedModel;
 use Monolog\Logger;
@@ -13,19 +14,19 @@ use Supermarkets\Asda\Asda;
 
 class Recommended extends Asda {
 
-    public $productModel;
+    public $product_model;
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
-        $this->productModel = new ProductModel($this->database);
+        $this->product_model = new ProductModel($this->database);
     }
 
     public function all_recommended_products(){
         //Loop through all product in database without related products and set their related products.
         $this->logger->notice('------ Product Recommended Start ---------');
 
-        $products_without_recommended = $this->productModel->select(['id','site_product_id','name'])->where(['store_type_id' => $this->store_type_id, 'recommended_searched' => null])->order_by('id','ASC')->get();
+        $products_without_recommended = $this->product_model->select(['id','site_product_id','name'])->where(['store_type_id' => $this->store_type_id, 'recommended_searched' => null])->order_by('id','ASC')->get();
         
         if($products_without_recommended){
 
@@ -120,7 +121,7 @@ class Recommended extends Asda {
 
         }
 
-        $this->productModel->where(['id' => $product_id])->update(['recommended_searched' => 1]);
+        $this->product_model->where(['id' => $product_id])->update(['recommended_searched' => 1]);
 
     }
 

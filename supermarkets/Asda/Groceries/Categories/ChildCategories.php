@@ -2,6 +2,7 @@
 
 namespace Supermarkets\Asda\Groceries\Categories;
 
+use Exception;
 use Supermarkets\Asda\Groceries\Products\Products;
 
 class ChildCategories extends Categories {
@@ -18,12 +19,12 @@ class ChildCategories extends Categories {
 
         $last_category_index = $this->remember->get('child_category_index') ?? 0;
 
-        $categories_list = array_slice( $department->subcategories, $last_category_index );
+        $categories_list = array_slice( $department->child_taxonomies, $last_category_index );
 
         if(count($categories_list) != 0){
 
             $first_category = $categories_list[0];
-            $this->logger->debug("Starting With Child Category: [$last_category_index] " . $first_category->displayName);
+            $this->logger->debug("Starting With Child Category: [$last_category_index] " . $first_category->taxonomy_name);
     
             foreach($categories_list as $index => $aisle){
 
@@ -77,40 +78,18 @@ class ChildCategories extends Categories {
         //Return an array of products with details. To be then be inserted into database
         $products = [];
 
-        $shelf_endpoint = $this->endpoints->shelves . $site_shelf_id;
         $this->logger->debug("Shelf: $site_shelf_id");
 
         if($this->env == 'dev'){
-            $shelf_results = file_get_contents(__DIR__."/../../data/Asda/Shelf.json");
+            $shelf_results = file_get_contents(__DIR__."/../../data/Asda/New_Shelf.json");
+            $shelf_data = $this->request->parse_json($shelf_results)->data->tempo_cms_content;
         } else {
-            $shelf_results = $this->request->request($shelf_endpoint);
+            $shelf_data = $this->request_details('child_category', $site_shelf_id);
         }
         
-        $shelf_data = $this->request->parse_json($shelf_results);
-
-        foreach($shelf_data->contents[0] as $header => $content_parts){
-
-            if(strtolower($header) == "maincontent"){
-
-                foreach($content_parts as $content_part){
-                    if(strtolower($content_part->{'@type'}) == "aislecontentholder" ){
-
-                        $records = (object)$content_part->dynamicSlot->contents[0]->mainContent[0]->records;
-
-                        foreach($records as $record){
-                            $attributes =  $record->{'attributes'};
-                            $product_id = $attributes->{'sku.repositoryId'}[0];
-                            $name = $attributes->{'sku.displayName'}[0];
-                            
-                            $products[] = $product_id;
-
-                        }
-
-                    }
-                }
-
-            }
-            
+        foreach($shelf_data->zones[1]->configs->products->items as $product){
+            $item = $product->item;
+            $products[] = $item->sku_id;
         }
 
         return $products;

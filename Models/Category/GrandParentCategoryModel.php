@@ -15,9 +15,7 @@ class GrandParentCategoryModel extends CategoryModel {
         $fields = [
             'name' => [],
             'store_type_id' => [],
-            'site_category_id' => [
-                'type' => 'int'
-            ],
+            'site_category_id' => [],
         ];
 
         $this->fields($fields);

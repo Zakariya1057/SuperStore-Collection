@@ -25,16 +25,14 @@ class Groceries extends Asda {
     }
 
     public function groceries_details(){
-
-        $groceries_endpoint = $this->endpoints->groceries;
-
         if($this->env == 'dev'){
-            $groceries_response = file_get_contents(__DIR__."/../../data/Asda/Groceries.json");
+            $groceries_response = file_get_contents(__DIR__."/../../data/Asda/New_Groceries.json");
+            $groceries_data = $this->request->parse_json($groceries_response)->data->tempo_taxonomy;;
         } else {
-            $groceries_response = $this->request->request($groceries_endpoint);
+            $groceries_data = $this->request_details('categories');
         }
         
-        return $this->request->parse_json($groceries_response);
+        return $groceries_data;
 
     }
 

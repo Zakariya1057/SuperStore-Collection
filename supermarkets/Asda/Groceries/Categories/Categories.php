@@ -17,8 +17,8 @@ class Categories extends Asda {
     }
 
     public function select_category($category,$type){
-        $category_store_id = $category->dimvalid;
-        $category_name = $category->displayName;
+        $category_store_id = $category->hierarchy_id;
+        $category_name = $category->taxonomy_name;
         $parent_category_id = $category->parent_category_id ?? null;
 
         $insert_fields = [
