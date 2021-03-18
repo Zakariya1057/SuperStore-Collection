@@ -3,15 +3,14 @@
 namespace Supermarkets\Canadian_Superstore\Stores;
 
 use Exception;
+use Interfaces\StoreInterface;
 use Models\Store\FacilitiesModel;
 use Models\Store\LocationModel;
 use Models\Store\OpeningHoursModel;
 use Models\Store\StoreModel;
 use Supermarkets\Canadian_Superstore\CanadianSuperstore;
 
-class Stores extends CanadianSuperstore {
-
-    private $stores_endpoint;
+class Stores extends CanadianSuperstore implements StoreInterface {
 
     public function create_stores(){
         
@@ -20,12 +19,10 @@ class Stores extends CanadianSuperstore {
         
         $this->logger->notice($this->store_name . " Finding All Stores");
 
-        $this->stores_endpoint =  $this->endpoints->stores;
-
         // if($this->env == 'dev'){
             $stores_response = file_get_contents(__DIR__."/../../../data/Canadian_Superstore/Stores.json");
         // } else {
-        //     $stores_response = $this->request->request($this->stores_endpoint . '?bannerIds=superstore');
+        //     $stores_response = $this->request->request($this->endpoints->stores . '?bannerIds=superstore');
         // }
 
         $stores_data = $this->request->parse_json($stores_response);
@@ -76,7 +73,7 @@ class Stores extends CanadianSuperstore {
             $store_id = $store->save();
 
             $this->create_location($store->location, $store_id);
-            $this->create_hours($store->hours, $store_id);
+            $this->create_hours($store->opening_hours, $store_id);
             $this->create_facilitites($store->facilities, $store_id);
         }
     }
@@ -100,7 +97,7 @@ class Stores extends CanadianSuperstore {
         }
     }
 
-    public function store_details($site_store_id): ?StoreModel {
+    public function store_details($site_store_id, $url = null): ?StoreModel {
 
         $this->logger->notice('-- Start Store Details: '. $site_store_id);
 
@@ -109,7 +106,7 @@ class Stores extends CanadianSuperstore {
         if($this->env == 'dev'){
             $store_response = file_get_contents(__DIR__."/../../data/Canadian_Superstore/Store.json");
         } else {
-            $url = $this->stores_endpoint . '/' . $site_store_id;
+            $url = $this->endpoints->stores . '/' . $site_store_id;
             $store_response = $this->request->request($url, 'GET', [], ['Site-Banner' => 'superstore']);
         }
 
@@ -162,7 +159,7 @@ class Stores extends CanadianSuperstore {
 
     private function set_hours($store, $store_hours){
 
-        $store->hours = [];
+        $store->opening_hours = [];
 
         foreach($store_hours as $index => $store_hour){
 
@@ -183,7 +180,7 @@ class Stores extends CanadianSuperstore {
                 $hour->closed_today = 1;
             }
 
-            $store->hours[] = $hour;
+            $store->opening_hours[] = $hour;
         }
 
     }

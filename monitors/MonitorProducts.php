@@ -2,7 +2,6 @@
 
 namespace Monitors;
 
-use Exception;
 use Interfaces\ProductInterface;
 use Interfaces\PromotionInterface;
 use Models\Product\ProductModel;
@@ -45,8 +44,8 @@ class MonitorProducts {
         ->join('grocery_list_items', 'grocery_list_items.product_id', 'products.id')
         ->join('monitored_products', 'monitored_products.product_id', 'products.id')
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
-        // ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
-        ->where_raw(["store_type_id = $store_type_id"])
+        ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
+        // ->where_raw(["store_type_id = $store_type_id"])
         ->group_by('products.id')
         ->order_by('num_monitoring')
         // ->limit(1)

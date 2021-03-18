@@ -1,6 +1,6 @@
 <?php
 
-namespace Supermarkets\Asda\Monitors;
+namespace Monitors;
 
 use Exception;
 use Interfaces\StoreInterface;
@@ -10,8 +10,6 @@ use Monolog\Logger;
 use Services\Config;
 use Services\Database;
 use Services\Notification;
-use Services\Remember;
-use Supermarkets\Asda\Asda;
 use Supermarkets\Asda\Stores\Stores;
 
 class MonitorStores {
@@ -40,7 +38,7 @@ class MonitorStores {
 
         $this->logger->debug('Store Monitoring');
 
-        $stores = $this->store->where(['store_type_id' => $store_type_id])
+        $stores = $this->store_model->where(['store_type_id' => $store_type_id])
         ->select_raw(['stores.*','TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) as time_difference'])
         // ->where_raw(['TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
         ->get();
@@ -63,9 +61,12 @@ class MonitorStores {
     }
 
     public function check_store_change($store){
-        $asda_store = new Stores($this->config, $this->logger, $this->database, $this->remember);
         
-        $new_store = $asda_store->page_store_details($store->url);
+        $new_store = $this->store_collection->store_details($store->site_store_id, $store->url);
+        
+        if(is_null($new_store)){
+            throw new Exception('New Store Not Found: ' . $store->id);
+        }
 
         $this->database->start_transaction();
 
@@ -96,7 +97,7 @@ class MonitorStores {
         }
 
         // Update details
-        $this->store->where(['id' => $store->id])->update([
+        $this->store_model->where(['id' => $store->id])->update([
             'name' => $new_store->name,
             'description' => $new_store->description,
             'last_checked' => date('Y-m-d H:i:s')

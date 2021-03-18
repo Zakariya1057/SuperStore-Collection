@@ -3,14 +3,17 @@
 use Models\Store\StoreModel;
 use Models\Store\StoreTypeModel;
 use Monitors\MonitorProducts;
+use Monitors\MonitorStores;
 use Services\Notification;
 use Services\Config;
 use Services\Loggers;
 use Services\Database;
 
 use Supermarkets\Asda\Groceries\Products\Products as AsdaProducts;
-use Supermarkets\Canadian_Superstore\CanadianSuperstore;
 use Supermarkets\Canadian_Superstore\Groceries\Products\Products as CanadianSuperStoreProducts;
+
+use Supermarkets\Asda\Stores\Stores as AsdaStores;
+use Supermarkets\Canadian_Superstore\Stores\Stores as CanadianSuperStoreStores;
 
 ini_set('memory_limit', '-1');
 
@@ -45,13 +48,11 @@ try {
     }
 
 
-    $logger->error('Getting All Stores');
-
-    // $stores = [1,2];
+    $logger->debug('Checking All Store Details Match');
 
     $store_model = new StoreTypeModel($database);
 
-    $stores = $store_model->select('id, name')->where(['id' => 2])->get();
+    $stores = $store_model->select('id, name')->get();
 
     $configs = [
         1 => 'asda',
@@ -75,9 +76,6 @@ try {
             if($type == 'products'){
                 // Runs every 3 hours.  [ 0 */3 * * * ]
 
-                // $asda_monitor = new MonitorProducts($config, $logger, $database, null, $notification);
-                // $asda_monitor->monitor_products();
-
                 if($store_type_id == 1){
                     $product_collection = new AsdaProducts($config, $logger, $database);
                 } else if($store_type_id == 2){
@@ -94,14 +92,20 @@ try {
 
             } else {
                 // Runs every sunday morning. 4am. [ 0 4 * * SUN ]
-                // $asda_monitor = new MonitorStores($config, $logger, $database, null);
-                // $asda_monitor->monitor_stores();
 
-                // if($store_type_id == 1){
-                //     $product_collection = new AsdaProducts($config, $logger, $database);
-                // } else if($store_type_id == 2){
-                //     // $product_collection = new Products($config, $logger, $database);
-                // }
+                if($store_type_id == 1){
+                    $store_collection = new AsdaStores($config, $logger, $database);
+                } else if($store_type_id == 2){
+                    $store_collection = new CanadianSuperStoreStores($config, $logger, $database);
+                }
+                
+                if(is_null($store_collection)){
+                    return exit($logger->error('No Store Collection Type Found For Store: ' . $store_type_id));
+                }
+
+                $monitor = new MonitorStores($config, $logger, $database, $store_collection );
+
+                $monitor->monitor_stores($store_type);
 
             }
 
@@ -109,7 +113,6 @@ try {
         }
 
     }
-
 
 } catch(Exception $e){
     $logger->critical('Script Monitor Error: '. $e->getMessage());

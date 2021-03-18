@@ -46,8 +46,8 @@ class Stores extends Asda implements StoreInterface {
 
     }
 
-    public function store_details($site_store_id): ?StoreModel {
-        return null;
+    public function store_details($site_store_id, $url = null): ?StoreModel {
+        return $this->page_store_details($url);
     }
 
     public function page_store_details($url){
@@ -57,7 +57,7 @@ class Stores extends Asda implements StoreInterface {
 
         $json_body = $this->request->parse_json($content->filter('script#js-map-config-dir-map')->eq(0)->text());
 
-        return $this->store_details($json_body->entities[0], true);
+        return $this->parse_store_data($json_body->entities[0], true);
     }
 
     public function parse_store_data($store_item,$retrieve=false){
