@@ -3,14 +3,17 @@
 namespace Supermarkets\Canadian_Superstore\Groceries\Products;
 
 use Exception;
+
+use Supermarkets\Canadian_Superstore\CanadianSuperstore;
+
 use Models\Category\CategoryProductModel;
-use Models\Category\ChildCategoryModel;
 use Models\Product\IngredientModel;
 use Models\Product\ProductImageModel;
 use Models\Product\ProductModel;
-use Supermarkets\Canadian_Superstore\CanadianSuperstore;
 
-class Products extends CanadianSuperstore {
+use Interfaces\ProductInterface;
+
+class Products extends CanadianSuperstore implements ProductInterface {
 
     public function create_product($site_product_id, $category_details, $request_type = null, $product = null){
 
@@ -19,7 +22,7 @@ class Products extends CanadianSuperstore {
         $product_id = null;
 
         if(is_null($product)){
-            $product = $this->product_details($site_product_id, $request_type);
+            $product = $this->product_details($site_product_id, false, $request_type);
         }
         
         if(!is_null($product)){
@@ -86,7 +89,7 @@ class Products extends CanadianSuperstore {
         }
     }
 
-    public function product_details($product_site_id, $request_type = null): ?ProductModel{
+    public function product_details($product_site_id, $ignore_image=false, $request_type = null): ?ProductModel{
 
         $product_response = null;
         $product = null;
@@ -96,7 +99,7 @@ class Products extends CanadianSuperstore {
         $product_endpoints = $this->endpoints->products;
 
         if(is_null($request_type) || $request_type == 'v3'){
-            $endpoint_v3 = $product_endpoints->v3 . "$product_site_id?lang=en&date=13032021&storeId=2800&banner=superstore";
+            $endpoint_v3 = $product_endpoints->v3 . "$product_site_id?lang=en&storeId=1080&banner=superstore";
             
             try {
                 $product_response = $this->request->request($endpoint_v3, 'GET', [], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, 1);
@@ -117,8 +120,9 @@ class Products extends CanadianSuperstore {
                 $product_details = $this->request->parse_json($product_response);
                 $product = $this->parse_product_v2($product_details);
             } catch(Exception $e){
-                $this->logger->error('Product Not Found On Either Endpoints: ' . $e->getMessage());
-                return null;
+                // $this->logger->error('Product Not Found On Either Endpoints: ' . $e->getMessage());
+                throw new Exception('Product Not Found On Either Endpoints');
+                // return null;
             }
 
         }
@@ -127,10 +131,12 @@ class Products extends CanadianSuperstore {
     }
 
 
-    private function parse_product_v2($product_details): ?ProductModel {
+    private function parse_product_v2($product_details, $ignore_image=false): ?ProductModel {
         $product = new ProductModel($this->database);
 
         $product->name = $product_details->title;
+        $product->available = 1;
+
         $this->set_description($product, $product_details->longDescription);
         $product->brand = $product_details->brand;
 
@@ -151,23 +157,26 @@ class Products extends CanadianSuperstore {
         $product->images = [];
         $product->ingredients = [];
 
-        foreach($price_details->media->images as $index => $image_url){
-            if($index == 0){
-                $product->small_image = $this->create_image($product->site_product_id, $image_url, 'small');
-                $product->large_image = $this->create_image($product->site_product_id, $image_url, 'large');
-            } else {
-                $image = new ProductImageModel($this->database);
-
-                $image_name = $this->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
-
-                if(!is_null($image_name)){
-                    $image->name = $image_name;
-                    $image->size = "large"; 
-                    $product->images[] = $image;
+        if($ignore_image){
+            foreach($price_details->media->images as $index => $image_url){
+                if($index == 0){
+                    $product->small_image = $this->create_image($product->site_product_id, $image_url, 'small');
+                    $product->large_image = $this->create_image($product->site_product_id, $image_url, 'large');
+                } else {
+                    $image = new ProductImageModel($this->database);
+    
+                    $image_name = $this->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
+    
+                    if(!is_null($image_name)){
+                        $image->name = $image_name;
+                        $image->size = "large"; 
+                        $product->images[] = $image;
+                    }
+    
                 }
-
             }
         }
+
         
         $product->currency = $this->currency;
 
@@ -176,10 +185,11 @@ class Products extends CanadianSuperstore {
         return $product;
     }
 
-    private function parse_product_v3($product_details): ?ProductModel {
+    private function parse_product_v3($product_details, $ignore_image=false): ?ProductModel {
         $product = new ProductModel($this->database);
 
         $product->name = $product_details->name;
+        $product->available = 1;
         $product->site_product_id = $product_details->code;
         $product->store_type_id = $this->store_type_id;
         
@@ -228,19 +238,21 @@ class Products extends CanadianSuperstore {
             }
         }
 
-        foreach($product_details->imageAssets as $index => $image_asset){
-            if($index == 0){
-                $product->small_image = $this->create_image($product->site_product_id, $image_asset->smallUrl, 'small');
-                $product->large_image = $this->create_image($product->site_product_id, $image_asset->mediumUrl, 'large');
-            } else {
-                $image = new ProductImageModel($this->database);
-
-                $image_name = $this->create_image($product->site_product_id . '_' . $index, $image_asset->smallUrl, 'large');
-
-                if(!is_null($image_name)){
-                    $image->name = $image_name;
-                    $image->size = "large"; 
-                    $product->images[] = $image;
+        if($ignore_image){
+            foreach($product_details->imageAssets as $index => $image_asset){
+                if($index == 0){
+                    $product->small_image = $this->create_image($product->site_product_id, $image_asset->smallUrl, 'small');
+                    $product->large_image = $this->create_image($product->site_product_id, $image_asset->mediumUrl, 'large');
+                } else {
+                    $image = new ProductImageModel($this->database);
+    
+                    $image_name = $this->create_image($product->site_product_id . '_' . $index, $image_asset->smallUrl, 'large');
+    
+                    if(!is_null($image_name)){
+                        $image->name = $image_name;
+                        $image->size = "large"; 
+                        $product->images[] = $image;
+                    }
                 }
             }
         }

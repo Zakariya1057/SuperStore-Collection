@@ -12,6 +12,8 @@
         "psr-4": {
             "Services\\": "services/",
             "Models\\": "models/",
+            "Monitors\\": "monitors/",
+            "Interfaces\\": "interfaces/",
             "Supermarkets\\": "supermarkets/",
             "Search\\": "search/"
         }

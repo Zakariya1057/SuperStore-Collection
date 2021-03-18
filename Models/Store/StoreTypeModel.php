@@ -7,7 +7,7 @@ use Models\Model;
 //Each store location.
 class StoreTypeModel extends Model {
     
-    public $name, $currency, $description, $large_logo, $small_logo, $user_id;
+    public $id, $name, $currency, $description, $large_logo, $small_logo, $user_id;
     
     // Name, Logo Small, Logo Big
     function __construct($database=null){

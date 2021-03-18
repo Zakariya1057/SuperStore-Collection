@@ -3,6 +3,7 @@
 namespace Supermarkets\Asda\Stores;
 
 use Exception;
+use Interfaces\StoreInterface;
 use Models\Store\FacilitiesModel;
 use Models\Store\LocationModel;
 use Models\Store\OpeningHoursModel;
@@ -13,7 +14,7 @@ use Services\Database;
 use Services\Remember;
 use Supermarkets\Asda\Asda;
 
-class Stores extends Asda {
+class Stores extends Asda implements StoreInterface {
 
     public function stores(){
 
@@ -37,12 +38,16 @@ class Stores extends Asda {
     
             foreach($stores_list as $item){
                 $this->database->start_transaction();
-                $this->store_details($item);
+                $this->parse_store_data($item);
                 $this->database->commit_transaction();
             }
 
         }
 
+    }
+
+    public function store_details($site_store_id): ?StoreModel {
+        return null;
     }
 
     public function page_store_details($url){
@@ -55,7 +60,7 @@ class Stores extends Asda {
         return $this->store_details($json_body->entities[0], true);
     }
 
-    public function store_details($store_item,$retrieve=false){
+    public function parse_store_data($store_item,$retrieve=false){
 
         $item_details = $store_item->profile;
 
