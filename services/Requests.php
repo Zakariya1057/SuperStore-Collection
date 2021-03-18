@@ -17,7 +17,7 @@ class Requests {
         $this->validator = new Validator();
     }
 
-    public function request($url, $method='GET', $data=[], $headers=[], $timeout=300, $retry_attempts = null){
+    public function request($url, $method='GET', $data=[], $headers=[], $timeout=300, $retry_attempts = null, $raw_data = false){
 
         $client = HttpClient::create();
         
@@ -25,17 +25,23 @@ class Requests {
 
         $times_retried = 0;
 
-        if(count($data) == 0){
-            $request_data = [ 'headers' => $headers,'timeout' => $timeout];
+        if($raw_data){
+            $request_data = [ 'headers' => $headers, 'body' => $data];
+
         } else {
 
-            if($method == "GET"){
-                $request_data = [ 'headers' => $headers,'timeout' => $timeout, 'query' => $data];
+            if(count($data) == 0){
+                $request_data = [ 'headers' => $headers,'timeout' => $timeout];
             } else {
-                $request_data = [ 'headers' => $headers,'json' => $data, 'timeout' => $timeout];
+                if($method == 'GET'){
+                    $request_data = [ 'headers' => $headers,'timeout' => $timeout, 'query' => $data];
+                } else {
+                    $request_data = [ 'headers' => $headers,'json' => $data, 'timeout' => $timeout];
+                }
             }
-           
+            
         }
+
 
         $request_send_success = false;
 
@@ -67,9 +73,6 @@ class Requests {
                 } 
 
             } catch(Exception $e){
-
-                $this->logger->error('Times: ' . $retry);
-                // print_r($retry);
 
                 if($retry == 1){
                     break;
