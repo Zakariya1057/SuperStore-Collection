@@ -199,11 +199,11 @@
 
             "currency": "Pounds",
 
-            "run": 0,
+            "run": 1,
     
-            "monitor": 0,
+            "monitor": 1,
     
-            "stores": 1,
+            "stores": 0,
     
             "groceries": 1,
             "recommended": 1,
@@ -221,12 +221,12 @@
 
             "run": 1,
     
-            "monitor": 0,
+            "monitor": 1,
     
-            "stores": 1,
+            "stores": 0,
     
             "groceries": 1,
-            "recommended": 0,
+            "recommended": 1,
             
             "store_type_id": 2,
             "user_id": 2
@@ -236,8 +236,8 @@
     "endpoints": {
 
         "asda": {
-            "groceries": "https://groceries.asda.com/cmscontent/json/getFullTaxonomy",
-            "shelves": "https://groceries.asda.com/cmscontent/json/pages/browse/aisle?requestorigin=gi&Nrpp=10000000&storeId=4676&N=",
+            "groceries": "https://groceries.asda.com/api/bff/graphql",
+            "shelves": "https://groceries.asda.com/api/bff/graphql",
             "products": "https://groceries.asda.com/api/items/catalog",
             "reviews": "https://groceries.asda.com/review/reviews.json?requestorigin=gi&apiversion=5.4&passkey=92ffdz3h647mtzgbmu5vedbq&Filter=ProductId%3A",
             "promotions": "https://groceries.asda.com/cmscontent/json/pages/overlays/linksave?requestorigin=gi&Nrpp=10000000&storeId=4565&promoid=",
