@@ -43,7 +43,7 @@ try {
         
         $asda = new Asda($config,$logger,$database,$remember);
     
-    //     // Generate Asda Store Type
+        // Generate Asda Store Type
         $asda->store_type();
 
         if($asda_conf->stores){
@@ -101,14 +101,10 @@ try {
     $error_file = $e->getFile() ?? null;
     $error_stack = $e->getTraceAsString() ?? null;
 
-    $remember->set_error($error_message,$error_file,$error_stack,null);
-
     $logger->error('Error Occured Exiting Script');
     $logger->error('Message: ' . $error_message);
     $logger->error('File: ' . $error_file);
     $logger->error('Error Stack: ' .$error_stack);
-
-    $remember->save_data();
     
     throw new Exception($e);
 }

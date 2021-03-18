@@ -104,7 +104,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
             try {
                 $product_response = $this->request->request($endpoint_v3, 'GET', [], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, 1);
                 $product_details = $this->request->parse_json($product_response);
-                $product = $this->parse_product_v3($product_details);
+                $product = $this->parse_product_v3($product_details, $ignore_image);
     
             } catch (Exception $e){
                 $this->logger->debug('Product V3 Endpoint Error: ' . $product_site_id . ' -> ' . $e->getMessage());
@@ -118,7 +118,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
             try {
                 $product_response = $this->request->request($endpoint_v2, 'GET', [], [], 300, 1);
                 $product_details = $this->request->parse_json($product_response);
-                $product = $this->parse_product_v2($product_details);
+                $product = $this->parse_product_v2($product_details, $ignore_image);
             } catch(Exception $e){
                 // $this->logger->error('Product Not Found On Either Endpoints: ' . $e->getMessage());
                 throw new Exception('Product Not Found On Either Endpoints');
@@ -157,7 +157,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
         $product->images = [];
         $product->ingredients = [];
 
-        if($ignore_image){
+        if(!$ignore_image){
             foreach($price_details->media->images as $index => $image_url){
                 if($index == 0){
                     $product->small_image = $this->create_image($product->site_product_id, $image_url, 'small');
@@ -238,7 +238,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
             }
         }
 
-        if($ignore_image){
+        if(!$ignore_image){
             foreach($product_details->imageAssets as $index => $image_asset){
                 if($index == 0){
                     $product->small_image = $this->create_image($product->site_product_id, $image_asset->smallUrl, 'small');
@@ -274,9 +274,9 @@ class Products extends CanadianSuperstore implements ProductInterface {
             
             $product->features = $this->create_description($features);
             $product->dimensions = $this->create_description($dimensions);
-            $product->description = $this->clean_description_name($start_description);
+            $product->description = str_replace('..','.', preg_replace('/<\/*\w+>\s*<\/*\w+>/',".\n\n", $start_description));
         } else {
-            $product->description = $description;
+            $product->description = str_replace('..','.', preg_replace('/<\/*\w+>\s*<\/*\w+>/',".\n\n", $description));
         }
 
     }
@@ -309,7 +309,6 @@ class Products extends CanadianSuperstore implements ProductInterface {
         return strip_tags($description);
     }
     
-
 }
 
 ?>

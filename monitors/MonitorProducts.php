@@ -116,9 +116,7 @@ class MonitorProducts {
         ->join('users', 'monitored_products.user_id', 'users.id')
         ->group_by('user_id')->get();
 
-        $data = [
-            'product_id' => $old_product->id
-        ];
+        $data = ['product_id' => (int)$old_product->id];
 
         foreach($monitored_users as $user){
             $notification_message = $this->create_notification_message($product, $old_product);
@@ -131,8 +129,8 @@ class MonitorProducts {
 
         $currency = $this->currency_service->get_currency_symbol($product->currency);
 
-        $new_price = $product->price;
-        $old_price = $old_product->price;
+        $new_price = number_format($product->price, 2);
+        $old_price = number_format($old_product->price, 2);
 
         $changed_type = $new_price < $old_price ? 'Increased' : 'Decreased';
 
