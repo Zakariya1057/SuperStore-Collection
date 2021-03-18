@@ -115,7 +115,8 @@ class Asda {
 
         $contracts = [
             'categories' => 'web/cms/taxonomy',
-            'child_category' => 'web/cms/taxonomy-page'
+            'child_category' => 'web/cms/taxonomy-page',
+            'promotion' => 'web/cms/link-save'
         ];
 
         if(!key_exists($type, $contracts)){
@@ -132,6 +133,9 @@ class Asda {
 
         if($type == 'child_category'){
             $variables['payload'] = [ 'page_type' => 'aisle', 'hierarchy_id' => $item_id, 'filter_query' => [],'page_meta_info' => true];
+        } else {
+            $variables['type'] = 'content';
+            $variables['payload'] = [ 'page_id' => $item_id, 'page_type' => 'linkSave', 'page_meta_info' => true ];
         }
 
         $request_data = [
@@ -153,7 +157,8 @@ class Asda {
 
         $required_property = [
             'categories' => 'tempo_taxonomy',
-            'child_category' => 'tempo_cms_content'
+            'child_category' => 'tempo_cms_content',
+            'promotion' => 'tempo_cms_content'
         ];
 
         $data_field = $required_property[$type];

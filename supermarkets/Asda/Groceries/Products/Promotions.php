@@ -18,7 +18,7 @@ class Promotions extends Asda {
         $promotion_info = $product_data->promotion_info[0];
 
         $price_details = new PriceModel();
-
+        
         $price_details->price = $this->product_item_price($product_data);
 
         if($product_data->price->is_on_sale){
@@ -86,10 +86,10 @@ class Promotions extends Asda {
 
             $promotion_info = $this->promotion_info($promotion_site_id);
             $promotion->name = $promotion_info->name;
-            $promotion->category =$promotion_info->category;
+            $promotion->site_promotion_id = $promotion_site_id;
 
             $promotion->store_type_id = $this->config->get('stores.asda.store_type_id');
-            $promotion->site_promotion_id = $promotion_site_id;
+           
             $promotion->url = "https://groceries.asda.com/promotion/$promotion_name/$promotion_site_id";
             
             if(is_null($promotion_results)){
@@ -118,23 +118,22 @@ class Promotions extends Asda {
     }
 
     public function promotion_info($promotion_site_id){
-        $promotion_url = $this->endpoints->promotions . $promotion_site_id;
 
         if($this->env == 'dev'){
-            $promotion_response = file_get_contents(__DIR__."/../../data/Asda/Promotion.json");
+            $promotion_response = file_get_contents(__DIR__."/../../data/Asda/New_Promotion.json");
+            $promotion_info = $this->request->parse_json($promotion_response);
         } else {
-            $promotion_response = $this->request->request($promotion_url);
+            $promotion_info = $this->request_details('promotion', $promotion_site_id);
         }
 
-        $promotion_info = $this->request->parse_json($promotion_response);
-
-        $attributes = $promotion_info->contents[0]->mainContent[1]->contents[0]->records[0]->attributes;
-        $name = $attributes->{'sku.promoDisplayName'}[0];
-        $category = $attributes->{'sku.shelfName'}[0];
+        $promotion_details = $promotion_info->zones[0]->configs;
+        
+        $id = $promotion_details->promo_offer_type_code;
+        $name = $promotion_details->promo_display_name;
 
         $name = ucwords(strtolower($name));
 
-        return (object)['name' => $name, 'category' => $category];
+        return (object)['id' => $id, 'name' => $name];
     }
 
     public function promotion_calculator($promotion_id, $promotion_name){
