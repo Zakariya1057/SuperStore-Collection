@@ -13,12 +13,17 @@ use Services\Notification;
 use Monolog\Logger;
 use Services\Database;
 use Services\Config;
+use Services\Currency;
 
 class MonitorProducts {
     
-    public $notification, $config, $logger, $database, $product_model;
+    private $notification, $config, $logger, $database;
     
-    public $product_collection, $promotion_collection;
+    private $product_model, $monitor_model;
+
+    private $currency_service;
+    
+    private $product_collection, $promotion_collection;
 
     function __construct(Config $config, Logger $logger, Database $database, ProductInterface $product_collection, PromotionInterface $promotion_collection = null){
         $this->config = $config;
@@ -26,11 +31,14 @@ class MonitorProducts {
         $this->database = $database;
 
         $this->product_model = new ProductModel($database);
+        $this->monitor_model = new MonitoredProductModel($database);
 
         $this->product_collection = $product_collection;
         $this->promotion_collection = $promotion_collection;
 
         $this->notification = new Notification($config, $logger);
+
+        $this->currency_service = new Currency();
     }
 
     // Shared Monitor, check if data has changed, if so update in database.
@@ -44,8 +52,8 @@ class MonitorProducts {
         ->join('grocery_list_items', 'grocery_list_items.product_id', 'products.id')
         ->join('monitored_products', 'monitored_products.product_id', 'products.id')
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
-        ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
-        // ->where_raw(["store_type_id = $store_type_id"])
+        // ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
+        ->where_raw(["store_type_id = $store_type_id"])
         ->group_by('products.id')
         ->order_by('num_monitoring')
         // ->limit(1)
@@ -92,23 +100,47 @@ class MonitorProducts {
         $this->database->commit_transaction();
 
         if($price_changed){
-            $this->logger->debug('Product Price Changed. Send Notification');
-            $user = new UserModel();
-            $user->name = 'Zakariya';
-            $user->notification_token = 'e004ec30ed2277fd5a24ba8903f1d7e3ae321226d3e0fbd723ffb01865bdcbb8';
-
-            $product_name = $new_product->name;
-            $old_price = $old_product->price;
-            $new_price = $new_product->price;
-            $currency = $new_product->currency;
-
-            $title = "Price Change";
-            $content = "$product_name - Price Increased \n$currency$new_price";
-
-            $this->notification->send_notification($user, ['product' => $new_product], $title, $content);
+            $this->notify_product_changed($new_product, $old_product);
+            die('Complete');
         }
+        
     }
     
+
+    private function notify_product_changed($product, $old_product){
+
+        $this->logger->debug('Product Price Changed. Sending Notification');
+
+        $monitored_users  = $this->monitor_model
+        ->where(['product_id' => $old_product->id, 'send_notifications' => 1])
+        ->join('users', 'monitored_products.user_id', 'users.id')
+        ->group_by('user_id')->get();
+
+        $data = [
+            'product_id' => $old_product->id
+        ];
+
+        foreach($monitored_users as $user){
+            $notification_message = $this->create_notification_message($product, $old_product);
+            $this->notification->send_notification($user, $data, $notification_message);
+        }
+    }
+
+    private function create_notification_message($product, $old_product){
+        $product_name = $product->name;
+
+        $currency = $this->currency_service->get_currency_symbol($product->currency);
+
+        $new_price = $product->price;
+        $old_price = $old_product->price;
+
+        $changed_type = $new_price < $old_price ? 'Increased' : 'Decreased';
+
+        $title = "Product Price Change";
+        $content = "$product_name - $changed_type from {$currency}{$new_price} to {$currency}{$old_price}";
+
+        return ['title' => $title, 'body' => $content];
+    }
 
     private function available_check($new_product, $old_product, &$update_fields){
         if((int)$old_product->available != (int)$new_product->available){

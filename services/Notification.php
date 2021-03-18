@@ -19,7 +19,7 @@ class Notification {
     }
 
     // Send notification to user phone.
-    function send_notification($user, $data, $title, $content){
+    function send_notification($user, $data, $message){
         $notification_token = $user->notification_token;
 
         $this->logger->info("Sending Notification To: [{$user->id}] {$user->name}");
@@ -31,12 +31,10 @@ class Notification {
         
         $fp = stream_socket_client('ssl://'. $this->url , $err, $errstr, 60, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
 
-        $message = ['title' => $title, 'body' => $content];
-
         // Create the payload body
         $body['aps'] = array(
             'badge' => +1,
-            'alert' => (array)$message,
+            'alert' => $message,
             'sound' => 'default',
             'data' => (array)$data
         );
