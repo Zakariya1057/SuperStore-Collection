@@ -52,10 +52,8 @@ class Products extends CanadianSuperstore implements ProductInterface {
         }
 
         $this->database->commit_transaction();
-
+        
         return $product_id;
-
-        // die('Reached: '. $product->description);
         
     }
 

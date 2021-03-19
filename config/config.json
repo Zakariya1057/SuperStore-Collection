@@ -141,11 +141,24 @@
                 "type": {
                     "type": "text"
                 }
+            },
+
+            "promotions": {
+                "id": {
+                    "type": "integer"
+                },
+                "store_type_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "text",
+                    "analyzer": "text_analyzer"
+                }
             }
 
         },
 
-        "create_index": 1,
+        "create_index": 0,
         "index_documents": 1
     },
 
@@ -223,7 +236,7 @@
     
             "monitor": 1,
     
-            "stores": 0,
+            "stores": 1,
     
             "groceries": 1,
             "recommended": 1,

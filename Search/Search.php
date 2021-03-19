@@ -39,6 +39,7 @@ class Search {
         $mapping = new Mapping($this->config, $this->logger, $this->database, $this->client);
         $mapping->map_products();
         $mapping->map_stores();
+        $mapping->map_promotions();
         $mapping->map_categories();
     }
 
@@ -51,6 +52,7 @@ class Search {
         $index = new Indices($this->config, $this->logger, $this->database, $this->client);
         $index->index_products();
         $index->index_stores();
+        $index->index_promotions();
         $index->index_categories();
     }
     

@@ -7,6 +7,7 @@ use Models\Category\ChildCategoryModel;
 use Models\Category\GrandParentCategoryModel;
 use Models\Category\ParentCategoryModel;
 use Models\Product\ProductModel;
+use Models\Product\PromotionModel;
 use Models\Store\StoreTypeModel;
 use Monolog\Logger;
 use Services\Config;
@@ -15,18 +16,19 @@ use Services\Database;
 // Index Documents
 class Indices extends Search {
 
-    public $product, $store;
-    public $child_category, $parent_category, $grand_parent_category;
+    public $product_model, $promotion_model, $store_model;
+    public $child_category_model, $parent_category_model, $grand_parent_category_model;
 
     function __construct(Config $config, Logger $logger, Database $database, Client $client){
         parent::__construct($config, $logger, $database, $client);
 
-        $this->product = new ProductModel($database);
-        $this->store = new StoreTypeModel($database);
+        $this->product_model = new ProductModel($database);
+        $this->store_model = new StoreTypeModel($database);
+        $this->promotion_model = new PromotionModel($database);
 
-        $this->child_category = new ChildCategoryModel($database);
-        $this->parent_category = new ParentCategoryModel($database);
-        $this->grand_parent_category = new GrandParentCategoryModel($database);
+        $this->child_category_model = new ChildCategoryModel($database);
+        $this->parent_category_model = new ParentCategoryModel($database);
+        $this->grand_parent_category_model = new GrandParentCategoryModel($database);
     }
 
     public function index_products(){
@@ -35,12 +37,12 @@ class Indices extends Search {
 
         $this->delete_documents('products');
 
-        $results = $this->product->select_raw('COUNT(*) as total_count')->get();
+        $results = $this->product_model->select_raw('COUNT(*) as total_count')->get();
         $product_count = $results[0]->total_count;
 
         // Loop through groups of 5000 products.
         for($i = 0; $i < $product_count; $i += 1000){
-            $products = $this->product->limit("$i,1000")->get();
+            $products = $this->product_model->limit("$i,1000")->get();
             $this->logger->debug("Indexing Product Groups: $i,1000");
             $this->index_product_group($products);
         }
@@ -53,7 +55,7 @@ class Indices extends Search {
 
         $this->delete_documents('stores');
 
-        $stores = $this->store->get();
+        $stores = $this->store_model->get();
 
         $params = [
             'body' => []
@@ -77,6 +79,36 @@ class Indices extends Search {
         $responses = $this->client->bulk($params);
     }
 
+    public function index_promotions(){
+
+        $this->logger->debug('Indexing Promotions');
+
+        $this->delete_documents('promotions');
+
+        $promotions = $this->promotion_model->get();
+
+        $params = [
+            'body' => []
+        ];
+
+        foreach($promotions as $promotion){
+            $params['body'][] = [
+                'index' => [
+                    '_index' => 'promotions',
+                    '_id'    => $promotion->id
+                ]
+            ];
+
+            $params['body'][] = [
+                'id' => (int)$promotion->id,
+                'store_type_id' => (int)$promotion->id,
+                'name' => $promotion->name,
+            ];
+        }
+
+        $responses = $this->client->bulk($params);
+    }
+
     public function index_categories(){
 
         $this->logger->debug('Indexing Categories');
@@ -84,9 +116,9 @@ class Indices extends Search {
         $this->delete_documents('categories');
 
         $categories = array_merge(
-            $this->child_category->select_raw(['*', '"child_categories" as "type"'])->get(), 
-            $this->parent_category->select_raw(['*', '"parent_categories" as "type"'])->get(),
-            $this->grand_parent_category->select_raw(['*', '"grand_parent_categories" as "type"'])->get()
+            $this->child_category_model->select_raw(['*', '"child_categories" as "type"'])->get(), 
+            $this->parent_category_model->select_raw(['*', '"parent_categories" as "type"'])->get(),
+            $this->grand_parent_category_model->select_raw(['*', '"grand_parent_categories" as "type"'])->get()
         );
 
         $params = [

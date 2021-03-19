@@ -24,6 +24,11 @@ class Mapping extends Search {
         $response = $this->client->indices()->create($params);
     }
 
+    public function map_promotions(){
+        $params = $this->create_params('promotions');
+        $response = $this->client->indices()->create($params);
+    }
+
     public function map_categories(){
         $params = $this->create_params('categories');
         $response = $this->client->indices()->create($params);
