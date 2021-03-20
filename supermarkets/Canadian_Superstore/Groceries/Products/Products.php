@@ -12,8 +12,11 @@ use Models\Product\ProductImageModel;
 use Models\Product\ProductModel;
 
 use Interfaces\ProductInterface;
+use Models\Product\PromotionModel;
 
 class Products extends CanadianSuperstore implements ProductInterface {
+
+    private $promotions;
 
     public function create_product($site_product_id, $category_details, $request_type = null, $product = null){
 
@@ -29,7 +32,6 @@ class Products extends CanadianSuperstore implements ProductInterface {
             $this->logger->debug("Start Creating Product: [{$product->site_product_id}] {$product->name}");
 
             $product_results = $product->where(['site_product_id' => $product->site_product_id])->get()[0] ?? null;
-            // $product_results = null;
 
             if(is_null($product_results)){
                 $this->logger->debug('New Product Found. Storing In Database: ' . $product->name);
@@ -53,6 +55,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
         $this->database->commit_transaction();
         
+
         return $product_id;
         
     }
@@ -97,7 +100,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
         $product_endpoints = $this->endpoints->products;
 
         if(is_null($request_type) || $request_type == 'v3'){
-            $endpoint_v3 = $product_endpoints->v3 . "$product_site_id?lang=en&storeId=1080&banner=superstore";
+            $endpoint_v3 = $product_endpoints->v3 . "$product_site_id?lang=en&storeId=1077&banner=superstore";
             
             try {
                 $product_response = $this->request->request($endpoint_v3, 'GET', [], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, 1);
@@ -194,17 +197,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
         $product->weight = $product_details->packageSize;
         $product->currency = $this->currency;
         
-        $price_details = $product_details->prices;
-
-        $product->price = $price_details->price->value;
-
-        if(!is_null($price_details->wasPrice)){
-            $ends_at = $product_details->badges->dealBadge->expiryDate;
-
-            $product->is_on_sale = true;
-            $product->sale_ends_at = date("Y-m-d H:i:s", strtotime($ends_at));
-            $product->old_price = $price_details->wasPrice->value;
-        }
+        $this->set_price_v3($product, $product_details);
 
         $this->set_description($product, $product_details->description);
 
@@ -257,6 +250,34 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
         return $product;
     }
+
+
+
+    private function set_price_v3($product, $product_details){
+
+        $price_details = $product_details->prices;
+
+        $product->price = $price_details->price->value;
+
+        $deal = $product_details->badges->dealBadge;
+
+        if(!is_null($price_details->wasPrice)){
+            $ends_at = $deal->expiryDate;
+
+            $product->is_on_sale = true;
+            $product->sale_ends_at = date("Y-m-d H:i:s", strtotime($ends_at));
+            $product->old_price = $price_details->wasPrice->value;
+
+        } else if(!is_null($product_details->badges->dealBadge)){
+            if(is_null($this->promotions)){
+                $this->promotions = new Promotions($this->config,$this->logger,$this->database,$this->remember);
+            }
+
+            $product->promotion_id = $this->promotions->parse_promotion_v3($deal);
+        }
+
+    }
+
 
     private function create_image($name, $url, $size): ?string {
         return $this->image->save($name, $url, $size, "products", $this->store_name);

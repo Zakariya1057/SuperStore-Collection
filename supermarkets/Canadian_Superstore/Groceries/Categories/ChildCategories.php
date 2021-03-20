@@ -108,7 +108,7 @@ class ChildCategories extends Categories {
                     'banner' => 'superstore',
                     'cartId' => '564d3383-738b-4407-b170-1064b504d991',
                     'lang' => 'en',
-                    'storeId' => '1080',
+                    'storeId' => '1077',
                     'date' => '13032021',
                     'pickupType' => 'STORE',
                     'categoryId' => $category->number

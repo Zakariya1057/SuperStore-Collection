@@ -38,7 +38,9 @@ class PromotionModel extends Model {
                 'nullable' => true
             ],
             
-            'site_promotion_id' => [],
+            'site_promotion_id' => [
+                'nullable' => true
+            ],
 
             'store_type_id' => [
                 'type' => 'int'

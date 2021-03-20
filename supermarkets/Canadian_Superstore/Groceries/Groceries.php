@@ -27,12 +27,12 @@ class Groceries extends CanadianSuperstore {
 
         $groceries_endpoint = $this->endpoints->groceries;
 
-        // if($this->env == 'dev'){
+        if($this->env == 'dev'){
             $groceries_response = file_get_contents(__DIR__."/../../../data/Canadian_Superstore/Groceries.json");
-        // } else {
-        //     $groceries_response = $this->request->request($groceries_endpoint, 'GET', [], ['authorization' => 'Bearer ' . $this->header_token]);
-        // }
-        
+        } else {
+            $groceries_response = $this->request->request($groceries_endpoint, 'GET', [], ['authorization' => 'Bearer ' . $this->header_token]);
+        }
+
         $grocery_data = $this->request->parse_json($groceries_response);
 
         $categories = $this->grand_parent_categories($grocery_data);
@@ -63,7 +63,7 @@ class Groceries extends CanadianSuperstore {
                 $category_name = $details['name'];
 
                 // Grand Parent Category
-                if(property_exists($fields,'pcsCategoryId') && $category_id != '00991f29746140d6793a53'){
+                if(property_exists($fields,'pcsCategoryId') && property_exists($fields, 'children') && $category_id != '138494ea6b11b88466f18d'){
                     // $this->logger->debug('--- Grand Parent Category: '. $category_name);
 
                     $details['parent_categories'] = [];
