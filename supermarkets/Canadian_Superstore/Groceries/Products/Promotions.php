@@ -18,11 +18,11 @@ class Promotions extends CanadianSuperstore {
         // 2 FOR $12.00
         preg_match('/(\d+) FOR \$(\d+\.*\d*)/i', $promotion_name, $promotion_for_matches);
 
-        $price = $quantity = null;
+        $price = $minimum = $quantity = null;
 
         if($promotion_min_matches){
             $price = $promotion_min_matches[1];
-            $quantity = $promotion_min_matches[2];
+            $minimum = $promotion_min_matches[2];
         }
 
         if($promotion_for_matches){
@@ -39,6 +39,7 @@ class Promotions extends CanadianSuperstore {
 
         $promotion->name = $promotion_name;
         $promotion->price = $price;
+        $promotion->minimum = $minimum;
         $promotion->quantity = $quantity;
 
         if(!is_null($promotion_expires)){

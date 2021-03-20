@@ -24,6 +24,8 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
         $product_id = null;
 
+        // $site_product_id = '21019804_EA';
+
         if(is_null($product)){
             $product = $this->product_details($site_product_id, false, $request_type);
         }

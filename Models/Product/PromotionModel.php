@@ -12,6 +12,9 @@ class PromotionModel extends Model {
         $price,
         $for_quantity,
 
+        $minimum,
+        $maximum,
+
         $site_promotion_id,
         $url,
         $expires,
@@ -28,7 +31,9 @@ class PromotionModel extends Model {
         $fields = [
             'name' => [],
 
-            'quantity' => [],
+            'quantity' => [
+                'nullable' => true,
+            ],
 
             'price' => [
                 'nullable' => true
@@ -38,6 +43,14 @@ class PromotionModel extends Model {
                 'nullable' => true
             ],
             
+            'minimum' => [
+                'nullable' => true
+            ],
+
+            'maximum' => [
+                'nullable' => true
+            ],
+
             'site_promotion_id' => [
                 'nullable' => true
             ],
