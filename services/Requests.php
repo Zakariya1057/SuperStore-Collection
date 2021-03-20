@@ -6,21 +6,21 @@ use Exception;
 use Symfony\Component\DomCrawler\Crawler;
 use \Symfony\Component\HttpClient\HttpClient;
 
-// Used for sending GET/POST Requests. Retrying And Logging
 class Requests {
  
-    public $logger,$config,$validator;
+    public $logger, $config, $validator, $client;
 
     function __construct($config,$logger){
         $this->logger  = $logger;
         $this->config  = $config;
+
         $this->validator = new Validator();
+
+        $this->client = HttpClient::create(['verify_peer' => false]);
     }
 
     public function request($url, $method='GET', $data=[], $headers=[], $timeout=300, $retry_attempts = null, $raw_data = false){
 
-        $client = HttpClient::create();
-        
         $retry_config = $this->config->get('retry.request');
 
         $times_retried = 0;
@@ -55,7 +55,7 @@ class Requests {
 
             try {
 
-                $response = $client->request($method, $url,$request_data);
+                $response = $this->client->request($method, $url,$request_data);
 
                 $this->logger->debug("$method REQUEST: $url");
 
@@ -99,8 +99,9 @@ class Requests {
 
     }
     
+    // Parsing Content
     public function parse_html($content){
-        return new Crawler( $content );
+        return new Crawler($content);
     }
 
     public function parse_json($content){
