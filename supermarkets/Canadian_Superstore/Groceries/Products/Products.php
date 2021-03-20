@@ -55,7 +55,6 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
         $this->database->commit_transaction();
         
-
         return $product_id;
         
     }
@@ -99,11 +98,13 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
         $product_endpoints = $this->endpoints->products;
 
+        $retry_times = !is_null($request_type) ? 3 : 1;
+
         if(is_null($request_type) || $request_type == 'v3'){
             $endpoint_v3 = $product_endpoints->v3 . "$product_site_id?lang=en&storeId=1077&banner=superstore";
             
             try {
-                $product_response = $this->request->request($endpoint_v3, 'GET', [], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, 1);
+                $product_response = $this->request->request($endpoint_v3, 'GET', [], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, $retry_times);
                 $product_details = $this->request->parse_json($product_response);
                 $product = $this->parse_product_v3($product_details, $ignore_image);
     
@@ -117,7 +118,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
             $endpoint_v2 = $product_endpoints->v2 . $product_site_id;
 
             try {
-                $product_response = $this->request->request($endpoint_v2, 'GET', [], [], 300, 1);
+                $product_response = $this->request->request($endpoint_v2, 'GET', [], [], 300, $retry_times);
                 $product_details = $this->request->parse_json($product_response);
                 $product = $this->parse_product_v2($product_details, $ignore_image);
             } catch(Exception $e){
