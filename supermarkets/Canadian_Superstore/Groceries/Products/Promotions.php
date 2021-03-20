@@ -13,32 +13,42 @@ class Promotions extends CanadianSuperstore {
         $promotion_expires = $promotion_details->expiryDate ?? null;
         
         // $2.68 MIN 3
-        preg_match('/(\d+\.*\d*) MIN (\d+)/i', $promotion_name, $promotion_matches);
+        preg_match('/(\d+\.*\d*) MIN (\d+)/i', $promotion_name, $promotion_min_matches);
 
-        if($promotion_matches){
+        // 2 FOR $12.00
+        preg_match('/(\d+) FOR \$(\d+\.*\d*)/i', $promotion_name, $promotion_for_matches);
 
-            $price = $promotion_matches[1];
-            $quantity = $promotion_matches[2];
+        $price = $quantity = null;
 
-            $promotion = new PromotionModel($this->database);
-            $promotion->store_type_id = $this->store_type_id;
+        if($promotion_min_matches){
+            $price = $promotion_min_matches[1];
+            $quantity = $promotion_min_matches[2];
+        }
 
-            $promotion->name = $promotion_name;
-            $promotion->price = $price;
-            $promotion->quantity = $quantity;
-            $promotion->expires = 1;
+        if($promotion_for_matches){
+            $price = $promotion_for_matches[2];
+            $quantity = $promotion_for_matches[1];
+        }
 
-            if(!is_null($promotion_expires)){
-                $promotion_expires = date("Y-m-d H:i:s", strtotime($promotion_expires));
-            }
-
-            $promotion->ends_at = $promotion_expires;
-
-            return $promotion->save();
-
-        } else {
+        if(is_null($promotion_for_matches) && is_null($promotion_min_matches)){
             throw new Exception('Unknown Promotion Type Encountered: '. $promotion_name);
         }
+
+        $promotion = new PromotionModel($this->database);
+        $promotion->store_type_id = $this->store_type_id;
+
+        $promotion->name = $promotion_name;
+        $promotion->price = $price;
+        $promotion->quantity = $quantity;
+
+        if(!is_null($promotion_expires)){
+            $promotion->expires = 1;
+            $promotion_expires = date("Y-m-d H:i:s", strtotime($promotion_expires));
+        }
+
+        $promotion->ends_at = $promotion_expires;
+
+        return $promotion->save();
     }
 
 }
