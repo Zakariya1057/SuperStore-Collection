@@ -85,7 +85,12 @@ class Promotions extends Asda {
             $promotion_site_id = $promotion_details->promo_id;
 
             $promotion_info = $this->promotion_info($promotion_site_id);
+
             $promotion->name = $promotion_info->name;
+            $promotion->quantity = $promotion_info->quantity;
+            $promotion->price = $promotion_info->price;
+            $promotion->for_quantity = $promotion_info->for_quantity;
+
             $promotion->site_promotion_id = $promotion_site_id;
 
             $promotion->store_type_id = $this->config->get('stores.asda.store_type_id');
@@ -128,15 +133,14 @@ class Promotions extends Asda {
 
         $promotion_details = $promotion_info->zones[0]->configs;
         
-        $id = $promotion_details->promo_offer_type_code;
         $name = $promotion_details->promo_display_name;
 
         $name = ucwords(strtolower($name));
 
-        return (object)['id' => $id, 'name' => $name];
+        return $this->parse_promotion($name);
     }
 
-    public function promotion_calculator($promotion_id, $promotion_name){
+    private function parse_promotion($promotion_name){
 
         $value = html_entity_decode($promotion_name, ENT_QUOTES);
         preg_match('/(\d+).+£(\d+\.*\d*)$/',$value,$price_promotion_matches);
@@ -155,10 +159,10 @@ class Promotions extends Asda {
         }
 
         if(!$quantity_promotion_matches && !$price_promotion_matches){
-            return null;
+            throw new Exception('Unknown Promotion Type Encountered: ' . $promotion_name);
         }
 
-        return (object)['id' => $promotion_id,'name' => $promotion_name, 'quantity' => $quantity, 'price' => $price, 'for_quantity' => $for_quantity];
+        return (object)['name' => $promotion_name, 'quantity' => $quantity, 'price' => $price, 'for_quantity' => $for_quantity];
     }
 
 }

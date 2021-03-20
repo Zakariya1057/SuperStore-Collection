@@ -6,7 +6,17 @@ use Models\Model;
 
 class PromotionModel extends Model {
 
-    public $name,$site_promotion_id,$url,$expires,$starts_at,$ends_at;
+    public 
+        $name,
+        $quantity,
+        $price,
+        $for_quantity,
+
+        $site_promotion_id,
+        $url,
+        $expires,
+        $starts_at,
+        $ends_at;
 
     // Promotion Id, Name, URL, expires, starts_at,ends_at
     function __construct($database=null){
@@ -17,14 +27,32 @@ class PromotionModel extends Model {
 
         $fields = [
             'name' => [],
+
+            'quantity' => [],
+
+            'price' => [
+                'nullable' => true
+            ],
+
+            'for_quantity' => [
+                'nullable' => true
+            ],
+            
             'site_promotion_id' => [],
+
             'store_type_id' => [
                 'type' => 'int'
             ],
+
             'expires' => ['nullable' => true],
+
             'starts_at' => ['nullable' => true],
+
             'ends_at' => ['nullable' => true],
-            'url' => []
+
+            'url' => [
+                'nullable' => true
+            ]
         ];
 
         $this->fields($fields);
