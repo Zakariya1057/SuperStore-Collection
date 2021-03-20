@@ -51,6 +51,17 @@ class Groceries extends CanadianSuperstore {
 
         $categories = [];
 
+        $acceptable_categories = [
+            '27988' => 1,
+            '27985' => 1,
+            '27987' => 1,
+            '27986' => 1,
+            '27990' => 1,
+            '27992' => 1,
+            '27991' => 1,
+            '27994' => 1,
+        ];
+
         foreach($category_items as $category){
 
             $fields = $category->fields;
@@ -63,7 +74,7 @@ class Groceries extends CanadianSuperstore {
                 $category_name = $details['name'];
 
                 // Grand Parent Category
-                if(property_exists($fields,'pcsCategoryId') && property_exists($fields, 'children') && $category_id != '138494ea6b11b88466f18d'){
+                if(property_exists($fields,'pcsCategoryId') && key_exists($fields->pcsCategoryId, $acceptable_categories)){
                     // $this->logger->debug('--- Grand Parent Category: '. $category_name);
 
                     $details['parent_categories'] = [];
