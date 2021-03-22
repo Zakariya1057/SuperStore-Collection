@@ -37,6 +37,9 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
             if(is_null($product_results)){
                 $this->logger->debug('New Product Found. Storing In Database: ' . $product->name);
+
+                $this->create_promotion($product);
+
                 $product_id = $product->save();
 
                 $this->create_product_category($category_details, $product_id);
@@ -83,6 +86,12 @@ class Products extends CanadianSuperstore implements ProductInterface {
         }
     }
 
+    private function create_promotion(&$product){
+        if(property_exists($product, 'promotion') && !is_null($product->promotion)){
+            $product->promotion_id = $product->promotion->save();
+        }
+    }
+
     private function create_images($product_id, $images){
         foreach($images as $image){
             $image->product_id = $product_id;
@@ -124,9 +133,9 @@ class Products extends CanadianSuperstore implements ProductInterface {
                 $product_details = $this->request->parse_json($product_response);
                 $product = $this->parse_product_v2($product_details, $ignore_image);
             } catch(Exception $e){
-                // $this->logger->error('Product Not Found On Either Endpoints: ' . $e->getMessage());
-                throw new Exception('Product Not Found On Either Endpoints');
-                // return null;
+                $this->logger->error('Product Not Found On Either Endpoints: ' . $e->getMessage());
+                // throw new Exception('Product Not Found On Either Endpoints');
+                return null;
             }
 
         }
@@ -234,18 +243,32 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
         if(!$ignore_image){
             foreach($product_details->imageAssets as $index => $image_asset){
+                
+                $small_url = $image_asset->smallUrl ?? null;
+                $medium_url = $image_asset->mediumUrl ?? null;
+
                 if($index == 0){
-                    $product->small_image = $this->create_image($product->site_product_id, $image_asset->smallUrl, 'small');
-                    $product->large_image = $this->create_image($product->site_product_id, $image_asset->mediumUrl, 'large');
+                    
+                    if(!is_null($small_url)){
+                        $product->small_image = $this->create_image($product->site_product_id, $small_url,  'small');
+                    }
+                    
+                    if(!is_null($medium_url)){
+                        $product->large_image = $this->create_image($product->site_product_id, $medium_url, 'large');
+                    }
+
                 } else {
-                    $image = new ProductImageModel($this->database);
+
+                    if(!is_null($small_url)){
+                        $image = new ProductImageModel($this->database);
     
-                    $image_name = $this->create_image($product->site_product_id . '_' . $index, $image_asset->smallUrl, 'large');
-    
-                    if(!is_null($image_name)){
-                        $image->name = $image_name;
-                        $image->size = "large"; 
-                        $product->images[] = $image;
+                        $image_name = $this->create_image($product->site_product_id . '_' . $index, $small_url, 'large');
+        
+                        if(!is_null($image_name)){
+                            $image->name = $image_name;
+                            $image->size = "large"; 
+                            $product->images[] = $image;
+                        }
                     }
                 }
             }
@@ -276,7 +299,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
                 $this->promotions = new Promotions($this->config,$this->logger,$this->database,$this->remember);
             }
 
-            $product->promotion_id = $this->promotions->parse_promotion_v3($deal);
+            $product->promotion = $this->promotions->parse_promotion_v3($deal);
         }
 
     }

@@ -49,7 +49,7 @@ class Promotions extends CanadianSuperstore {
 
         $promotion->ends_at = $promotion_expires;
 
-        return $promotion->save();
+        return $promotion;
     }
 
 }

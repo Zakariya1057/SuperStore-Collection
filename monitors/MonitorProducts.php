@@ -52,8 +52,8 @@ class MonitorProducts {
         ->join('grocery_list_items', 'grocery_list_items.product_id', 'products.id')
         ->join('monitored_products', 'monitored_products.product_id', 'products.id')
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
-        // ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
-        ->where_raw(["store_type_id = $store_type_id"])
+        ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
+        // ->where_raw(["store_type_id = $store_type_id"])
         ->group_by('products.id')
         ->order_by('num_monitoring')
         // ->limit(1)
@@ -78,7 +78,13 @@ class MonitorProducts {
 
             $new_product = $this->product_collection->product_details($site_product_id, true);
 
-            $this->check_product_change($new_product, $product);
+            if(is_null($new_product)){
+                $this->logger->error('Failed To Find Product: ' . $site_product_id);
+            } else {
+                $this->check_product_change($new_product, $product);
+            }
+
+            
             $this->logger->notice("------- Checking $name Product Complete --------");
         }
 
@@ -152,7 +158,6 @@ class MonitorProducts {
             'description',
             'features',
             'dimensions',
-            'promotion_id',
             'weight',
             'brand',
             'dietary_info',
@@ -182,6 +187,7 @@ class MonitorProducts {
             $this->logger->debug("Price Changed: $old_value -> $new_value");
             $price_changed = true;
             $update_fields['price'] = $new_value;
+            $update_fields['old_price'] = null;
         }
 
         return $price_changed;
