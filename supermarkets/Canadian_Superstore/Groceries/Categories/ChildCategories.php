@@ -3,6 +3,7 @@
 namespace Supermarkets\Canadian_Superstore\Groceries\Categories;
 
 use Exception;
+use Models\Category\ChildCategoryModel;
 use Supermarkets\Canadian_Superstore\Groceries\Products\Products;
 
 class ChildCategories extends Categories {
@@ -78,9 +79,12 @@ class ChildCategories extends Categories {
                 
             }
 
+        } else {
+            $this->logger->info('No product found for category. Removing it');
+            $category_model = new ChildCategoryModel($this->database);
+            $category_model->where(['id' => $category_details->id])->delete();
         }
 
-    
         $this->remember->set('product_index',0);
     }
 
