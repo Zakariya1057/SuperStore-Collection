@@ -20,7 +20,6 @@ class Categories extends CanadianSuperstore {
 
         $category = (object)$category;
 
-        $category_store_id = $category->id;
         $category_name = $category->name;
         $parent_category_id = $category->parent_category_id ?? null;
         $category_number = $category->number ?? null;
@@ -32,18 +31,18 @@ class Categories extends CanadianSuperstore {
             'store_type_id' => $this->store_type_id 
         ];
 
-        if($type == "grand_parent"){
+        if($type == 'grand_parent'){
             $category = new GrandParentCategoryModel($this->database);
             unset($insert_fields['parent_category_id']);
-        } elseif($type == "parent"){
+        } elseif($type == 'parent'){
             $category = new ParentCategoryModel($this->database);
-        } elseif($type == "child"){
+        } elseif($type == 'child'){
             $category = new ChildCategoryModel($this->database);
         } else {
             throw new Exception("Unknown Category Type Found: $type");
         }
 
-        $category_item = $category->where(["site_category_id" => $category_store_id])->get()[0] ?? null;
+        $category_item = $category->where(['site_category_id' => $category_number])->get()[0] ?? null;
 
         if(!is_null($category_item)){
             $this->logger->debug($category_name . ' Category: Found In Database');
