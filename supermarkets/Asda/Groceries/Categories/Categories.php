@@ -17,8 +17,20 @@ class Categories extends Asda {
     }
 
     public function select_category($category,$type){
-        $category_store_id = $category->hierarchy_id;
-        $category_name = $category->taxonomy_name;
+
+        $required_fields = [
+            'id',
+            'name'
+        ];
+
+        foreach($required_fields as $field){
+            if(!property_exists($category, $field)){
+                throw new Exception("$field Field Required");
+            }
+        }
+
+        $category_store_id = $category->id;
+        $category_name = $category->name;
         $parent_category_id = $category->parent_category_id ?? null;
 
         $insert_fields = [

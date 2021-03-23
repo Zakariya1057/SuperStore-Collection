@@ -10,12 +10,13 @@ class GrandParentCategories extends Categories {
         
         $last_category_index = $this->remember->get('grand_parent_category_index') ?? 0;
         
-        $categories_list = array_slice($categories->categories,$last_category_index);
+        $categories_list = array_slice($categories,$last_category_index);
 
         if(count($categories_list) != 0){
 
             $first_category = $categories_list[0];
-            $this->logger->notice("Starting With Grand Parent Category: [$last_category_index] " . $first_category->taxonomy_name);
+
+            $this->logger->notice("Starting With Grand Parent Category: [$last_category_index] " . $first_category->name);
     
             foreach($categories_list as $index => $category_item){
                 $this->remember->set('grand_parent_category_index',$index + $last_category_index);

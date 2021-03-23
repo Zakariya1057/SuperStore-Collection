@@ -19,12 +19,12 @@ class ChildCategories extends Categories {
 
         $last_category_index = $this->remember->get('child_category_index') ?? 0;
 
-        $categories_list = array_slice( $department->child_taxonomies, $last_category_index );
+        $categories_list = array_slice( $department->categories, $last_category_index );
 
         if(count($categories_list) != 0){
 
             $first_category = $categories_list[0];
-            $this->logger->debug("Starting With Child Category: [$last_category_index] " . $first_category->taxonomy_name);
+            $this->logger->debug("Starting With Child Category: [$last_category_index] " . $first_category->name);
     
             foreach($categories_list as $index => $aisle){
 
