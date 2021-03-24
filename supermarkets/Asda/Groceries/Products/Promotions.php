@@ -131,13 +131,17 @@ class Promotions extends Asda {
             $promotion_info = $this->request_details('promotion', $promotion_site_id);
         }
 
-        $promotion_details = $promotion_info->zones[0]->configs;
-        
-        $name = $promotion_details->promo_display_name;
+        foreach($promotion_info->zones as $promotion_item){
+            $promotion_details = $promotion_item->configs;
 
-        $name = ucwords(strtolower($name));
+            if(property_exists($promotion_details, 'promo_display_name')){
+                $name = $promotion_details->promo_display_name;
+                $name = ucwords(strtolower($name));
+                return $this->parse_promotion($name);
+            }
+        }
 
-        return $this->parse_promotion($name);
+        return null;
     }
 
     private function parse_promotion($promotion_name){
@@ -159,7 +163,12 @@ class Promotions extends Asda {
         }
 
         if(!$quantity_promotion_matches && !$price_promotion_matches){
-            throw new Exception('Unknown Promotion Type Encountered: ' . $promotion_name);
+            // Wine buy 6 
+            preg_match('/Wine buy 6|1 Main 1 Side 1 Dessert 1 Drink|2 Pizzas, 1 Side, 1 Drink|2 Pizzas 1 Drink - £5 Pizza Deal/i',$value,$ignore_promotions);
+
+            if(!$ignore_promotions){
+                throw new Exception('Unknown Promotion Type Encountered: ' . $promotion_name);
+            }
         }
 
         return (object)['name' => $promotion_name, 'quantity' => $quantity, 'price' => $price, 'for_quantity' => $for_quantity];

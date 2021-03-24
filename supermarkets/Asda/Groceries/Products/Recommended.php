@@ -28,26 +28,32 @@ class Recommended extends Asda {
 
         $products_without_recommended = $this->product_model->select(['id','site_product_id','name'])->where(['store_type_id' => $this->store_type_id, 'recommended_searched' => null])->order_by('id','ASC')->get();
         
-        if($products_without_recommended){
+        // After recommended product run additonal product will be created. These will require an addtional run.
+        while(true){
 
-            $product_count = count($products_without_recommended);
+            if($products_without_recommended){
 
-            $this->logger->debug("Found $product_count Products Without Recommended");
-    
-            foreach($products_without_recommended as $product){
-                $name = $product->name;
-                $product_id = $product->id;
-                $site_product_id = $product->site_product_id;
-    
-                $this->logger->debug("New Product To Find Recommended Item: [$product_id]$name");
-    
-                $this->database->start_transaction();
-                $this->product_recommended($product_id, $site_product_id);
-                $this->database->commit_transaction();
+                $product_count = count($products_without_recommended);
+
+                $this->logger->debug("Found $product_count Products Without Recommended");
+        
+                foreach($products_without_recommended as $product){
+                    $name = $product->name;
+                    $product_id = $product->id;
+                    $site_product_id = $product->site_product_id;
+        
+                    $this->logger->debug("New Product To Find Recommended Item: [$product_id]$name");
+        
+                    $this->database->start_transaction();
+                    $this->product_recommended($product_id, $site_product_id);
+                    $this->database->commit_transaction();
+                }
+
+            } else {
+                $this->logger->notice('No Product Without Recommended Found');
+                break;
             }
-
-        } else {
-            $this->logger->notice('No Product Without Recommended Found');
+            
         }
 
         $this->logger->notice('------ Product Recommended Complete ---------');

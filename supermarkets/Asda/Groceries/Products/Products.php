@@ -29,7 +29,7 @@ class Products extends Asda implements ProductInterface {
         $this->promotions = new Promotions($this->config,$this->logger,$this->database,$this->remember);
     }
 
-    public function create_product($product_site_id, $grand_parent_category_id=null, $parent_category_id=null, $child_category_id=null,$parent_site_category_name=null){
+    public function create_product($product_site_id, $child_category, $parent_site_category_name=null){
         //Get product details for each product and insert into database.
 
         $this->logger->info("Product ID: $product_site_id");
@@ -45,7 +45,7 @@ class Products extends Asda implements ProductInterface {
 
             $product_details  = $this->product_details($product_site_id);
 
-            if(is_null($parent_category_id)){
+            if(is_null($child_category->parent_category_id)){
 
                 if(is_null($parent_site_category_name)){
                     throw new Exception('Parent Category Id or Parent Category Name Required');
@@ -87,9 +87,9 @@ class Products extends Asda implements ProductInterface {
                 $product_id = $product_details->save();
 
                 $product_categories->product_id = $product_id;
-                $product_categories->child_category_id = $child_category_id;
-                $product_categories->parent_category_id = $parent_category_id;
-                $product_categories->grand_parent_category_id = $grand_parent_category_id;
+                $product_categories->child_category_id = $child_category->id;
+                $product_categories->parent_category_id = $child_category->parent_category_id;
+                $product_categories->grand_parent_category_id = $child_category->grand_parent_category_id;
 
                 $product_categories->save();
 
@@ -108,13 +108,13 @@ class Products extends Asda implements ProductInterface {
             $this->logger->info("Product Found In Database: $product_site_id");
             // If under new category, save that under multiple categories
 
-            $results = $product_categories->where(['product_id' => $product_results->id, 'child_category_id' => $child_category_id])->get()[0] ?? null;
+            $results = $product_categories->where(['product_id' => $product_results->id, 'child_category_id' => $child_category->id])->get()[0] ?? null;
             if(is_null($results)){
                 $this->logger->info("No Product Under Category: $product_site_id");
                 $product_categories->product_id = $product_results->id;
-                $product_categories->child_category_id = $child_category_id;
-                $product_categories->parent_category_id = $parent_category_id;
-                $product_categories->grand_parent_category_id = $grand_parent_category_id;
+                $product_categories->child_category_id = $child_category->id;
+                $product_categories->parent_category_id = $child_category->parent_category_id;
+                $product_categories->grand_parent_category_id = $child_category->grand_parent_category_id;
                 $product_categories->save();
             }
 
@@ -164,7 +164,7 @@ class Products extends Asda implements ProductInterface {
             return null;
         }
 
-        $this->logger->notice('--- Start Product('.$item->sku_id.'): '.$item->name .' ---');
+        $this->logger->notice('----- Start Product('.$item->sku_id.'): '.$item->name .' -----');
 
         $product = new ProductModel();
         $product->name = $this->clean_product_name($name);
@@ -185,7 +185,7 @@ class Products extends Asda implements ProductInterface {
 
         $this->product_details = $product_details;
 
-        $this->logger->notice('--- Complete Product('.$item->sku_id.'): '.$item->name .' ---');
+        $this->logger->notice('----- Complete Product('.$item->sku_id.'): '.$item->name .' -----');
 
         return $product;
     }

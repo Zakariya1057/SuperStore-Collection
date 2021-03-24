@@ -7,11 +7,20 @@ use Models\Category\CategoryModel;
 use Models\Category\ChildCategoryModel;
 use Models\Category\GrandParentCategoryModel;
 use Models\Category\ParentCategoryModel;
+use Models\Product\ProductModel;
 use Supermarkets\Asda\Asda;
 
 class Categories extends Asda {
 
+    public $grand_parent_category_model, $parent_category_model, $child_category_model, $product_model;
+
     public function categories($categories){
+
+        $this->grand_parent_category_model = new ParentCategoryModel($this->database);
+        $this->parent_category_model = new ParentCategoryModel($this->database);
+        $this->child_category_model = new ChildCategoryModel($this->database);
+        $this->product_model = new ProductModel($this->database);
+
         $grand_parent_categories = new GrandParentCategories($this->config, $this->logger, $this->database, $this->remember);
         $grand_parent_categories->create_categories($categories);
     }

@@ -18,9 +18,11 @@ class GrandParentCategories extends Categories {
 
             $this->logger->notice("Starting With Grand Parent Category: [$last_category_index] " . $first_category->name);
     
-            foreach($categories_list as $index => $category_item){
+            foreach($categories_list as $index => $grand_parent_category_data){
+                $grand_parent_category = $this->select_category($grand_parent_category_data,'grand_parent');
+
                 $this->remember->set('grand_parent_category_index',$index + $last_category_index);
-                $parent_categories->create_category($category_item);
+                $parent_categories->create_category($grand_parent_category, $grand_parent_category_data->categories);
             }
 
             $this->remember->set('grand_parent_category_index',0);
