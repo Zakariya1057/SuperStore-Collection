@@ -8,7 +8,7 @@ use Aws\Credentials\Credentials;
 
 class Image {
 
-    private $logger, $img_config, $aws_credentials, $request;
+    private $logger, $img_config, $aws_credentials, $request, $retry_conf;
 
     function __construct($config,$logger,Requests $request){
         $this->logger = $logger;
@@ -20,6 +20,8 @@ class Image {
         $this->aws_credentials = new \Aws\Credentials\Credentials($credentials->key, $credentials->secret);
 
         $this->request = $request;
+
+        $this->retry_conf = $config->get('retry.image');
     }
 
     public function save($name, $image_url,$size='',$type='products', $store='Asda'){
@@ -83,11 +85,28 @@ class Image {
             'credentials' => $this->aws_credentials
         ]);
 
-        $s3Client->putObject([
-            'Bucket' => 'superstore.images',
-            'Key' => $file_location,
-            'Body' => $image,
-        ]);
+        $retry_attempts = $this->retry_conf->attempts;
+        $retry_wait = $this->retry_conf->wait;
+
+        for($i = 0; $i < $retry_attempts; $i++){
+
+            try {
+                $s3Client->putObject([
+                    'Bucket' => 'superstore.images',
+                    'Key' => $file_location,
+                    'Body' => $image,
+                ]);
+
+                $this->logger->debug('Images Successfully Uploaded To AWS');
+
+                break;
+            } catch(Exception $e){
+                $this->logger->debug('Failed To Upload Image To AWS. Error: ' . $e->getMessage());
+                sleep($retry_wait);
+            }
+
+        }
+
 
         return $file_location;
     }
