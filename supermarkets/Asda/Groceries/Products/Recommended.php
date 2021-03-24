@@ -102,7 +102,7 @@ class Recommended extends Asda {
                     $this->logger->warning('Similar Product Not Found In Database. Creating The Product, Then Setting As Recommened');
 
                     $new_product = new Products($this->config,$this->logger,$this->database,$this->remember);
-                    $new_product_id = $new_product->create_product($item->id,null,null,null,$this->sanitize->sanitize_field($item->aisleName));
+                    $new_product_id = $new_product->create_product($item->id, null, $this->sanitize->sanitize_field($item->aisleName));
 
                     if($new_product_id){
                         $this->logger->debug('Setting New Product As Recommened');

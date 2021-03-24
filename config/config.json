@@ -216,7 +216,7 @@
     
             "monitor": 1,
     
-            "stores": 0,
+            "stores": 1,
     
             "groceries": 1,
             "recommended": 1,
@@ -238,7 +238,7 @@
     
             "stores": 1,
     
-            "groceries": 1,
+            "groceries": 0,
             "recommended": 1,
             
             "store_type_id": 2,
@@ -264,7 +264,7 @@
         },
 
         "canadian_superstore": {
-            "groceries": "https://cdn.contentful.com/spaces/0dlg9rxz8nvy/environments/master/entries?content_type=navigationList&include=3",
+            "groceries": "https://cdn.contentful.com/spaces/0dlg9rxz8nvy/environments/master/entries?content_type=navigationList&locale=en-CA&include=3",
             
             "categories": {
                 "v2": "https://api.pcexpress.ca/marketplace/v2/banners/superstore/products?pageSize=50&sorts=relevance&filter.category=",
@@ -292,6 +292,11 @@
         "database": {
             "attempts": 20,
             "wait": 300
+        },
+
+        "image": {
+            "attempts": 3,
+            "wait": 60
         }
     },
 

@@ -8,19 +8,27 @@ use Models\Category\ChildCategoryModel;
 use Models\Category\GrandParentCategoryModel;
 use Models\Category\ParentCategoryModel;
 use Models\Product\ProductModel;
+use Monolog\Logger;
+use Services\Config;
+use Services\Database;
+use Services\Remember;
 use Supermarkets\Asda\Asda;
 
 class Categories extends Asda {
 
     public $grand_parent_category_model, $parent_category_model, $child_category_model, $product_model;
 
-    public function categories($categories){
+    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
+    {
+        parent::__construct($config, $logger, $database, $remember);
 
         $this->grand_parent_category_model = new ParentCategoryModel($this->database);
         $this->parent_category_model = new ParentCategoryModel($this->database);
         $this->child_category_model = new ChildCategoryModel($this->database);
         $this->product_model = new ProductModel($this->database);
-
+    }
+    
+    public function categories($categories){
         $grand_parent_categories = new GrandParentCategories($this->config, $this->logger, $this->database, $this->remember);
         $grand_parent_categories->create_categories($categories);
     }

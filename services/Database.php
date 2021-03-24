@@ -146,17 +146,17 @@ class Database {
     }
 
     public function start_transaction(){
-        $this->logger->notice("--- Transaction Begin ---");
+        $this->logger->notice("- Transaction Begin");
         $this->connection->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
     }
 
     public function commit_transaction(){
-        $this->logger->notice("--- Transaction Complete ---");
+        $this->logger->notice("- Transaction Complete");
         $this->connection->commit();
     }
 
     public function transaction_rollback(){
-        $this->logger->notice("--- Transaction Rollback ---");
+        $this->logger->notice("- Transaction Rollback");
         $this->connection->rollback();
     }
 

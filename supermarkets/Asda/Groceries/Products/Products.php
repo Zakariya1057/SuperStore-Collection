@@ -21,12 +21,14 @@ use Interfaces\ProductInterface;
 
 class Products extends Asda implements ProductInterface {
 
-    public $product_details,$promotions,$image;
+    public $product_details, $promotions, $image;
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
         $this->promotions = new Promotions($this->config,$this->logger,$this->database,$this->remember);
+
+        $this->child_category_model = new ChildCategoryModel($this->database);
     }
 
     public function create_product($product_site_id, $child_category, $parent_site_category_name=null){
@@ -45,14 +47,14 @@ class Products extends Asda implements ProductInterface {
 
             $product_details  = $this->product_details($product_site_id);
 
-            if(is_null($child_category->parent_category_id)){
+            if(is_null($child_category)){
 
                 if(is_null($parent_site_category_name)){
                     throw new Exception('Parent Category Id or Parent Category Name Required');
                 }
 
-                $category = new ChildCategoryModel($this->database);
-                $category_details = $category->like(['name'=> "$parent_site_category_name%"])->get();
+                
+                $category_details = $this->child_category_model->like(['name'=> "$parent_site_category_name%"])->get();
 
                 if(count($category_details) > 0){
                     $category_details = $category_details[0];
@@ -70,16 +72,19 @@ class Products extends Asda implements ProductInterface {
                         return;
                     }
 
-                    $grand_parent_category_id = $category_info->grand_parent_category_id;
-                    $parent_category_id = $category_info->parent_category_id;
-                    $child_category_id = $category_info->child_category_id;
+
+                    $child_category = new ChildCategoryModel();
+
+                    $child_category->grand_parent_category_id = $category_info->grand_parent_category_id;
+                    $child_category->parent_category_id = $category_info->parent_category_id;
+                    $child_category->id = $category_info->child_category_id;
                 }
                 
             }
 
             if(!is_null($product_details)){
 
-                $this->logger->notice("Adding New Product: ".$product_details->name);
+                $this->logger->notice('Adding New Product: '.$product_details->name);
 
                 $this->database->start_transaction();
                 
@@ -95,7 +100,7 @@ class Products extends Asda implements ProductInterface {
 
                 $this->create_ingredients($product_id,$this->product_details);
 
-                $this->logger->notice("Complete Product Added: " . $product_details->name);
+                $this->logger->notice('Complete Product Added: ' . $product_details->name);
 
                 $this->database->commit_transaction();
 
@@ -131,11 +136,11 @@ class Products extends Asda implements ProductInterface {
             $product_response = file_get_contents( __DIR__. '/../../' . $this->config->get('test_files.product'));
         } else {
 
-            $product_response = $this->request->request($shelf_endpoint,"POST",[
-                "item_ids" => [$site_product_id], 
-                "consumer_contract" => "webapp_pdp",
-                "store_id" => "4565", // Change for different regions. Different stores, different prices
-                "request_origin" => "gi"
+            $product_response = $this->request->request($shelf_endpoint,'POST',[
+                'item_ids' => [$site_product_id], 
+                'consumer_contract' => 'webapp_pdp',
+                'store_id' => '4565', // Change for different regions. Different stores, different prices
+                'request_origin' => 'gi'
             ]);
 
         }
@@ -146,9 +151,6 @@ class Products extends Asda implements ProductInterface {
             $this->logger->debug('No Product Returned');
             return null;
         }
-        
-        // file_put_contents(__DIR__.'/../../ProductDetails.json',$product_response);
-        // $this->logger->debug('Saving File and Parse Json Response');
 
         $product_results = $this->request->parse_json($product_response);
 
@@ -246,7 +248,7 @@ class Products extends Asda implements ProductInterface {
                 $product->description = NULL;
             }
         } else {
-            if(property_exists($product,'additional_info') && $product->additional_info != ""){
+            if(property_exists($product,'additional_info') && $product->additional_info != ''){
                 $product->description = $product->additional_info;
             }
         }
