@@ -36,6 +36,10 @@ class Products extends Asda implements ProductInterface {
 
         $this->logger->info("Product ID: $product_site_id");
 
+        if(is_null($product_site_id)){
+            throw new Exception('product_site_id required to create product');
+        }
+
         $product_item = new ProductModel($this->database);
         $product_results = $product_item->where(['site_product_id' => $product_site_id])->get()[0] ?? null;
 

@@ -57,16 +57,20 @@ class ChildCategories extends Categories {
             $this->logger->notice("Starting With Product: [$last_product_index] $first_product");
     
             //Loop through and insert into database
-            foreach($products as $index => $product_item){
+            foreach($products as $index => $site_product_id){
     
                 $this->remember->set('product_index', $index + $last_product_index);
-    
-                $product = new Products($this->config,$this->logger,$this->database,$this->remember);
-                $product->create_product($product_item, $child_category);
-    
-                //Between Each Products. Wait 1 Second
-                sleep(1);
-                
+
+                if(!is_null($site_product_id)){
+
+                    $product = new Products($this->config,$this->logger,$this->database,$this->remember);
+                    $product->create_product($site_product_id, $child_category);
+        
+                    //Between Each Products. Wait 1 Second
+                    sleep(1);
+
+                }
+
             }
 
         } else {
