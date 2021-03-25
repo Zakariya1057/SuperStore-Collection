@@ -12,6 +12,7 @@ use Models\Product\ProductImageModel;
 use Models\Product\ProductModel;
 
 use Interfaces\ProductInterface;
+use Models\Product\BarcodeModel;
 use Models\Product\PromotionModel;
 
 class Products extends CanadianSuperstore implements ProductInterface {
@@ -44,6 +45,8 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
                 $this->create_product_category($category_details, $product_id);
                 
+                $this->create_barcodes($product_id, $product);
+
                 $this->create_ingredients($product_id, $product);
                 $this->create_images($product_id, $product->images);
             } else {
@@ -74,6 +77,15 @@ class Products extends CanadianSuperstore implements ProductInterface {
         $product_categories->insert_ignore = true;
 
         $product_categories->save();
+    }
+
+    private function create_barcodes($product_id, $product){
+        if(key_exists('barcodes', $product)){
+            foreach($product->barcodes as $barcode){
+                $barcode->product_id = $product_id;
+                $barcode->save();
+            }
+        }
     }
 
     private function create_ingredients($product_id, $product){
@@ -155,6 +167,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
         $variant = $product_details->variants[0];
         $price_details = $variant->offers[0];
+        $inventory = $variant->specifications;
 
         $product->price = $price_details->price;
 
@@ -191,12 +204,39 @@ class Products extends CanadianSuperstore implements ProductInterface {
         }
 
         
+        $this->set_barcodes_v2($product, $inventory);
+        
         $product->currency = $this->currency;
 
         $product->url = "https://www.realcanadiansuperstore.ca" . $product_details->uri;
 
         return $product;
     }
+
+    public function set_barcodes_v2(&$product, $inventory){
+        $barcodes_data = [
+            'upc' => $inventory->upc,
+            'ean' => $inventory->ean,
+            'mpn' => $inventory->mpn,
+            'isbn' => $inventory->isbn,
+            'asin' => $inventory->asin
+        ];
+
+        $product->barcodes = [];
+        foreach($barcodes_data as $type => $value){
+
+            if(!is_null($value) && $value != ''){
+                $barcode = new BarcodeModel($this->database);
+                $barcode->type = $type;
+                $barcode->value = $value;
+                $barcode->store_type_id = $this->store_type_id;
+    
+                $product->barcodes[] = $barcode;
+            }
+
+        }
+    }
+
 
     private function parse_product_v3($product_details, $ignore_image=false): ?ProductModel {
         $product = new ProductModel($this->database);
@@ -272,6 +312,10 @@ class Products extends CanadianSuperstore implements ProductInterface {
                     }
                 }
             }
+        }
+
+        if(!is_null($product_details->upcs)){
+            throw new Exception('Non Empty UPC Found');
         }
 
         return $product;

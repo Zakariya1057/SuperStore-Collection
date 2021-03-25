@@ -18,10 +18,11 @@ use Services\Database;
 use Services\Remember;
 
 use Interfaces\ProductInterface;
+use Models\Product\BarcodeModel;
 
 class Products extends Asda implements ProductInterface {
 
-    public $product_details, $promotions, $image;
+    public $promotions, $image;
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
@@ -102,7 +103,9 @@ class Products extends Asda implements ProductInterface {
 
                 $product_categories->save();
 
-                $this->create_ingredients($product_id,$this->product_details);
+                $this->create_ingredients($product_id, $product_details);
+
+                $this->create_barcodes($product_id, $product_details);
 
                 $this->logger->notice('Complete Product Added: ' . $product_details->name);
 
@@ -163,6 +166,7 @@ class Products extends Asda implements ProductInterface {
         $item = $product_details->item;
         $name = $item->name;
         $item_enrichment = $product_details->item_enrichment->enrichment_info;
+        $inventory = $product_details->inventory;
 
         $is_bundle_product = $product_details->is_bundle ?? false;
         if($is_bundle_product){
@@ -185,11 +189,9 @@ class Products extends Asda implements ProductInterface {
 
         $this->set_product_description($product, $item);
 
-        $this->set_product_details($product, $item_enrichment, $item, $ignore_image);
+        $this->set_product_details($product, $item_enrichment, $item, $inventory, $ignore_image);
 
         $this->set_product_prices($product, $product_details, $ignore_promotion);
-
-        $this->product_details = $product_details;
 
         $this->logger->notice('----- Complete Product('.$item->sku_id.'): '.$item->name .' -----');
 
@@ -229,6 +231,14 @@ class Products extends Asda implements ProductInterface {
         return array_unique($list);
     }
 
+
+    public function create_barcodes($product_id, $product){
+        foreach($product->barcodes as $barcode){
+            $barcode->product_id = $product_id;
+            $barcode->save();
+        }
+    }
+
     public function product_image($product_site_id, $image_id,$size,$size_name){
         $url = "https://ui.assets-asda.com/dm/asdagroceries/{$image_id}?defaultImage=asdagroceries/noImage&resMode=sharp2&id=8daSB3&fmt=jpg&fit=constrain,1&wid={$size}&hei={$size}";
         $file_name = $this->image->save($product_site_id,$url,$size_name);
@@ -260,11 +270,13 @@ class Products extends Asda implements ProductInterface {
 
     private function set_product_prices($product, $product_details, $ignore_promotion){
         // Promotion Types:
+        //
         // 1. 2 for £10. Product Grouped
         // 2. Rollback
         // 3. Sale.
 
         if(!$ignore_promotion){
+
             //This will get product price, regardless of promotions or not
             $product_prices = $this->promotions->product_prices($product_details);
 
@@ -273,19 +285,18 @@ class Products extends Asda implements ProductInterface {
             $product->is_on_sale = $product_prices->is_on_sale ?? null;
             $product->promotion_id = $product_prices->promotion_id ?? null;
             $product->promotion = $product_prices->promotion ?? null;
-            
-            // $product->promotion = null;
-            // $product->promotion_id = null;
         }
     }
 
-    private function set_product_details(ProductModel $product, $item_enrichment, $item, $ignore_image){
+    private function set_product_details(ProductModel $product, $item_enrichment, $item, $inventory, $ignore_image){
 
         $rating_review = $item->rating_review;
 
         $product_site_id = $item->sku_id;
         $product->site_product_id = $product_site_id;
         $product->store_type_id = $this->store_type_id;
+
+        $this->set_barcodes($product, $item, $inventory);
 
         $product->currency = $this->currency;
 
@@ -312,6 +323,31 @@ class Products extends Asda implements ProductInterface {
             $product->weight = $item->extended_item_info->weight;
         }
 
+    }
+
+
+    public function set_barcodes(&$product, $item, $inventory){
+        $barcodes_data = [
+            'sku' => $inventory->sku_id,
+            'cin' => $inventory->cin,
+        ];
+
+        foreach($item->upc_numbers as $upc){
+            $barcodes_data['upc'] = $upc;
+        }
+
+        $product->barcodes = [];
+        foreach($barcodes_data as $type => $value){
+
+            if(!is_null($value) && $value != ''){
+                $barcode = new BarcodeModel($this->database);
+                $barcode->type = $type;
+                $barcode->value = $value;
+                $barcode->store_type_id = $this->store_type_id;
+    
+                $product->barcodes[] = $barcode;
+            }
+        }
     }
 
 }
