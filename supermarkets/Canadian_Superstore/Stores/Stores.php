@@ -19,11 +19,11 @@ class Stores extends CanadianSuperstore implements StoreInterface {
         
         $this->logger->notice($this->store_name . " Finding All Stores");
 
-        // if($this->env == 'dev'){
+        if($this->env == 'dev'){
             $stores_response = file_get_contents(__DIR__."/../../../data/Canadian_Superstore/Stores.json");
-        // } else {
-        //     $stores_response = $this->request->request($this->endpoints->stores . '?bannerIds=superstore');
-        // }
+        } else {
+            $stores_response = $this->request->request($this->endpoints->stores . '?bannerIds=superstore');
+        }
 
         $stores_data = $this->request->parse_json($stores_response);
 

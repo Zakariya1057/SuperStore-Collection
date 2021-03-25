@@ -38,14 +38,13 @@ class ParentCategories extends Categories {
 
                 $child_categories->create_category($parent_category_item, $parent_category);
 
-
+                
                 // If all child categories deleted, delete parent category as well
                 $child_categories_count = count($child_category_model->where(['parent_category_id' => $parent_category_item->id])->get());
                 if($child_categories_count == 0){
                     $this->logger->notice('No Child Categories For Parent Category Found. Deleting Parent Category ID');
                     $parent_category_model->where(['id' => $parent_category_item->id])->delete();
                 }
-
             }
 
             $this->remember->set('parent_category_index',0);
