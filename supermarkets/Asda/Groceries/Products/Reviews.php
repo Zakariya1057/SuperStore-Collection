@@ -26,7 +26,7 @@ class Reviews extends Asda {
         //Get all products without reviews, get matching reviews
         $this->logger->notice('------ Product Reviews Start ---------');
 
-        $products_without_reviews = $this->product_model->select(['id','site_product_id','name'])->where(['reviews_searched' => null])->get() ?? null;
+        $products_without_reviews = $this->product_model->select(['id','site_product_id','name'])->where(['store_type_id' => $this->store_type_id, 'reviews_searched' => null])->get() ?? null;
 
         if($products_without_reviews){
 
