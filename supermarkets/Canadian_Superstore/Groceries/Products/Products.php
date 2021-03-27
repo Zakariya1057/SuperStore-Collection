@@ -13,7 +13,6 @@ use Models\Product\ProductModel;
 
 use Interfaces\ProductInterface;
 use Models\Product\BarcodeModel;
-use Models\Product\PromotionModel;
 
 class Products extends CanadianSuperstore implements ProductInterface {
 
@@ -284,25 +283,24 @@ class Products extends CanadianSuperstore implements ProductInterface {
         if(!$ignore_image){
             foreach($product_details->imageAssets as $index => $image_asset){
                 
-                $small_url = $image_asset->smallUrl ?? null;
-                $medium_url = $image_asset->mediumUrl ?? null;
+                $image_url = $image_asset->smallUrl ?? null;
 
                 if($index == 0){
                     
-                    if(!is_null($small_url)){
-                        $product->small_image = $this->create_image($product->site_product_id, $small_url,  'small');
+                    if(!is_null($image_url)){
+                        $product->small_image = $this->create_image($product->site_product_id, $image_url,  'small');
                     }
                     
-                    if(!is_null($medium_url)){
-                        $product->large_image = $this->create_image($product->site_product_id, $medium_url, 'large');
+                    if(!is_null($image_url)){
+                        $product->large_image = $this->create_image($product->site_product_id, $image_url, 'large');
                     }
 
                 } else {
 
-                    if(!is_null($small_url)){
+                    if(!is_null($image_url)){
                         $image = new ProductImageModel($this->database);
     
-                        $image_name = $this->create_image($product->site_product_id . '_' . $index, $small_url, 'large');
+                        $image_name = $this->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
         
                         if(!is_null($image_name)){
                             $image->name = $image_name;

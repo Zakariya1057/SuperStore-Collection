@@ -51,7 +51,7 @@ class Indices extends Search {
 
     public function index_stores(){
 
-        $this->logger->debug('Indexing Stores');
+        $this->logger->debug('Indexing Store Types');
 
         $this->delete_documents('stores');
 
