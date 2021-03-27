@@ -101,7 +101,7 @@ class Indices extends Search {
 
             $params['body'][] = [
                 'id' => (int)$promotion->id,
-                'store_type_id' => (int)$promotion->id,
+                'store_type_id' => (int)$promotion->store_type_id,
                 'name' => $promotion->name,
             ];
         }
