@@ -201,14 +201,39 @@ class Stores extends Asda implements StoreInterface {
 
     }
 
-    public function facilities($store_id,$facilities_details, $retrieve){
-        
-        $facilities_list = $facilities_details->c_facilitiesList;
-        
+    public function facilities($store_id, $facilities_details, $retrieve){
+    
         $facilities = [];
 
-        if($facilities_details->c_petrolStation){
-            $facilities_list[] = "Petrol Filling Station";
+        $facility_options = [
+            'c_communityRoom' => 'Community Room',
+            'c_costaCoffee' => 'Costa Coffee',
+            'c_deliCounter' => 'Deli Counter',
+            'c_electricalGoods' => 'Electric Goods',
+            'c_ethnicFoods' => 'Ethnic Foods',
+            'c_expressDiner' => 'Express Diner',
+            'c_expressPizzaCounter' => 'Express Pizza Counter',
+            'c_expressRotisserie' => 'Express Rotisserie',
+            'c_firstChoiceTravel' => 'First Choice Travel',
+            'c_fishCounter' => 'Fish Counter',
+            'c_groceryClickAndCollect' => 'Click & Collect',
+            'c_halal' => 'Halal',
+            'c_homeShopping' => 'Home Shopping',
+            'c_hotChicken' => 'Hot Chicken',
+            'c_instantPhotoPrint' => 'Instant Photo Print',
+            'c_opticians' => 'Opticians',
+            'c_organic' => 'Organic',
+            'c_pharmacy' => 'Pharmacy',
+            'c_postOffice' => 'Post Office',
+            'c_recycling' => 'Recycling',
+        ];
+        
+        $facilities_list = $facilities_details->c_facilitiesList;
+
+        foreach($facility_options as $key => $facility_name){
+            if($facilities_details->{$key}){
+                $facilities_list[] = $facility_name;
+            }
         }
 
         foreach($facilities_list as $facility_name){
@@ -230,7 +255,6 @@ class Stores extends Asda implements StoreInterface {
             } else {
                 $this->logger->debug("Old Store Facilities: $store_id ");
             }
-
         }
 
         return $facilities;
