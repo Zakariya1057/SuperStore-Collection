@@ -46,13 +46,13 @@ class Categories extends Asda {
             }
         }
 
-        $category_store_id = $category->id;
+        $site_category_id = $category->id;
         $category_name = $category->name;
         $parent_category_id = $category->parent_category_id ?? null;
 
         $insert_fields = [
             'name' => $category_name,
-            'site_category_id' => $category_store_id,
+            'site_category_id' => $site_category_id,
             'parent_category_id' => $parent_category_id,
             'store_type_id' => $this->store_type_id 
         ];
@@ -68,7 +68,19 @@ class Categories extends Asda {
             throw new Exception("Unknown Category Type Found: $type");
         }
 
-        $category_item = $category->where(["site_category_id" => $category_store_id])->get()[0] ?? null;
+        // 1215135760597-910000975210-1215666691670
+        // Match last part to see if category exists in database. So *-1215666691670 needs to be unique.
+        $search_site_category_id = null;
+
+        preg_match('/\-*(\d+)$/',$site_category_id, $category_matches);
+        if($category_matches){
+            $search_site_category_id = $category_matches[1];
+        } else {
+            throw new Exception('Unknown Category Number Type Found: ' . $site_category_id);
+        }
+
+        $category_item = $category->like(['store_type_id' => $this->store_type_id, 'site_category_id'=> "%$search_site_category_id"])->get()[0] ?? null;
+
 
         if(!is_null($category_item)){
             $this->logger->debug($category_name . ' Category: Found In Database');
@@ -80,7 +92,7 @@ class Categories extends Asda {
             $category_item = new CategoryModel();
             $category_item->id = $category_insert_id;
             $category_item->name = $category_name;
-            $category_item->site_category_id = $category_store_id;
+            $category_item->site_category_id = $site_category_id;
             $category_item->parent_category_id = $parent_category_id;
 
             return $category_item;

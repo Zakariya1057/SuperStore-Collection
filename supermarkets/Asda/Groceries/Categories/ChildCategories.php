@@ -95,7 +95,7 @@ class ChildCategories extends Categories {
         } else {
             $shelf_data = $this->request_details('child_category', $category_site_id);
         }
-        
+
         foreach($shelf_data->zones[1]->configs->products->items as $product){
             $item = $product->item;
             $products[] = $item->sku_id;
