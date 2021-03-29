@@ -42,7 +42,7 @@ class Categories extends CanadianSuperstore {
             throw new Exception("Unknown Category Type Found: $type");
         }
 
-        $category_item = $category->where(['site_category_id' => $category_number])->get()[0] ?? null;
+        $category_item = $category->where(['store_type_id' => $this->store_type_id, 'site_category_id' => $category_number])->get()[0] ?? null;
 
         if(!is_null($category_item)){
             $this->logger->debug($category_name . ' Category: Found In Database');
