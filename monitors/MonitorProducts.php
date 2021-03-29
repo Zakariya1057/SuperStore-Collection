@@ -43,8 +43,6 @@ class MonitorProducts {
 
     // Shared Monitor, check if data has changed, if so update in database.
     public function monitor_products($store_type){
-
-        $store_name = $store_type->name;
         $store_type_id = $store_type->id;
 
         $products = $this->product_model
@@ -54,6 +52,7 @@ class MonitorProducts {
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
         ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
         // ->where_raw(["store_type_id = $store_type_id"])
+        // ->where_raw(["products.id = 1003"])
         ->group_by('products.id')
         ->order_by('num_monitoring')
         // ->limit(1)
@@ -107,7 +106,7 @@ class MonitorProducts {
 
         if($price_changed){
             $this->notify_product_changed($new_product, $old_product);
-            die('Complete');
+            // die('Complete');
         }
         
     }
@@ -138,10 +137,10 @@ class MonitorProducts {
         $new_price = number_format($product->price, 2);
         $old_price = number_format($old_product->price, 2);
 
-        $changed_type = $new_price < $old_price ? 'Increased' : 'Decreased';
+        $changed_type = $new_price > $old_price ? 'Increased' : 'Decreased';
 
         $title = "Product Price Change";
-        $content = "$product_name - $changed_type from {$currency}{$new_price} to {$currency}{$old_price}";
+        $content = "$product_name - $changed_type from {$currency}{$old_price} to {$currency}{$new_price}";
 
         return ['title' => $title, 'body' => $content];
     }
