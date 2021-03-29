@@ -185,8 +185,12 @@ class Products extends CanadianSuperstore implements ProductInterface {
         if(!$ignore_image){
             foreach($price_details->media->images as $index => $image_url){
                 if($index == 0){
-                    $product->small_image = $this->create_image($product->site_product_id, $image_url, 'small');
-                    $product->large_image = $this->create_image($product->site_product_id, $image_url, 'large');
+                    $saved_image_url =  $this->create_image($product->site_product_id, $image_url, 'large');
+
+                    if(!is_null($saved_image_url)){
+                        $product->small_image = $saved_image_url;
+                        $product->large_image = $saved_image_url;
+                    }
                 } else {
                     $image = new ProductImageModel($this->database);
     
@@ -194,7 +198,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
     
                     if(!is_null($image_name)){
                         $image->name = $image_name;
-                        $image->size = "large"; 
+                        $image->size = 'large'; 
                         $product->images[] = $image;
                     }
     
@@ -288,23 +292,23 @@ class Products extends CanadianSuperstore implements ProductInterface {
                 if($index == 0){
                     
                     if(!is_null($image_url)){
-                        $product->small_image = $this->create_image($product->site_product_id, $image_url,  'small');
-                    }
-                    
-                    if(!is_null($image_url)){
-                        $product->large_image = $this->create_image($product->site_product_id, $image_url, 'large');
-                    }
+                        $saved_image_url = $this->create_image($product->site_product_id, $image_url, 'large');
 
+                        if(!is_null($saved_image_url)){
+                            $product->small_image = $saved_image_url;
+                            $product->large_image = $saved_image_url;
+                        }
+                    }
                 } else {
 
                     if(!is_null($image_url)){
                         $image = new ProductImageModel($this->database);
     
-                        $image_name = $this->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
+                        $saved_image_url = $this->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
         
-                        if(!is_null($image_name)){
-                            $image->name = $image_name;
-                            $image->size = "large"; 
+                        if(!is_null($saved_image_url)){
+                            $image->name = $saved_image_url;
+                            $image->size = 'large'; 
                             $product->images[] = $image;
                         }
                     }
