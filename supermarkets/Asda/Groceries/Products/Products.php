@@ -103,7 +103,7 @@ class Products extends Asda implements ProductInterface {
 
                 $product_categories->save();
 
-                $this->create_ingredients($product_id, $product_details);
+                $this->create_ingredients($product_id, $product_details->ingredients);
 
                 $this->create_barcodes($product_id, $product_details);
 
@@ -187,22 +187,23 @@ class Products extends Asda implements ProductInterface {
             return null;
         }
 
-        $this->set_product_description($product, $item);
+        $this->set_product_description($product, $item, $item_enrichment);
 
         $this->set_product_details($product, $item_enrichment, $item, $inventory, $ignore_image);
 
         $this->set_product_prices($product, $product_details, $ignore_promotion);
+
+        $this->set_ingredients($product, $product_details);
 
         $this->logger->notice('----- Complete Product('.$item->sku_id.'): '.$item->name .' -----');
 
         return $product;
     }
 
-    public function create_ingredients($product_id, $product_data){
+    public function create_ingredients($product_id, $ingredients){
         //Store Product Ingredients
-        $ingredients_list = $this->ingredients_list($product_data);
 
-        foreach($ingredients_list as $ingredient_name){
+        foreach($ingredients as $ingredient_name){
             $ingredient = new IngredientModel($this->database);
             $ingredient->name = $ingredient_name;
             $ingredient->product_id = $product_id;
@@ -213,7 +214,7 @@ class Products extends Asda implements ProductInterface {
 
     }
 
-    public function ingredients_list($product_data){
+    public function set_ingredients($product, $product_data){
         $ingredients_response = $product_data->item_enrichment->enrichment_info->ingredients_formatted ?? '';
         $ingredients_list = explode(' , ',$ingredients_response);
 
@@ -228,7 +229,7 @@ class Products extends Asda implements ProductInterface {
         }
 
         //Return All Unique Ingredients
-        return array_unique($list);
+        $product->ingredients = array_unique($list);
     }
 
 
@@ -250,7 +251,7 @@ class Products extends Asda implements ProductInterface {
         return preg_replace('/\s*\(.+/','',$name);
     }
 
-    private function set_product_description($product, $item){
+    private function set_product_description($product, $item, $item_enrichment){
         // $product->store_type_id = $this->store_type_id;
         $product->description = $item->description == '.' ? NULL : $item->description;
 
@@ -264,8 +265,12 @@ class Products extends Asda implements ProductInterface {
         } else {
             if(property_exists($product,'additional_info') && $product->additional_info != ''){
                 $product->description = $product->additional_info;
+            } elseif(property_exists($item_enrichment, 'product_marketing') && $item_enrichment->product_marketing != ''){
+                $product->description = $item_enrichment->product_marketing;
             }
         }
+
+        $product->description = trim($product->description) == '' ? NULL : $product->description;
     }
 
     private function set_product_prices($product, $product_details, $ignore_promotion){
@@ -315,9 +320,12 @@ class Products extends Asda implements ProductInterface {
         }
 
         $product->brand = $item->brand;
-        $product->allergen_info = $item_enrichment->allergy_info_formatted_web == '' ? NULL : $item_enrichment->allergy_info_formatted_web ;
 
-        $product->storage = $item_enrichment->storage ?? NULL;
+        $product->warning = trim($item_enrichment->safety_warning) == '' ? NULL : $item_enrichment->safety_warning;
+        $product->country_of_origin = trim($item_enrichment->country_of_origin) == '' ? null : $item_enrichment->country_of_origin;
+        $product->allergen_info = trim($item_enrichment->allergy_info_formatted_web) == '' ? NULL : $item_enrichment->allergy_info_formatted_web ;
+
+        $product->storage = trim($item_enrichment->storage) == '' ? NULL : $item_enrichment->storage;
 
         if($item->extended_item_info->weight){
             $product->weight = $item->extended_item_info->weight;
@@ -328,7 +336,6 @@ class Products extends Asda implements ProductInterface {
 
     public function set_barcodes(&$product, $item, $inventory){
         $barcodes_data = [
-            'sku' => $inventory->sku_id,
             'cin' => $inventory->cin,
         ];
 
