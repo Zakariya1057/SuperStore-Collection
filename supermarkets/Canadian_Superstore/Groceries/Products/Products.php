@@ -370,6 +370,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
             $product->description = str_replace('..','.', preg_replace('/<\/*\w+>\s*<\/*\w+>/',".\n\n", $description));
         }
 
+        $product->description = trim($product->description) == '' ? NULL : $product->description;
     }
 
     private function create_description($description){
