@@ -37,8 +37,10 @@ class Database {
         $password = $this->database_config->password;
         $database = $this->database_config->database;
 
-        $this->logger->debug('Initialising Database Connection...');
+        $this->logger->debug('Initialising Database Connection.');
+
         $this->connection = new \mysqli($host,$username,$password,$database);
+
     }
 
     public function connect(){
@@ -83,7 +85,7 @@ class Database {
 
                     $this->database_connect();
 
-                    if($$this->connection->ping()) {
+                    if($this->connection->ping()) {
                         $this->logger->debug('Successfully Reconnected To Database');
                         $connection_successfull = true;
                         break;
