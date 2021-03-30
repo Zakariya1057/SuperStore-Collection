@@ -169,7 +169,7 @@ class Stores extends CanadianSuperstore implements StoreInterface {
 
             $time_matches = explode(' - ', $store_hour->hours);
 
-            if($time_matches){
+            if($time_matches && count($time_matches) == 2){
                 $opens_at = date("H:i:s", strtotime($time_matches[0]));
                 $closes_at =  date("H:i:s", strtotime($time_matches[1]));
                 

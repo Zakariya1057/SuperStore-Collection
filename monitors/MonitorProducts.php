@@ -52,7 +52,7 @@ class MonitorProducts {
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
         ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
         // ->where_raw(["store_type_id = $store_type_id"])
-        // ->where_raw(["products.id = 1003"])
+        // ->where_raw(["products.id = 4574"])
         ->group_by('products.id')
         ->order_by('num_monitoring')
         // ->limit(1)
