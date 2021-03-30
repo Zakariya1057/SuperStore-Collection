@@ -3,6 +3,7 @@
 namespace Supermarkets\Canadian_Superstore\Groceries\Categories;
 
 use Exception;
+use Models\Category\CategoryProductModel;
 use Models\Category\ChildCategoryModel;
 use Supermarkets\Canadian_Superstore\Groceries\Products\Products;
 
@@ -60,7 +61,7 @@ class ChildCategories extends Categories {
 
             $last_product_index = $this->remember->get('product_index') ?? 0;
         
-            $products = array_slice($products,$last_product_index);
+            $products = array_slice($products, $last_product_index);
     
             $first_product = $products[0];
     
@@ -80,12 +81,23 @@ class ChildCategories extends Categories {
             }
 
         } else {
-            $this->logger->info('No product found for category. Removing it');
-            $category_model = new ChildCategoryModel($this->database);
-            $category_model->where(['id' => $category_details->id])->delete();
+            $this->logger->info('No Products Found For Category: '. $category_details->id);
+
+            $product_categories = new CategoryProductModel($this->database);
+            $products_count = count($product_categories->where(['child_category_id' => $category_details->id])->get());
+
+            if($products_count == 0){
+                $this->logger->debug('No Products Found For Matching Product Categories. Deleting Child Category');
+                // Check if no products for category
+                $category_model = new ChildCategoryModel($this->database);
+                $category_model->where(['id' => $category_details->id])->delete();
+            } else {
+                $this->logger->debug('Products Found In Database For Category. Not Deleting Child Category');
+            }
+
         }
 
-        $this->remember->set('product_index',0);
+        $this->remember->set('product_index', 0);
     }
 
     public function create_products($category){

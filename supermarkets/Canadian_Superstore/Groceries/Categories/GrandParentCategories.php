@@ -26,7 +26,7 @@ class GrandParentCategories extends Categories {
                 $parent_categories->create_category($grand_parent_category_model, $grand_parent_category);
             }
 
-            $this->remember->set('grand_parent_category_index',0);
+            $this->remember->set('grand_parent_category_index', 0);
         }
 
     }
