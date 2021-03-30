@@ -6,9 +6,21 @@ use Models\Model;
 
 class LocationModel extends Model {
 
-    public $store_id, $country, $city, 
-    $address_line1,$address_line2,$address_line3,
-    $region, $postcode, $latitude,$longitude;
+    public 
+        $store_id, 
+        
+        $city, 
+        $postcode, 
+
+        $address_line1,
+        $address_line2,
+        $address_line3,
+
+        $country, 
+        $region, 
+
+        $latitude,
+        $longitude;
 
     function __construct($database=null){
 
