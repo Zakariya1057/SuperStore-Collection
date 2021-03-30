@@ -8,9 +8,16 @@ class ProductModel extends Model {
 
     public 
         $name,
+
         $description,
         $features,
         $dimensions,
+
+        $country_of_origin,
+
+        $return_policy,
+        $warning,
+
         $large_image,
         $small_image, 
 
@@ -62,6 +69,17 @@ class ProductModel extends Model {
             'dimensions' => [
                 'nullable' => true,
                 'exclude_sanitize' => true
+            ],
+
+            'country_of_origin' => [
+                'nullable' => true
+            ],
+
+            'return_policy' => [
+                'nullable' => true
+            ],
+            'warning' => [
+                'nullable' => true
             ],
 
             'large_image' => [

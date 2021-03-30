@@ -98,7 +98,7 @@ class MonitorProducts {
         $price_changed = $this->price_check($new_product, $old_product, $update_fields);
         $this->available_check($new_product, $old_product, $update_fields);
         $this->details_check($new_product, $old_product, $update_fields);
-        $this->promotion_check($new_product, $old_product, $update_fields);
+        $this->sale_check($new_product, $old_product, $update_fields);
 
         $this->product_model->where(['id' => $old_product->id])->update($update_fields);
 
@@ -192,7 +192,7 @@ class MonitorProducts {
         return $price_changed;
     }
 
-    private function promotion_check($new_product, $old_product, &$update_fields){
+    private function sale_check($new_product, $old_product, &$update_fields){
         if($old_product->is_on_sale && is_null($new_product->is_on_sale)){
              // Sale Expired
             $update_fields['is_on_sale'] = null;
