@@ -6,7 +6,18 @@ use Models\Model;
 
 class UserModel extends Model {
 
-    public $id, $name, $email, $password, $identifier, $notification_token;
+    public 
+        $name,
+        $email,
+        $password,
+        $identifier,
+        $send_notifications,
+        $notification_token,
+        $remember_token,
+        $store_type_id,
+        $token_sent_at,
+        $logged_in_at,
+        $logged_out_at;
     
     function __construct($database=null){
 
@@ -15,12 +26,26 @@ class UserModel extends Model {
         $this->table('users');
 
         $fields = [
-            'product_id' => [
-                'type' => 'int'
+            'store_type_id' => [],
+            'name' => [],
+            'email' => [],
+            'password' => [],
+            'identifier' => [
+                'nullable' => true
             ],
-
-            'user_id' => [
-                'type' => 'int'
+            'send_notifications' => [],
+            'notification_token' => [
+                'nullable' => true
+            ],
+            'remember_token' => [
+                'nullable' => true
+            ],
+            'token_sent_at' => [
+                'nullable' => true
+            ],
+            'logged_in_at' => [],
+            'logged_out_at' => [
+                'nullable' => true
             ],
         ];
 

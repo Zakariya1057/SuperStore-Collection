@@ -8,7 +8,7 @@ class Database {
 
     private $config, $logger, $connection, $database_config,$log_query;
 
-    function __construct($config,$logger) {
+    function __construct($config, $logger) {
 
         $this->logger = $logger;
         $this->config = $config;
