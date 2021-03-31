@@ -150,11 +150,11 @@ class Stores extends CanadianSuperstore implements StoreInterface {
         $location->city = $location_data->town;
         $location->region = $location_data->region;
         $location->country = $location_data->country;
-
+        
         $longitude = $geo_data->longitude;
         $latitude = $geo_data->latitude;
 
-        if( (!is_null($longitude) && $longitude > 0) && (!is_null($latitude) && $latitude > 0) ){
+        if( (!is_null($longitude) && $longitude != 0) && (!is_null($latitude) && $latitude != 0) ){
             $location->longitude = $longitude;
             $location->latitude = $latitude;
         }
