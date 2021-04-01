@@ -48,9 +48,9 @@ class ChildCategories extends Categories {
     public function category_products($category_details){
 
         // Get list of all product sold on shelf. Insert new products
-        $products_data = $this->create_products($category_details);
+        $products_data = $this->category_results($category_details);
 
-        $products = $products_data['results'];
+        $products = $products_data['products'];
         $request_type = $products_data['type'];
 
         $product_count = count($products);
@@ -63,17 +63,12 @@ class ChildCategories extends Categories {
         
             $products = array_slice($products, $last_product_index);
     
-            $first_product = $products[0];
-    
-            $this->logger->notice("Starting With Product: [$last_product_index] " . $first_product->name ?? $first_product->title);
-    
             //Loop through and insert into database
-            foreach($products as $index => $product_details){
-    
+            foreach($products as $index => $site_product_id){
                 $this->remember->set('product_index', $index + $last_product_index);
     
                 $product = new Products($this->config,$this->logger,$this->database,$this->remember);
-                $product->create_product($product_details->productId ?? $product_details->code, $category_details, $request_type);
+                $product->create_product($site_product_id, $category_details, $request_type);
     
                 // Between Each Products. Wait 1 Second
                 sleep(1);
@@ -100,48 +95,94 @@ class ChildCategories extends Categories {
         $this->remember->set('product_index', 0);
     }
 
-    public function create_products($category){
-        $categories_endpoints = $this->endpoints->categories;
-
-        $category_endpoint_v2 = $categories_endpoints->v2 . $category->number;
-        $category_endpoint_v3 = $categories_endpoints->v3;
-
-        $request_type = 'v3';
-
-        $this->logger->debug("Product Categories: {$category->name}");
+    public function category_results($category){
+        $this->logger->debug("Fetch Products For Child Category: {$category->name}");
 
         if($this->env == 'dev'){
-            $products_results = file_get_contents(__DIR__."/../../data/Asda/Shelf.json");
+            $category_data = [];
         } else {
-
-            try {
-                $products_results = $this->request->request($category_endpoint_v3, 'POST', [
-                    'pagination' => [
-                        'from' => 0,
-                        'size' => 50
-                    ],
-
-                    'banner' => 'superstore',
-                    'cartId' => '564d3383-738b-4407-b170-1064b504d991',
-                    'lang' => 'en',
-                    'storeId' => '1077',
-                    'date' => '13032021',
-                    'pickupType' => 'STORE',
-                    'categoryId' => $category->number
-
-                ], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, 1);
-
-            } catch(Exception $e){
-                $request_type = 'v2';
-                $products_results = $this->request->request($category_endpoint_v2, 'GET', [], ['Is-Pcs-Catalog' => 'true']);
-            }
-            
+            $category_data = $this->request_category_results($category->number);
         }
         
-        $products_data = $this->request->parse_json($products_results);
+        return $category_data;
+    }
 
-        return ['results' => $products_data->results, 'type' => $request_type];
+    private function request_category_results($category_number){
+        $request_type = 'v3';
 
+        $size = 50;
+        $page_number = 0;
+
+        $products = [];
+
+        $category_data = $this->request_category_data($category_number, $size, $page_number);
+
+        $category_results = $category_data['results'];
+        $request_type = $category_data['type'];
+
+        $pagination_data = $category_results->pagination;
+        $total_results = $pagination_data->totalResults;
+
+        $this->add_category_products($products, $category_results->results);
+
+        if($total_results > $size){
+            $total_pages = ceil($total_results / $size);
+            $this->logger->debug('Total Pages: '. $total_pages);
+
+            for($i = 1; $i < $total_pages; $i++){
+                $category_data = $this->request_category_data($category_number, $size, $i);
+                $this->add_category_products($products, $category_data['results']->results);
+            }
+
+        } else {
+            $this->logger->debug('Total Pages: 1');
+        }
+
+        return ['products' => $products, 'type' => $request_type];
+    }
+
+    private function request_category_data($category_number, $size = 50, $page_number = 0){
+
+        $categories_endpoints = $this->endpoints->categories;
+        $category_endpoint_v2 = $categories_endpoints->v2 . $category_number;
+        $category_endpoint_v3 = $categories_endpoints->v3;
+
+        $this->logger->debug('Category Request Page Number: '. $page_number);
+
+        try {
+            $results = $this->request->request($category_endpoint_v3, 'POST', [
+                'pagination' => [
+                    'from' => $page_number,
+                    'size' => $size
+                ],
+
+                'banner' => 'superstore',
+                'cartId' => '564d3383-738b-4407-b170-1064b504d991',
+                'lang' => 'en',
+                'storeId' => '1077',
+                'date' => '13032021',
+                'pickupType' => 'STORE',
+                'categoryId' => $category_number
+
+            ], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, 1);
+
+            $request_type = 'v3';
+
+        } catch(Exception $e){
+            $request_type = 'v2';
+            $results = $this->request->request($category_endpoint_v2, 'GET', [], ['Is-Pcs-Catalog' => 'true']);
+        }
+
+        $results =  $this->request->parse_json($results);
+
+        return ['results' => $results, 'type' => $request_type];
+    }
+
+    private function add_category_products(&$products, $category_products){
+        foreach($category_products as $product_data){
+            $site_product_id =  $product_data->productId ?? $product_data->code;
+            $products[] = $site_product_id;
+        }
     }
 
 }

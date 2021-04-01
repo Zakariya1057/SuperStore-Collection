@@ -111,7 +111,7 @@ class Asda {
 
 
 
-    public function request_details($type, $item_id = null){
+    public function request_details($type, $item_id = null, $page_number = 1, $page_size = 60){
 
         $contracts = [
             'categories' => 'web/cms/taxonomy',
@@ -132,6 +132,9 @@ class Asda {
 
 
         if($type == 'child_category'){
+            $this->logger->debug("Category Details For Page: $page_number");
+            $variables['page_size'] = $page_size;
+            $variables['page'] = $page_number;
             $variables['payload'] = [ 'page_type' => 'aisle', 'hierarchy_id' => $item_id, 'filter_query' => [],'page_meta_info' => true];
         } else {
             $variables['type'] = 'content';

@@ -321,18 +321,29 @@ class Products extends Asda implements ProductInterface {
 
         $product->brand = $item->brand;
 
-        $product->warning = trim($item_enrichment->safety_warning) == '' ? NULL : $item_enrichment->safety_warning;
-        $product->country_of_origin = trim($item_enrichment->country_of_origin) == '' ? null : $item_enrichment->country_of_origin;
-        $product->allergen_info = trim($item_enrichment->allergy_info_formatted_web) == '' ? NULL : $item_enrichment->allergy_info_formatted_web ;
-
-        $product->storage = trim($item_enrichment->storage) == '' ? NULL : $item_enrichment->storage;
+        $this->set_optional_details($product, $item_enrichment);
 
         if($item->extended_item_info->weight){
             $product->weight = $item->extended_item_info->weight;
         }
-
     }
 
+    private function set_optional_details(&$product, $item_enrichment){
+
+        $optional_details = [
+            'safety_warning' => 'warning',
+            'country_of_origin' => 'country_of_origin',
+            'allergy_info_formatted_web' => 'allergen_info',
+            'storage' => 'storage',
+        ];
+
+        foreach($optional_details as $property => $new_property){
+            if(property_exists($item_enrichment, $property)){
+                $product->{$new_property} = trim($item_enrichment->{$property}) == '' ? NULL : $item_enrichment->{$property};
+            }
+        }
+
+    }
 
     public function set_barcodes(&$product, $item, $inventory){
         $barcodes_data = [
