@@ -8,7 +8,7 @@ use Supermarkets\Canadian_Superstore\CanadianSuperstore;
 
 class Promotions extends CanadianSuperstore {
 
-    public function parse_promotion_v3($promotion_details){
+    public function parse_promotion_v3($promotion_details, $site_category_id){
         $promotion_name = $promotion_details->text;
         $promotion_expires = $promotion_details->expiryDate ?? null;
 
@@ -41,6 +41,7 @@ class Promotions extends CanadianSuperstore {
         $where = [
             'store_type_id' => $store_type_id,
             'name' => $promotion_name,
+            'site_category_id' => $site_category_id,
             'expires' => is_null($promotion_expires) ? NULL : 1
         ];
 
@@ -59,6 +60,7 @@ class Promotions extends CanadianSuperstore {
             $promotion->price = $price;
             $promotion->minimum = $minimum;
             $promotion->quantity = $quantity;
+            $promotion->site_category_id = $site_category_id;
     
             if(!is_null($promotion_expires)){
                 $promotion->expires = 1;

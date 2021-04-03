@@ -15,6 +15,8 @@ class PromotionModel extends Model {
         $minimum,
         $maximum,
 
+        $site_category_id,
+
         $store_type_id,
 
         $site_promotion_id,
@@ -54,6 +56,10 @@ class PromotionModel extends Model {
             ],
 
             'site_promotion_id' => [
+                'nullable' => true
+            ],
+
+            'site_category_id' => [
                 'nullable' => true
             ],
 

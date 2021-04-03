@@ -333,6 +333,12 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
         $price_details = $product_details->prices;
 
+        $site_category_id = $product_details->breadcrumbs[1]->categoryCode;
+
+        if(is_null($site_category_id)){
+            throw new Exception('Site Category ID Not Found');
+        }
+
         $product->price = $price_details->price->value;
 
         $deal = $product_details->badges->dealBadge;
@@ -349,7 +355,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
                 $this->promotions = new Promotions($this->config,$this->logger,$this->database,$this->remember);
             }
 
-            $product->promotion = $this->promotions->parse_promotion_v3($deal);
+            $product->promotion = $this->promotions->parse_promotion_v3($deal, $site_category_id);
         }
 
     }
