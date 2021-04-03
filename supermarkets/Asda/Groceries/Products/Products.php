@@ -32,25 +32,25 @@ class Products extends Asda implements ProductInterface {
         $this->child_category_model = new ChildCategoryModel($this->database);
     }
 
-    public function create_product($product_site_id, $child_category, $parent_site_category_name=null){
+    public function create_product($site_product_id, $child_category, $parent_site_category_name=null){
         //Get product details for each product and insert into database.
 
-        $this->logger->info("Product ID: $product_site_id");
+        $this->logger->info("Product ID: $site_product_id");
 
-        if(is_null($product_site_id)){
-            throw new Exception('product_site_id required to create product');
+        if(is_null($site_product_id)){
+            throw new Exception('site_product_id required to create product');
         }
 
         $product_item = new ProductModel($this->database);
-        $product_results = $product_item->where(['site_product_id' => $product_site_id])->get()[0] ?? null;
+        $product_results = $product_item->where(['site_product_id' => $site_product_id])->get()[0] ?? null;
 
         $product_categories = new CategoryProductModel($this->database);
 
         if(is_null($product_results)){
             
-            $this->logger->info("New Product Found: $product_site_id");
+            $this->logger->info("New Product Found: $site_product_id");
 
-            $product_details  = $this->product_details($product_site_id);
+            $product_details  = $this->product_details($site_product_id);
 
             if(is_null($child_category)){
 
@@ -117,12 +117,12 @@ class Products extends Asda implements ProductInterface {
             }
 
         } else { 
-            $this->logger->info("Product Found In Database: $product_site_id");
+            $this->logger->info("Product Found In Database: $site_product_id");
             // If under new category, save that under multiple categories
 
             $results = $product_categories->where(['product_id' => $product_results->id, 'child_category_id' => $child_category->id])->get()[0] ?? null;
             if(is_null($results)){
-                $this->logger->info("No Product Under Category: $product_site_id");
+                $this->logger->info("No Product Under Category: $site_product_id");
                 $product_categories->product_id = $product_results->id;
                 $product_categories->child_category_id = $child_category->id;
                 $product_categories->parent_category_id = $child_category->parent_category_id;
@@ -240,9 +240,9 @@ class Products extends Asda implements ProductInterface {
         }
     }
 
-    public function product_image($product_site_id, $image_id,$size,$size_name){
+    public function product_image($site_product_id, $image_id,$size,$size_name){
         $url = "https://ui.assets-asda.com/dm/asdagroceries/{$image_id}?defaultImage=asdagroceries/noImage&resMode=sharp2&id=8daSB3&fmt=jpg&fit=constrain,1&wid={$size}&hei={$size}";
-        $file_name = $this->image->save($product_site_id,$url,$size_name);
+        $file_name = $this->image->save($site_product_id,$url,$size_name);
         return $file_name;
     }
     
@@ -297,8 +297,8 @@ class Products extends Asda implements ProductInterface {
 
         $rating_review = $item->rating_review;
 
-        $product_site_id = $item->sku_id;
-        $product->site_product_id = $product_site_id;
+        $site_product_id = $item->sku_id;
+        $product->site_product_id = $site_product_id;
         $product->store_type_id = $this->store_type_id;
 
         $this->set_barcodes($product, $item, $inventory);
@@ -313,9 +313,9 @@ class Products extends Asda implements ProductInterface {
         $image_id = $item->images->scene7_id;
 
         if(!$ignore_image){
-            $product->large_image = $this->product_image($product_site_id, $image_id, 600,'large');
+            $product->large_image = $this->product_image($site_product_id, $image_id, 600,'large');
             if(!is_null($product->large_image)){
-                $product->small_image = $this->product_image($product_site_id, $image_id, 200, 'small');
+                $product->small_image = $this->product_image($site_product_id, $image_id, 200, 'small');
             }
         }
 
