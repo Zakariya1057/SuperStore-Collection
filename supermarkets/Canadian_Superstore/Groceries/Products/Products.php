@@ -24,7 +24,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
         $product_id = null;
 
-        // $site_product_id = '21019804_EA';
+        // $site_product_id = '21189781_EA';
 
         if(is_null($product)){
             $product = $this->product_details($site_product_id, false, $request_type);
@@ -99,7 +99,11 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
     private function create_promotion(&$product){
         if(property_exists($product, 'promotion') && !is_null($product->promotion)){
-            $product->promotion_id = $product->promotion->save();
+            if(property_exists($product->promotion, 'id')){
+                $product->promotion_id = $product->promotion->id;
+            } else {
+                $product->promotion_id = $product->promotion->save();
+            }
         }
     }
 

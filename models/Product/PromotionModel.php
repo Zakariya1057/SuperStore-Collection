@@ -15,6 +15,8 @@ class PromotionModel extends Model {
         $minimum,
         $maximum,
 
+        $store_type_id,
+
         $site_promotion_id,
         $url,
         $expires,

@@ -155,11 +155,14 @@ class Model {
     }
 
     public function order_by($field, $order = 'DESC'){
-        
-        $order = strtoupper($order);
+        if(is_null($order)){
+            $order = '';
+        } else {
+            $order = strtoupper($order);
 
-        if($order != 'ASC' && $order != 'DESC'){
-            throw new Exception('Unknown Order By: '.$order);
+            if($order != 'ASC' && $order != 'DESC'){
+                throw new Exception('Unknown Order By: '.$order);
+            }
         }
 
         $this->order = "ORDER BY $field $order";
@@ -209,7 +212,13 @@ class Model {
 
         $query_list = join(',', $query_list);
 
-        $this->not_in = "WHERE $field IN ($query_list)";
+        if(is_null($this->where)){
+            $this->where = "$field IN ($query_list)";
+        } else {
+            $this->where = $this->where . " AND $field IN ($query_list)";
+        }
+        // $this->not_in = 
+
         return $this;
     }
 
@@ -401,7 +410,18 @@ class Model {
     }
 
     private function reset_data(){
-        $this->join = $this->order = $this->group_by = $this->create = $this->delete = $this->select =null;
+        $this->where = 
+        $this->not_in = 
+        $this->like = 
+        $this->limit = 
+        $this->update = 
+        $this->join = 
+        $this->order = 
+        $this->group_by = 
+        $this->create = 
+        $this->delete = 
+        $this->select =
+        null;
     }
 }
 
