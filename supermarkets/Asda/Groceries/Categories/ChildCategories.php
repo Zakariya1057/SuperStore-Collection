@@ -92,19 +92,17 @@ class ChildCategories extends Categories {
             $shelf_results = file_get_contents(__DIR__."/../../data/Asda/New_Shelf.json");
             $shelf_data = $this->request->parse_json($shelf_results)->data->tempo_cms_content;
 
-            $this->add_category_products($products, $shelf_data);
+            $this->set_category_details($products, $shelf_data);
         } else {
             $shelf_data = $this->request_details('child_category', $category_site_id);
-            $this->add_category_products($products, $shelf_data);
+            $total_pages = $this->set_category_details($products, $shelf_data);
 
-            // If more than a single page, loop through rest of the pages
-            $category_data = $shelf_data->zones[1]->configs;
-            $total_pages = $category_data->max_pages;
-
+            $this->logger->debug('Category Pages: '. $total_pages);
+            
             if($total_pages > 1){
                 for($i = 1; $i < $total_pages; $i++){
                     $shelf_data = $this->request_details('child_category', $category_site_id, $i + 1);
-                    $this->add_category_products($products, $shelf_data);
+                    $this->set_category_details($products, $shelf_data);
                 }
             }
         }
@@ -113,13 +111,25 @@ class ChildCategories extends Categories {
 
     }
 
-    private function add_category_products(&$products, $shelf_data){
-        $items = $shelf_data->zones[1]->configs->products->items;
+    private function set_category_details(&$products, $shelf_data){
 
-        foreach($items as $product){
-            $item = $product->item;
-            $products[] = $item->sku_id;
+        $max_pages = 0;
+
+        foreach($shelf_data->zones as $zone){
+            if(key_exists('products', $zone->configs)){
+                $category_details = $zone->configs;
+
+                $max_pages = $category_details->max_pages;
+                $items = $category_details->products->items;
+
+                foreach($items as $product){
+                    $item = $product->item;
+                    $products[] = $item->sku_id;
+                }
+            }
         }
+
+        return $max_pages;
     }
 
 }
