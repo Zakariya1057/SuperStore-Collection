@@ -179,7 +179,6 @@ class Products extends Asda implements ProductInterface {
         $product = new ProductModel();
         $product->name = $this->clean_product_name($name);
         $product->available = 1;
-        $product->dietary_info = $item_enrichment->dietary_info_formatted == '' ? NULL : $item_enrichment->dietary_info_formatted;
 
         if(is_null($product_details->price)){
             $this->logger->notice('Product Not Available. No Price Details Found.');
@@ -335,6 +334,7 @@ class Products extends Asda implements ProductInterface {
             'country_of_origin' => 'country_of_origin',
             'allergy_info_formatted_web' => 'allergen_info',
             'storage' => 'storage',
+            'dietary_info' => 'dietary_info_formatted'
         ];
 
         foreach($optional_details as $property => $new_property){
