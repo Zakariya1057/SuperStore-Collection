@@ -334,7 +334,7 @@ class Products extends Asda implements ProductInterface {
             'country_of_origin' => 'country_of_origin',
             'allergy_info_formatted_web' => 'allergen_info',
             'storage' => 'storage',
-            'dietary_info' => 'dietary_info_formatted'
+            'dietary_info_formatted' => 'dietary_info'
         ];
 
         foreach($optional_details as $property => $new_property){
