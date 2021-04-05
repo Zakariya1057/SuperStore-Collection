@@ -25,12 +25,12 @@ class Recommended extends Asda {
     public function all_recommended_products(){
         //Loop through all product in database without related products and set their related products.
         $this->logger->notice('------ Product Recommended Start ---------');
-
-        $products_without_recommended = $this->product_model->select(['id','site_product_id','name'])->where(['store_type_id' => $this->store_type_id, 'recommended_searched' => null])->order_by('id','ASC')->get();
         
         // After recommended product run additonal product will be created. These will require an addtional run.
         while(true){
 
+            $products_without_recommended = $this->product_model->select(['id','site_product_id','name'])->where(['store_type_id' => $this->store_type_id, 'recommended_searched' => null])->order_by('id','ASC')->get();
+            
             if($products_without_recommended){
 
                 $product_count = count($products_without_recommended);
