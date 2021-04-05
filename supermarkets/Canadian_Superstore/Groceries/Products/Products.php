@@ -333,7 +333,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
         $price_details = $product_details->prices;
 
-        $site_category_id = $product_details->breadcrumbs[1]->categoryCode;
+        $site_category_id = $product_details->breadcrumbs[2]->categoryCode;
 
         if(is_null($site_category_id)){
             throw new Exception('Site Category ID Not Found');
