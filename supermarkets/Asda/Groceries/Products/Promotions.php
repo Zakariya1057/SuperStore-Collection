@@ -35,7 +35,6 @@ class Promotions extends Asda {
             $this->product_promotion($promotion_info,$price_details);
         } else {
             //No Product Promotion
-            
         }
 
         return $price_details;
@@ -84,7 +83,11 @@ class Promotions extends Asda {
             $promotion_name = $promotion_details->promo_detail;
             $promotion_site_id = $promotion_details->promo_id;
 
-            $promotion_info = $this->promotion_info($promotion_site_id);
+            try {
+                $promotion_info = $this->parse_promotion($promotion_name);
+            } catch(Exception $e) {
+                $promotion_info = $this->promotion_info($promotion_site_id);
+            }
 
             $promotion->name = $promotion_info->name;
             $promotion->quantity = $promotion_info->quantity;
