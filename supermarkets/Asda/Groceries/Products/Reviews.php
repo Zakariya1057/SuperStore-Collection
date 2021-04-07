@@ -26,7 +26,10 @@ class Reviews extends Asda {
         //Get all products without reviews, get matching reviews
         $this->logger->notice('------ Product Reviews Start ---------');
 
-        $products_without_reviews = $this->product_model->select(['id','site_product_id','name'])->where(['store_type_id' => $this->store_type_id, 'reviews_searched' => null])->get() ?? null;
+        $products_without_reviews = $this->product_model->select(['id','site_product_id','name'])
+        ->where(['store_type_id' => $this->store_type_id, 'reviews_searched' => null])
+        ->order_by('products.id')
+        ->get() ?? null;
 
         if($products_without_reviews){
 
@@ -39,7 +42,7 @@ class Reviews extends Asda {
                 $product_id = $product->id;
                 $site_product_id = $product->site_product_id;
     
-                $this->logger->debug("New Product Review Item: [$product_id]$name");
+                $this->logger->debug("New Product Review Item: [$product_id] $name");
     
                 $this->database->start_transaction();
                 $this->create_review($product_id, $site_product_id);
@@ -98,12 +101,16 @@ class Reviews extends Asda {
     }
 
     public function process_reviews($product_id, $reviews_data){
+        $unique_reviews = $this->unique_reviews($reviews_data);
+        $unique_reviews_count = count($unique_reviews);
 
-        foreach($reviews_data as $review_item){
+        $this->logger->debug("Found $unique_reviews_count Unique Reviews");
+    
+        foreach($unique_reviews as $review_item){
             $review = new ReviewModel($this->database);
             $review->rating = $review_item->Rating;
-            $review->text = preg_replace('/\s*\\\\$/','',ucfirst($review_item->ReviewText ?? ''));
-            $review->title = ucfirst( $review_item->Title ?? '');
+            $review->text = preg_replace('/\s*\\\\$/','', ucfirst($review_item->ReviewText ?? ''));
+            $review->title = preg_replace('/\s*\\\\$/','', ucfirst( $review_item->Title ?? ''));
             $review->user_id = $this->user_id;
             $review->site_review_id = $review_item->Id;
 
@@ -117,18 +124,37 @@ class Reviews extends Asda {
 
             $this->logger->debug("Review Details: $review->title \t $review->rating/5 \t $review->created_at");
 
-            $select_review = $review->where(['site_review_id' => $review->site_review_id])->get()[0] ?? null;
-
-            if(is_null($select_review)){
-                $review->product_id = $product_id;
-                $review->database = $this->database;
-                $review->save();
-            } else {
-                $this->logger->error('Ignoring Duplicate Review In Database: ' . $select_review->id);
-            }
+            $review->product_id = $product_id;
+            $review->database = $this->database;
+            $review->save();
 
         }
 
+    }
+
+    private function unique_reviews($reviews){
+        // Return all reviews not in database
+        $reviews_data = [];
+        
+        $this->logger->debug('Total Reviews Count: ' . count($reviews));
+
+        $review_model = new ReviewModel($this->database);
+
+        foreach($reviews as $review){
+            $site_review_id = $review->Id;
+            $reviews_data[$site_review_id] = $review;
+        }
+
+        if($reviews_data != []){
+            $reviews_results = $review_model->where_in('site_review_id', array_keys($reviews_data))->get();
+
+            foreach($reviews_results as $review){
+               unset($reviews_data[$review->site_review_id]);
+            }
+        }
+
+
+        return array_values($reviews_data);
     }
 
 
