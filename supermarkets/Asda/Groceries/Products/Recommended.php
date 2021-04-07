@@ -42,7 +42,7 @@ class Recommended extends Asda {
                     $product_id = $product->id;
                     $site_product_id = $product->site_product_id;
         
-                    $this->logger->debug("New Product To Find Recommended Item: [$product_id]$name");
+                    $this->logger->debug("New Product To Find Recommended Item: [$product_id] $name");
         
                     $this->database->start_transaction();
                     $this->product_recommended($product_id, $site_product_id);
