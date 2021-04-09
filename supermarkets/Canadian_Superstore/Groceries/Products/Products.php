@@ -333,11 +333,14 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
         $price_details = $product_details->prices;
 
-        $site_category_id = $product_details->breadcrumbs[2]->categoryCode;
+        $breadcrumbs = $product_details->breadcrumbs;
+        $site_category_id = end($breadcrumbs)->categoryCode;
 
         if(is_null($site_category_id)){
             throw new Exception('Site Category ID Not Found');
         }
+
+        $product->site_category_id = $site_category_id;
 
         $product->price = $price_details->price->value;
 
@@ -347,7 +350,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
             $ends_at = $deal->expiryDate;
 
             $product->is_on_sale = true;
-            $product->sale_ends_at = date("Y-m-d H:i:s", strtotime($ends_at));
+            $product->sale_ends_at = date('Y-m-d H:i:s', strtotime($ends_at));
             $product->old_price = $price_details->wasPrice->value;
 
         } else if(!is_null($product_details->badges->dealBadge)){
