@@ -13,51 +13,69 @@ use Services\Config;
 use Services\Database;
 use Services\Remember;
 use Supermarkets\Asda\Asda;
+use Symfony\Component\DomCrawler\Crawler;
 
 class Stores extends Asda implements StoreInterface {
 
     public function stores(){
 
-        foreach($this->endpoints->stores as $store_url ){
+        $this->logger->notice("Finding All Stores In.");
 
-            $stores_endpoint = $store_url . $this->city;
-
-            $this->logger->notice("Finding All Stores In: $this->city");
-    
-            if($this->env == 'dev'){
-                $stores_response = file_get_contents(__DIR__."/../../data/Asda/Stores.json");
-            } else {
-                $stores_response = $this->request->request($stores_endpoint,'GET',[],['accept' => 'application/json']);
-            }
-    
-            $stores_results = $this->request->parse_json($stores_response);
-            
-            $stores_list = $stores_results->response->entities;
-    
-            $this->logger->notice('Found ' . count($stores_list) . ' Stores In ' . $this->city);
-    
-            foreach($stores_list as $item){
-                $this->database->start_transaction();
-                $this->parse_store_data($item);
-                $this->database->commit_transaction();
-            }
-
+        if($this->env == 'dev'){
+            $stores_response = file_get_contents(__DIR__."/../../data/Asda/Stores.json");
+        } else {
+            $stores_response = $this->request->request($this->endpoints->stores, 'GET');
         }
 
+        $county_results = $this->request->parse_html($stores_response);
+
+        $county_results->filter('a.Directory-listLink')->each(function(Crawler $node, $i){
+            $url = 'https://storelocator.asda.com/' . $node->attr('href');
+            $name = $node->filter('span')->text();
+
+            $this->logger->debug("County $name - $url");
+
+            $stores_response = $this->request->request($url, 'GET');
+            $area_results = $this->request->parse_html($stores_response);
+
+            $area_results->filter('a.Directory-listLink')->each(function(Crawler $node, $i){
+                $url = 'https://storelocator.asda.com/' . $node->attr('href');
+                $name = $node->filter('span')->text();
+    
+                $this->logger->debug("- Area $name - $url");
+
+
+                $stores_response = $this->request->request($url, 'GET');
+                $store_results = $this->request->parse_html($stores_response);
+
+                $store_results->filter('a.Teaser-titleLink')->each(function(Crawler $node, $i){
+                    $url = 'https://storelocator.asda.com/' . str_replace('../', '', $node->attr('href'));
+                    $name = $node->filter('span.LocationName-geo')->text();
+        
+                    $this->logger->debug("-- Store $name - $url");
+
+                    $this->database->start_transaction();
+                    $this->store_details(null, $url, false);
+                    $this->database->commit_transaction();
+                });
+            });
+
+        });
+
     }
 
-    public function store_details($site_store_id, $url = null): ?StoreModel {
-        return $this->page_store_details($url);
+    public function store_details($site_store_id, $url = null, $retrieve = true): ?StoreModel {
+        return $this->page_store_details($url, $retrieve);
     }
 
-    public function page_store_details($url){
+    public function page_store_details($url, $retrieve = true){
         // Get Store details from store url
         $response = $this->request->request($url);
         $content = $this->request->parse_html($response);
 
         $json_body = $this->request->parse_json($content->filter('script#js-map-config-dir-map')->eq(0)->text());
 
-        return $this->parse_store_data($json_body->entities[0], true);
+        return $this->parse_store_data($json_body->entities[0], $retrieve);
     }
 
     public function parse_store_data($store_item,$retrieve=false){
@@ -118,11 +136,15 @@ class Stores extends Asda implements StoreInterface {
         if(is_null($store_results)){
             $this->logger->debug("New Store Location: $store_id");
 
-            $coordinates = $location_details->displayCoordinate ?? $location_details->geocodedCoordinate;
             $address = $location_details->address;
+            $longitude = $latitude = null;
 
-            $longitude = $coordinates->long;
-            $latitude = $coordinates->lat;
+            if(property_exists($location_details, 'displayCoordinate', ) || property_exists($location_details, 'geocodedCoordinate')){
+                $coordinates = $location_details->displayCoordinate ?? $location_details->geocodedCoordinate;
+                $longitude = $coordinates->long;
+                $latitude = $coordinates->lat;
+            }
+
             $city = $address->city;
             $postcode = $address->postalCode;
 
@@ -229,9 +251,9 @@ class Stores extends Asda implements StoreInterface {
         ];
         
         $facilities_list = $facilities_details->c_facilitiesList;
-
+        
         foreach($facility_options as $key => $facility_name){
-            if($facilities_details->{$key}){
+            if(property_exists($facilities_details, $key) && !is_null($facilities_details->{$key})){
                 $facilities_list[] = $facility_name;
             }
         }
