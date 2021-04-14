@@ -8,10 +8,6 @@ use Models\Store\FacilitiesModel;
 use Models\Store\LocationModel;
 use Models\Store\OpeningHoursModel;
 use Models\Store\StoreModel;
-use Monolog\Logger;
-use Services\Config;
-use Services\Database;
-use Services\Remember;
 use Supermarkets\Asda\Asda;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -19,7 +15,7 @@ class Stores extends Asda implements StoreInterface {
 
     public function stores(){
 
-        $this->logger->notice("Finding All Stores In.");
+        $this->logger->notice("Collecting All Stores.");
 
         if($this->env == 'dev'){
             $stores_response = file_get_contents(__DIR__."/../../data/Asda/Stores.json");

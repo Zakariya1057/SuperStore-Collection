@@ -28,7 +28,7 @@ class Reviews extends Asda {
 
         $products_without_reviews = $this->product_model->select(['id','site_product_id','name'])
         ->where(['store_type_id' => $this->store_type_id, 'reviews_searched' => null])
-        ->order_by('products.id')
+        ->order_by('products.id', 'ASC')
         ->get() ?? null;
 
         if($products_without_reviews){
