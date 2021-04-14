@@ -2,26 +2,26 @@
 
 namespace Monitors;
 
+use Exception;
 use Interfaces\ProductInterface;
 use Interfaces\PromotionInterface;
+use Models\Product\IngredientModel;
 use Models\Product\ProductModel;
-use Models\Shared\FavouriteModel;
-use Models\Shared\GroceryListItemModel;
 use Models\Shared\MonitoredProductModel;
-use Models\Shared\UserModel;
 use Services\Notification;
 use Monolog\Logger;
 use Services\Database;
 use Services\Config;
 use Services\Currency;
+use Services\Sanitize;
 
 class MonitorProducts {
     
     private $notification, $config, $logger, $database;
     
-    private $product_model, $monitor_model;
+    private $product_model, $monitor_model, $ingredients_model;
 
-    private $currency_service;
+    private $currency_service, $sanitize_service;
     
     private $product_collection, $promotion_collection;
 
@@ -32,12 +32,14 @@ class MonitorProducts {
 
         $this->product_model = new ProductModel($database);
         $this->monitor_model = new MonitoredProductModel($database);
+        $this->ingredients_model = new IngredientModel($database);
 
         $this->product_collection = $product_collection;
         $this->promotion_collection = $promotion_collection;
 
         $this->notification = new Notification($config, $logger);
 
+        $this->sanitize_service = new Sanitize();
         $this->currency_service = new Currency();
     }
 
@@ -50,9 +52,9 @@ class MonitorProducts {
         ->join('grocery_list_items', 'grocery_list_items.product_id', 'products.id')
         ->join('monitored_products', 'monitored_products.product_id', 'products.id')
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
+        // ->where_raw(["products.id = 25287"])
         ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
-        // ->where_raw(["store_type_id = $store_type_id"])
-        // ->where_raw(["products.id = 4574"])
+        // ->where_raw(["store_type_id = 1", "products.`created_at` > '2021-04-05 03:32:10'", "dietary_info is null"])
         ->group_by('products.id')
         ->order_by('num_monitoring')
         // ->limit(1)
@@ -92,6 +94,8 @@ class MonitorProducts {
     public function check_product_change($new_product, $old_product){
         $this->database->start_transaction();
 
+        $product_id = $old_product->id;
+
         // If product price changes, notify relevant users.
         $update_fields = ['last_checked' => date('Y-m-d H:i:s')];
 
@@ -99,18 +103,16 @@ class MonitorProducts {
         $this->available_check($new_product, $old_product, $update_fields);
         $this->details_check($new_product, $old_product, $update_fields);
         $this->sale_check($new_product, $old_product, $update_fields);
-
-        $this->product_model->where(['id' => $old_product->id])->update($update_fields);
+        
+        $this->product_model->where(['id' => $product_id])->update($update_fields);
 
         $this->database->commit_transaction();
 
         if($price_changed){
             $this->notify_product_changed($new_product, $old_product);
-            // die('Complete');
         }
         
     }
-    
 
     private function notify_product_changed($product, $old_product){
 
@@ -206,6 +208,38 @@ class MonitorProducts {
         }
     }
 
+    private function ingredients_check($product_id, $new_product){
+        $new_ingredients = array_values($new_product->ingredients);
+        $old_ingredients = $this->ingredients_model->where(['product_id' => $product_id])->get() ?? [];
+
+        $new_ingredients_count = count($new_ingredients);
+        $old_ingredients_count = count($old_ingredients);
+
+        if($new_ingredients_count == $old_ingredients_count){
+            // Update Ingredient Name. Expand Truncated Ingredient Name
+            foreach($new_ingredients as $index => $ingredient){
+                if(!key_exists($index, $old_ingredients)){
+                    throw new Exception('Ingredient Not Found At Index: '. $index);
+                }
+
+                $old_name = $old_ingredients[$index]->name;
+                $ingredient = $this->sanitize_service->sanitize_field($ingredient);
+
+                $this->ingredients_model
+                ->where([
+                    'product_id' => $product_id
+                ])
+                ->like(['name'=> "$old_name%"])
+                ->limit("1")
+                ->update([
+                    'name' => $ingredient
+                ]);
+            }
+
+        } else {
+            throw new Exception("Number Of Ingredients Changed: $old_ingredients_count vs $new_ingredients_count");
+        }
+    }
 }
 
 ?>
