@@ -218,10 +218,10 @@
     
             "monitor": 1,
     
-            "stores": 1,
+            "stores": 0,
     
-            "groceries": 1,
-            "recommended": 1,
+            "groceries": 0,
+            "recommended": 0,
             "reviews": 1,
             
             "store_type_id": 1,
@@ -238,9 +238,9 @@
     
             "monitor": 1,
     
-            "stores": 1,
+            "stores": 0,
     
-            "groceries": 1,
+            "groceries": 0,
             "recommended": 1,
             
             "store_type_id": 2,
@@ -257,12 +257,7 @@
             "reviews": "https://groceries.asda.com/review/reviews.json?requestorigin=gi&apiversion=5.4&passkey=92ffdz3h647mtzgbmu5vedbq&Filter=ProductId%3A",
             "promotions": "https://groceries.asda.com/cmscontent/json/pages/overlays/linksave?requestorigin=gi&Nrpp=10000000&storeId=4565&promoid=",
             "recommended": "https://groceries.asda.com/p13nservice/recommendations?storeId=4565&placement=item_page.pdp1&skuId=",
-            "stores": [
-                "https://storelocator.asda.com/?q=52.5219314,-1.8446106&qp=Erdington,%20Birmingham,%20UK&l=en",
-                "https://storelocator.asda.com/?q=52.48624299999999,-1.890401000000001&l=en&qp=UK,%20",
-                "https://storelocator.asda.com/?q=52.57038499999999,-1.824042&qp=Sutton%20Coldfield,%20UK&l=en",
-                "https://storelocator.asda.com/?q=52.410447,-1.819373&qp=Shirley,%20Solihull,%20UK&l=en"
-            ]
+            "stores": "https://storelocator.asda.com/directory"
         },
 
         "canadian_superstore": {
