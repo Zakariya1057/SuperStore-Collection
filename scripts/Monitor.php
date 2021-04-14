@@ -110,8 +110,9 @@ try {
             }
 
             $logger->notice("---------- $store_name Monitoring Complete ---------- ");
+        } else {
+            $logger->notice("--- Monitoring Disabled: $store_name");
         }
-
     }
 
 } catch(Exception $e){
