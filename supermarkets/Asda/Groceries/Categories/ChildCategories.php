@@ -2,6 +2,7 @@
 
 namespace Supermarkets\Asda\Groceries\Categories;
 
+use Exception;
 use Models\Category\ChildCategoryModel;
 use Supermarkets\Asda\Groceries\Products\Products;
 
@@ -20,10 +21,19 @@ class ChildCategories extends Categories {
     
             foreach($categories_list as $index => $child_category_data){
                 
-                $this->logger->notice("-- Child Category: $child_category_data->name");
+                $site_category_id = $child_category_data->id;
+
+                $this->logger->notice("-- Child Category: [$site_category_id] $child_category_data->name");
 
                 $child_category_data->parent_category_id = $parent_category->id;
                 $child_category = $this->select_category($child_category_data, "child");
+
+                // If the site_category_id has changed from previous then update it
+                if($child_category_data->id != $child_category->site_category_id){
+                    $this->logger->debug("Changed Site Category ID: $site_category_id -> ". $child_category->site_category_id);
+                    $child_category->site_category_id = $child_category_data->id;
+                }
+
                 $child_category->grand_parent_category_id = $parent_category->parent_category_id;
 
                 $this->remember->set('child_category_index',$index + $last_category_index);
@@ -116,10 +126,16 @@ class ChildCategories extends Categories {
         $max_pages = 0;
 
         foreach($shelf_data->zones as $zone){
+            // if(key_exists('products', $zone->configs) && !is_null($zone->configs->products)){
             if(key_exists('products', $zone->configs)){
                 $category_details = $zone->configs;
 
+                if(is_null($zone->configs->products)){
+                    throw new Exception('No Product Property Found. For Child Category Config.');
+                }
+
                 $max_pages = $category_details->max_pages;
+
                 $items = $category_details->products->items;
 
                 foreach($items as $product){
