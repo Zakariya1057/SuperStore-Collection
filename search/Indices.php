@@ -37,7 +37,7 @@ class Indices extends Search {
 
         $this->delete_documents('products');
 
-        $results = $this->product_model->select_raw('COUNT(*) as total_count')->get();
+        $results = $this->product_model->select_raw('COUNT(*) as total_count')->where(['enabled' => 1])->get();
         $product_count = $results[0]->total_count;
 
         // Loop through groups of 5000 products.
@@ -55,7 +55,7 @@ class Indices extends Search {
 
         $this->delete_documents('stores');
 
-        $stores = $this->store_model->get();
+        $stores = $this->store_model->where(['enabled' => 1])->get();
 
         $params = [
             'body' => []
@@ -85,7 +85,7 @@ class Indices extends Search {
 
         $this->delete_documents('promotions');
 
-        $promotions = $this->promotion_model->get();
+        $promotions = $this->promotion_model->where(['enabled' => 1])->get();
 
         $params = [
             'body' => []
@@ -116,9 +116,9 @@ class Indices extends Search {
         $this->delete_documents('categories');
 
         $categories = array_merge(
-            $this->child_category_model->select_raw(['*', '"child_categories" as "type"'])->get(), 
-            $this->parent_category_model->select_raw(['*', '"parent_categories" as "type"'])->get(),
-            $this->grand_parent_category_model->select_raw(['*', '"grand_parent_categories" as "type"'])->get()
+            $this->child_category_model->select_raw(['*', '"child_categories" as "type"'])->where(['enabled' => 1])->get(), 
+            $this->parent_category_model->select_raw(['*', '"parent_categories" as "type"'])->where(['enabled' => 1])->get(),
+            $this->grand_parent_category_model->select_raw(['*', '"grand_parent_categories" as "type"'])->where(['enabled' => 1])->get()
         );
 
         $params = [
