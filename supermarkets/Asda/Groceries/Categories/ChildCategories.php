@@ -127,7 +127,6 @@ class ChildCategories extends Categories {
         $category_products_found = false;
 
         foreach($shelf_data->zones as $zone){
-            // if(key_exists('products', $zone->configs) && !is_null($zone->configs->products)){
             if(key_exists('products', $zone->configs) && !is_null($zone->configs->products)){
                 $category_products_found = true;
 

@@ -6,7 +6,9 @@ use Exception;
 
 class Database {
 
-    private $config, $logger, $connection, $database_config,$log_query;
+    private $config, $connection, $database_config,$log_query;
+
+    public $logger;
 
     function __construct($config, $logger) {
 

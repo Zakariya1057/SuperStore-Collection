@@ -6,7 +6,8 @@
         "aws/aws-sdk-php": "^3.151",
         "laravel/passport": "^10.0",
         "elasticsearch/elasticsearch": "~7.0",
-        "symfony/css-selector": "^5.1"
+        "symfony/css-selector": "^5.1",
+        "splitbrain/php-cli": "^1.1"
     },
     "autoload": {
         "psr-4": {

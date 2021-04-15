@@ -22,7 +22,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 $unique_products = [];
 
 $config = new Config();
-$logging = new Loggers();
+$logging = new Loggers('Monitor');
 
 $logger = $logging->logger_handler;
 

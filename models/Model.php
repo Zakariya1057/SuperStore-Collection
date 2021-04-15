@@ -5,6 +5,7 @@ namespace Models;
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Exception;
+use Services\Database;
 use Services\Loggers;
 use Services\Sanitize;
 use Services\Validator;
@@ -17,17 +18,15 @@ class Model {
 
     public $sanitize, $validator;
 
-    function __construct($database=null){
+    function __construct(Database $database=null){
         if($database){
             $this->database = $database;
         }
-
-        $log = new Loggers();
         
         $this->sanitize = new Sanitize();
         $this->validator = new Validator();
 
-        $this->logger = $log->logger_handler;
+        $this->logger = $database->logger;
     }
     
     public function create($data){
