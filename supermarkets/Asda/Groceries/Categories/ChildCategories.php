@@ -124,17 +124,16 @@ class ChildCategories extends Categories {
     private function set_category_details(&$products, $shelf_data){
 
         $max_pages = 0;
+        $category_products_found = false;
 
         foreach($shelf_data->zones as $zone){
             // if(key_exists('products', $zone->configs) && !is_null($zone->configs->products)){
-            if(key_exists('products', $zone->configs)){
+            if(key_exists('products', $zone->configs) && !is_null($zone->configs->products)){
+                $category_products_found = true;
+
                 $category_details = $zone->configs;
 
-                if(is_null($zone->configs->products)){
-                    throw new Exception('No Product Property Found. For Child Category Config.');
-                }
-
-                $max_pages = $category_details->max_pages;
+                $max_pages = $category_details->max_pages ?? 0;
 
                 $items = $category_details->products->items;
 
@@ -143,6 +142,10 @@ class ChildCategories extends Categories {
                     $products[] = $item->sku_id;
                 }
             }
+        }
+
+        if(!$category_products_found){
+            throw new Exception('For all child category configs, no product property found. Must be an issue with payload');
         }
 
         return $max_pages;
