@@ -17,7 +17,6 @@ $cli = new CLIService();
 $cli->run();
 $store_type = $cli->get_store_type();
 
-
 $config = new Config();
 $log = new Loggers('Collection', $store_type);
 

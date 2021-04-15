@@ -15,15 +15,15 @@ class CLIService extends CLI {
     // register options and arguments
     protected function setup(Options $options)
     {
-        $options->setHelp('SuperStore Grocery Content Collection Script');
-        $options->registerOption('store_type', 'Store type to scrape content from.', 's', 'store_type');
+        $options->setHelp('SuperStore grocery stores scraper.');
+        $options->registerOption('store', 'Store type to scrape content from.', 's', 'store_type');
         $options->registerOption('version', 'print version', 'v');
     }
 
     // implement your code
     protected function main(Options $options)
     {
-        if ($store_type = $options->getOpt('store_type')) {
+        if ($store_type = $options->getOpt('store')) {
             $this->store_type = $store_type;
         } else {
             echo $options->help();

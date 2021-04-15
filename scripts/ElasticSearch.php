@@ -12,7 +12,7 @@ $config = new Config();
 $index_documents = $config->get('elasticsearch.index_documents');
 $create_index = $config->get('elasticsearch.create_index');
 
-$log = new Loggers();
+$log = new Loggers('ElasticSearch');
 $logger = $log->logger_handler;
 
 $logger->notice("---------------------------- ElasticSearch Script Start ----------------------------");
