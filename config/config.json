@@ -1,7 +1,7 @@
 {
 
     "database": {
-        "env": "prod",
+        "env": "dev",
 
         "dev": {
             "host": "192.168.1.187",
@@ -220,7 +220,7 @@
     
             "stores": 0,
     
-            "groceries": 0,
+            "groceries": 1,
             "recommended": 1,
             "reviews": 1,
             
@@ -228,13 +228,13 @@
             "user_id": 1
         },
 
-        "canadian_superstore": {
+        "real_canadian_superstore": {
         
             "name": "Real Canadian Superstore",
     
             "currency": "Canadian Dollars",
 
-            "run": 9,
+            "run": 1,
     
             "monitor": 1,
     
@@ -260,7 +260,7 @@
             "stores": "https://storelocator.asda.com/directory"
         },
 
-        "canadian_superstore": {
+        "real_canadian_superstore": {
             "groceries": "https://cdn.contentful.com/spaces/0dlg9rxz8nvy/environments/master/entries?content_type=navigationList&locale=en-CA&include=3",
             
             "categories": {

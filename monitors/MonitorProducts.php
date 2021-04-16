@@ -43,14 +43,14 @@ class MonitorProducts {
 
     // Shared Monitor, check if data has changed, if so update in database.
     public function monitor_products($store_type){
-        $store_type_id = $store_type->id;
+        $store_type_id = $store_type->store_type_id;
 
         $products = $this->product_model
         ->select_raw(['products.*', 'count(*) as num_monitoring', 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) as time_difference'])
         ->join('grocery_list_items', 'grocery_list_items.product_id', 'products.id')
         ->join('monitored_products', 'monitored_products.product_id', 'products.id')
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
-        // ->where_raw(["products.id = 44691"])
+        // ->where_raw(["products.id = 11989"])
         ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
         ->group_by('products.id')
         ->order_by('num_monitoring')

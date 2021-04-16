@@ -40,9 +40,9 @@ class CanadianSuperstore {
         $this->config  = $config;
         $this->database = $database;
 
-        $canadian_superstore = $this->config->get('stores.canadian_superstore');
+        $canadian_superstore = $this->config->get('stores.real_canadian_superstore');
 
-        $this->endpoints = $this->config->get('endpoints.canadian_superstore');
+        $this->endpoints = $this->config->get('endpoints.real_canadian_superstore');
         $this->env = $this->config->get('env');
 
         $this->sanitize = new Sanitize();

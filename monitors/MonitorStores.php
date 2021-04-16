@@ -33,17 +33,14 @@ class MonitorStores {
 
     public function monitor_stores($store_type){
 
-        $store_type_id = $store_type->id;
+        $store_type_id = $store_type->store_type_id;
         $store_type_name = $store_type->name;
-
 
         $this->logger->debug('Store Monitoring');
 
         $stores = $this->store_model->where(['store_type_id' => $store_type_id])
         ->select_raw(['stores.*','TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) as time_difference'])
-        // ->where_raw(['TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
-        // ->where(['stores.id' => '135'])
-        ->where(['stores.store_type_id' => '2'])
+        ->where_raw(['TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3', 'stores.store_type_id = ' . $store_type_id])
         ->get();
 
         foreach($stores as $store){

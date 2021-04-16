@@ -76,7 +76,7 @@ try {
 
     } else {
 
-        $canadian_superstore_conf = $config->get('stores.canadian_superstore');
+        $canadian_superstore_conf = $config->get('stores.real_canadian_superstore');
 
         if($canadian_superstore_conf->run){
     
