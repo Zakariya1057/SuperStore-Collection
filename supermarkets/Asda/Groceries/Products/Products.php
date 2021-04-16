@@ -35,6 +35,8 @@ class Products extends Asda implements ProductInterface {
     public function create_product($site_product_id, $child_category, $parent_site_category_name=null){
         //Get product details for each product and insert into database.
 
+        $site_product_id = '1000134959131';
+
         $this->logger->info("Product ID: $site_product_id");
 
         if(is_null($site_product_id)){
@@ -94,6 +96,9 @@ class Products extends Asda implements ProductInterface {
                 $this->database->start_transaction();
                 
                 $product_details->database = $this->database;
+
+                $this->create_promotion($product_details);
+
                 $product_id = $product_details->save();
 
                 $product_categories->product_id = $product_id;
@@ -231,6 +236,15 @@ class Products extends Asda implements ProductInterface {
         $product->ingredients = array_unique($list);
     }
 
+    public function create_promotion(ProductModel &$product){
+        if(property_exists($product, 'promotion') && !is_null($product->promotion)){
+            if(property_exists($product->promotion, 'id')){
+                $product->promotion_id = $product->promotion->id;
+            } else {
+                $product->promotion_id = $product->promotion->save();
+            }
+        }
+    }
 
     public function create_barcodes($product_id, $product){
         foreach($product->barcodes as $barcode){
@@ -287,7 +301,6 @@ class Products extends Asda implements ProductInterface {
             $product->price = $product_prices->price;
             $product->old_price = $product_prices->old_price ?? null;
             $product->is_on_sale = $product_prices->is_on_sale ?? null;
-            $product->promotion_id = $product_prices->promotion_id ?? null;
             $product->promotion = $product_prices->promotion ?? null;
         }
     }

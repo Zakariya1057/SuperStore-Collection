@@ -102,22 +102,16 @@ class Promotions extends Asda {
             
             if(is_null($promotion_results)){
                 $this->logger->notice("New Promotion Found: $promotion_name($promotion_site_id)");
-                $promotion->new = true;
-                $promotion_insert_id = $promotion->save();
             } else {
                 $this->logger->notice("Promotion Found In Database: $promotion_name($promotion_site_id)");
-                $promotion->new = false;
-                $promotion_insert_id = $promotion_results->id;
+                $promotion->id = $promotion_results->id;
             }
-            
-            $promotion->promotion_id = $promotion_insert_id;
 
         } else {
             throw new Exception('Product Not Part Of Promotion.');
         }
 
         $price_details->promotion = $promotion;
-        $price_details->promotion_id = $promotion_insert_id;
 
     }
 

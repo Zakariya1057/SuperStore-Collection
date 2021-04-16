@@ -21,12 +21,11 @@ class Model {
     function __construct(Database $database=null){
         if($database){
             $this->database = $database;
+            $this->logger = $database->logger;
         }
         
         $this->sanitize = new Sanitize();
         $this->validator = new Validator();
-
-        $this->logger = $database->logger;
     }
     
     public function create($data){

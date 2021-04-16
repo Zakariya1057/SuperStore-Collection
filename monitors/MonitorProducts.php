@@ -17,16 +17,15 @@ use Services\Sanitize;
 
 class MonitorProducts {
     
-    private $notification, $config, $logger, $database;
+    private $notification, $logger, $database;
     
     private $product_model, $monitor_model, $ingredients_model;
 
     private $currency_service, $sanitize_service;
     
-    private $product_collection, $promotion_collection;
+    private $product_collection;
 
     function __construct(Config $config, Logger $logger, Database $database, ProductInterface $product_collection, PromotionInterface $promotion_collection = null){
-        $this->config = $config;
         $this->logger = $logger;
         $this->database = $database;
 
@@ -35,7 +34,6 @@ class MonitorProducts {
         $this->ingredients_model = new IngredientModel($database);
 
         $this->product_collection = $product_collection;
-        $this->promotion_collection = $promotion_collection;
 
         $this->notification = new Notification($config, $logger);
 
@@ -52,13 +50,14 @@ class MonitorProducts {
         ->join('grocery_list_items', 'grocery_list_items.product_id', 'products.id')
         ->join('monitored_products', 'monitored_products.product_id', 'products.id')
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
-        // ->where_raw(["products.id = 25287"])
+        // ->where_raw(["products.id = 44691"])
         ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
-        // ->where_raw(["store_type_id = 1", "products.`created_at` > '2021-04-05 03:32:10'", "dietary_info is null"])
         ->group_by('products.id')
         ->order_by('num_monitoring')
-        // ->limit(1)
+        // ->limit(100)
         ->get();
+
+        $this->logger->notice('Total Products Count: '. count($products));
 
         foreach($products as $product){
 
@@ -91,7 +90,7 @@ class MonitorProducts {
 
     }
 
-    public function check_product_change($new_product, $old_product){
+    public function check_product_change(ProductModel $new_product, $old_product){
         $this->database->start_transaction();
 
         $product_id = $old_product->id;
@@ -100,6 +99,8 @@ class MonitorProducts {
         $update_fields = ['last_checked' => date('Y-m-d H:i:s')];
 
         $price_changed = $this->price_check($new_product, $old_product, $update_fields);
+        $this->promotion_check($new_product, $old_product, $update_fields);
+
         $this->available_check($new_product, $old_product, $update_fields);
         $this->details_check($new_product, $old_product, $update_fields);
         $this->sale_check($new_product, $old_product, $update_fields);
@@ -153,7 +154,7 @@ class MonitorProducts {
         }   
     }
 
-    private function details_check($new_product, $old_product, &$update_fields){
+    private function details_check(ProductModel $new_product, $old_product, &$update_fields){
         $check_fields = [
             'name',
             'description',
@@ -178,7 +179,7 @@ class MonitorProducts {
         }
     }
 
-    private function price_check($new_product, $old_product, &$update_fields){
+    private function price_check(ProductModel $new_product, $old_product, &$update_fields){
         $price_changed = false;
 
         $old_value = $old_product->price;
@@ -194,7 +195,7 @@ class MonitorProducts {
         return $price_changed;
     }
 
-    private function sale_check($new_product, $old_product, &$update_fields){
+    private function sale_check(ProductModel $new_product, $old_product, &$update_fields){
         if($old_product->is_on_sale && is_null($new_product->is_on_sale)){
              // Sale Expired
             $update_fields['is_on_sale'] = null;
@@ -205,6 +206,26 @@ class MonitorProducts {
             $update_fields['is_on_sale'] = 1;
             $update_fields['old_price'] = $new_product->old_price;
             $update_fields['sale_ends_at'] = $new_product->sale_ends_at;
+        }
+    }
+
+    private function promotion_check(ProductModel $new_product, $old_product, &$update_fields){
+        if(!property_exists($new_product, 'promotion') || is_null($new_product->promotion)){
+            $update_fields['promotion_id'] = null;
+
+            if(is_null($old_product->promotion_id)){
+                $this->logger->debug('No Product Promotion Before Or After');
+            } else {
+                $this->logger->debug('Promotion Expired Or Product Removed From Promotions');
+            }
+        } else {
+            $this->logger->debug('Promotion Found For Product');
+            $this->product_collection->create_promotion($new_product);
+
+            if(is_null($old_product->promotion_id) || $old_product->promotion_id != $new_product->promotion_id){
+                $this->logger->debug('Updating Changed Product Promotion');
+                $update_fields['promotion_id'] = $new_product->promotion_id;
+            }
         }
     }
 

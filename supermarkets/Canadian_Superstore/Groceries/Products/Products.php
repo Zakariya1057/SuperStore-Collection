@@ -97,7 +97,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
         }
     }
 
-    private function create_promotion(&$product){
+    public function create_promotion(ProductModel &$product){
         if(property_exists($product, 'promotion') && !is_null($product->promotion)){
             if(property_exists($product->promotion, 'id')){
                 $product->promotion_id = $product->promotion->id;
