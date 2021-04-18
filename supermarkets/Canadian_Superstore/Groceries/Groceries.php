@@ -38,7 +38,6 @@ class Groceries extends CanadianSuperstore {
         $categories = $this->grand_parent_categories($grocery_data);
 
         return array_values($categories);
-
     }
 
 
@@ -52,14 +51,15 @@ class Groceries extends CanadianSuperstore {
         $categories = [];
 
         $acceptable_categories = [
-            '27988' => 1,
-            '27985' => 1,
-            '27987' => 1,
-            '27986' => 1,
-            '27990' => 1,
-            '27992' => 1,
-            '27991' => 1,
-            '27994' => 1,
+            // '27988' => 'Pet Supplies',
+            // '27985' => 'Food',
+            // '27987' => 'Baby',
+            '27995' => 'Lawn, Garden & Patio',
+            // '27986' => 'Home & Living',
+            // '27990' => 'Toys, Games & Hobbies',
+            // '27992' => 'Computers & Electronics',
+            // '27991' => 'Office & School Supplies',
+            // '27994' => 'Health & Beauty',
         ];
 
         foreach($category_items as $category){
@@ -72,9 +72,10 @@ class Groceries extends CanadianSuperstore {
 
                 $category_id = $details['id'];
                 $category_name = $details['name'];
+                $category_number = $details['number'];
 
                 // Grand Parent Category
-                if(property_exists($fields,'pcsCategoryId') && key_exists($fields->pcsCategoryId, $acceptable_categories)){
+                if(key_exists($category_number, $acceptable_categories)){
                     // $this->logger->debug('--- Grand Parent Category: '. $category_name);
 
                     $details['parent_categories'] = [];
@@ -170,6 +171,17 @@ class Groceries extends CanadianSuperstore {
                     $categories[$grand_parent_category_id]['parent_categories'][$parent_category_index]['child_categories'][] = $details;
                 }
 
+            }
+        }
+
+        foreach($categories as $key => $grand_parent_categories){
+            foreach($grand_parent_categories['parent_categories'] as $index => $category){
+                $categories[$key]['parent_categories'][$index]['child_categories'][] = [
+                    'id' => $category['id'],
+                    'name' => 'View All '. $category['name'],
+                    'url' => $category['url'],
+                    'number' => $category['number']
+                ];
             }
         }
 
