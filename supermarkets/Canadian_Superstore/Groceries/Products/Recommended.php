@@ -71,7 +71,13 @@ class Recommended extends CanadianSuperstore {
         if($this->env == 'dev'){
             $recommended_response = file_get_contents(__DIR__."/../../../../data/Canadian_Superstore/Recommendations.json");
         } else {
-            $recommended_response = $this->request->request($recommendation_endpoint, 'GET', [] , ['Site-Banner' => 'superstore']);
+            try {
+                $recommended_response = $this->request->request($recommendation_endpoint, 'GET', [] , ['Site-Banner' => 'superstore'], 300, 1);
+            } catch(Exception $e){
+                $recommended_response = '{}';
+                $this->logger->error('Failed To Find Recommended Products: '. $e->getMessage());
+            }
+            
         }
 
         $product_ids = [];
