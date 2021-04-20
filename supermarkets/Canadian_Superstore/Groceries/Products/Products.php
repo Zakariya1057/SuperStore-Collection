@@ -168,7 +168,9 @@ class Products extends CanadianSuperstore implements ProductInterface {
     private function parse_product_v2($product_details, $ignore_image=false): ?ProductModel {
         $product = new ProductModel($this->database);
 
-        $product->name = $product_details->title;
+        // $product->name = $product_details->title;
+        $product->name = $this->create_name( $product_details->title, $product_details->brand);
+
         $product->available = 1;
 
         $this->set_description($product, $product_details->longDescription);
@@ -254,7 +256,9 @@ class Products extends CanadianSuperstore implements ProductInterface {
     private function parse_product_v3($product_details, $ignore_image=false): ?ProductModel {
         $product = new ProductModel($this->database);
 
-        $product->name = $product_details->name;
+        // $product->name = $product_details->name;
+        $product->name = $this->create_name( $product_details->name, $product_details->brand);
+        
         $product->available = 1;
         $product->site_product_id = $product_details->code;
         $product->store_type_id = $this->store_type_id;
@@ -406,6 +410,23 @@ class Products extends CanadianSuperstore implements ProductInterface {
         }
         
         return json_encode($description_output);
+    }
+
+    private function create_name($name, $brand = null){
+        // Add Brand to name if brand not null
+        if(is_null($brand)){
+            return $name;
+        }
+
+        preg_match("/$brand/i", $name, $brand_matches);
+
+        if($brand_matches){
+            $this->logger->debug("Brand($brand) Found In Product Name: $name");
+            return $name;
+        } else {
+            $this->logger->debug("Brand($brand) Not Found In Product Name: $name");
+            return $brand .' '. $name;
+        }
     }
 
     private function seperate_description($description){
