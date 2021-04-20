@@ -20,22 +20,26 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
     public function create_product($site_product_id, $category_details, $request_type = null, $product = null){
 
+        $product_model = new ProductModel($this->database);
+
         $this->database->start_transaction();
 
         $product_id = null;
 
         // $site_product_id = '21189781_EA';
 
-        if(is_null($product)){
-            $product = $this->product_details($site_product_id, false, $request_type);
-        }
-        
-        if(!is_null($product)){
-            $this->logger->debug("Start Creating Product: [{$product->site_product_id}] {$product->name}");
+        $product_results = $product_model->where(['site_product_id' => $site_product_id])->get()[0] ?? null;
 
-            $product_results = $product->where(['site_product_id' => $product->site_product_id])->get()[0] ?? null;
+        if(is_null($product_results)){
 
-            if(is_null($product_results)){
+            if(is_null($product)){
+                $product = $this->product_details($site_product_id, false, $request_type);
+            }
+            
+            if(!is_null($product)){
+
+                $this->logger->debug("Start Creating Product: [{$product->site_product_id}] {$product->name}");
+
                 $this->logger->debug('New Product Found. Storing In Database: ' . $product->name);
 
                 $this->create_promotion($product);
@@ -48,20 +52,22 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
                 $this->create_ingredients($product_id, $product);
                 $this->create_images($product_id, $product->images);
+    
+                $this->logger->debug("Complete Creating Product: [{$product->site_product_id}] {$product->name}");
+    
             } else {
-                $this->logger->debug('Duplicate Product Found. Inserting Category Group');
-                $product_id = $product_results->id;
-                $this->create_product_category($category_details, $product_id);
+                $this->logger->debug("Product Not Found. Returning Null");
             }
-
-            $this->logger->debug("Complete Creating Product: [{$product->site_product_id}] {$product->name}");
-
+            
         } else {
-            $this->logger->debug("Product Not Found. Returning Null");
-        }
+            $product_id = $product_results->id;
 
-        $this->database->commit_transaction();
+            $this->logger->debug('Duplicate Product Found. Inserting Category Group');
+            $this->create_product_category($category_details, $product_id);
+        }
         
+        $this->database->commit_transaction();
+
         return $product_id;
         
     }

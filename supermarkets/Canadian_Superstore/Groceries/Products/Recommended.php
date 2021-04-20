@@ -124,7 +124,7 @@ class Recommended extends CanadianSuperstore {
                         $this->logger->debug('Product Category Found In Database. Creating Product');
 
                         // Creting Product
-                        $created_product_id = $this->product->create_product($product_data, $category_results, '', $product_item);
+                        $created_product_id = $this->product->create_product($product_code, $category_results, '', $product_item);
 
                         $this->logger->debug('Setting Product Recommended');
 

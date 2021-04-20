@@ -51,15 +51,15 @@ class Groceries extends CanadianSuperstore {
         $categories = [];
 
         $acceptable_categories = [
-            // '27988' => 'Pet Supplies',
-            // '27985' => 'Food',
-            // '27987' => 'Baby',
+            '27988' => 'Pet Supplies',
+            '27985' => 'Food',
+            '27987' => 'Baby',
             '27995' => 'Lawn, Garden & Patio',
-            // '27986' => 'Home & Living',
-            // '27990' => 'Toys, Games & Hobbies',
-            // '27992' => 'Computers & Electronics',
-            // '27991' => 'Office & School Supplies',
-            // '27994' => 'Health & Beauty',
+            '27986' => 'Home & Living',
+            '27990' => 'Toys, Games & Hobbies',
+            '27992' => 'Computers & Electronics',
+            '27991' => 'Office & School Supplies',
+            '27994' => 'Health & Beauty',
         ];
 
         foreach($category_items as $category){
