@@ -50,7 +50,7 @@ class MonitorProducts {
         ->join('grocery_list_items', 'grocery_list_items.product_id', 'products.id')
         ->join('monitored_products', 'monitored_products.product_id', 'products.id')
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
-        // ->where_raw(["products.id = 11989"])
+        // ->where_raw(["products.id = 31688"])
         ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
         ->group_by('products.id')
         ->order_by('num_monitoring')
@@ -75,8 +75,10 @@ class MonitorProducts {
             $this->logger->debug("Last Checked: $last_checked Hours Ago");
             $this->logger->debug("Updating Product: [$id] $name");
 
+            // Only fetch images if no product image found
+            $ignore_image = !is_null($product->large_image);
 
-            $new_product = $this->product_collection->product_details($site_product_id, true);
+            $new_product = $this->product_collection->product_details($site_product_id, $ignore_image);
 
             if(is_null($new_product)){
                 $this->logger->error('Failed To Find Product: ' . $site_product_id);
@@ -101,8 +103,11 @@ class MonitorProducts {
         $price_changed = $this->price_check($new_product, $old_product, $update_fields);
         $this->promotion_check($new_product, $old_product, $update_fields);
 
-        $this->available_check($new_product, $old_product, $update_fields);
         $this->details_check($new_product, $old_product, $update_fields);
+        $this->image_check($new_product, $old_product, $update_fields);
+
+        $this->available_check($new_product, $old_product, $update_fields);
+        
         $this->sale_check($new_product, $old_product, $update_fields);
         
         $this->product_model->where(['id' => $product_id])->update($update_fields);
@@ -176,6 +181,14 @@ class MonitorProducts {
                 $this->logger->debug( ucwords($field) . " Changed: $old_value -> $new_value");
                 $update_fields[$field] = $new_value;
             }
+        }
+    }
+
+    private function image_check(ProductModel $new_product, $old_product, &$update_fields){
+        if(is_null($old_product->large_image) && !is_null($new_product->large_image)){
+            $this->logger->debug('Saving New Product Images');
+            $update_fields['small_image'] = $new_product->small_image;
+            $update_fields['large_image'] = $new_product->large_image;
         }
     }
 
