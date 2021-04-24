@@ -1,394 +1,316 @@
 {
 
-    "database": {
-        "env": "dev",
+	"database": {
+		"env": "prod",
 
-        "dev": {
-            "host": "192.168.1.187",
-            "username": "zakariya",
-            "password": "umU5-,PGN43P[eVnr5[+r!R.Mnd!6T",
-            "database": "superstore_database"
-        },
-        
-        "prod": {
-            "host": "superstore-database.cuyqkwdewraf.eu-west-2.rds.amazonaws.com",
-            "username": "superstore_user",
-            "password": "7zDPwYkz2AlviJ1tMjMCz8A49IE37dzeEshcO5Ps",
-            "database": "superstore_database"
-        }
-    },
+		"dev": {
+			"host": "192.168.1.124",
+			"username": "zakariya",
+			"password": "umU5-,PGN43P[eVnr5[+r!R.Mnd!6T",
+			"database": "superstore_database"
+		},
 
-    "elasticsearch": {
+		"prod": {
+			"host": "superstore-database.cuyqkwdewraf.eu-west-2.rds.amazonaws.com",
+			"username": "superstore_user",
+			"password": "7zDPwYkz2AlviJ1tMjMCz8A49IE37dzeEshcO5Ps",
+			"database": "superstore_database"
+		}
+	},
 
-        "host": "https://search-superstore-elasticsearch-dc35zexhfs6al7xogt75gk6wdi.eu-west-2.es.amazonaws.com:443",
+	"elasticsearch": {
 
-        "settings": {
-            "number_of_shards": 3,
-            "number_of_replicas": 2,
+		"host": "https://search-superstore-elasticsearch-dc35zexhfs6al7xogt75gk6wdi.eu-west-2.es.amazonaws.com:443",
 
-            "analysis": {
+		"settings": {
+			"number_of_shards": 3,
+			"number_of_replicas": 2,
 
-                "filter": {
-                  "english_stop": {
-                    "type": "stop",
-                    "stopwords": "_english"
-                  },
-                  "english_stemmer": {
-                    "type": "stemmer",
-                    "language": "english"
-                  },
-                  "whitespace_remove": {
-                    "type": "pattern_replace",
-                    "pattern": "|-|\\.|:|,|\\'|\\s",
-                    "replacement": ""
-                  },
-                  "english_possessive_stemmer": {
-                    "type": "stemmer",
-                    "language": "possessive_english"
-                  }
-                },
-                "char_filter": {
-                    "custom_char_filter": {
-                      "type": "mapping",
-                      "mappings": [
-                        "and => &",
-                        "' =>"
-                      ]
-                    }
-                },
-                "analyzer": {
-                  "text_analyzer": {
-                    "tokenizer": "standard",
-                    "char_filter": [
-                        "custom_char_filter"
-                    ],
-                    "filter": [
-                      "stop",
-                      "english_possessive_stemmer",
-                      "lowercase",
-                      "english_stop",
-                      "english_stemmer"
-                    ]
-                  }
-                }
+			"analysis": {
 
-            }
-        },
+				"filter": {
 
-        "indices": {
+					"word_joiner": {
+						"type": "shingle",
+						"output_unigrams": "true",
+						"token_separator": ""
+					},
 
-            "products": {
-                "id": {
-                    "type": "integer"
-                },
-                "store_type_id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "text",
-                    "analyzer": "text_analyzer"
-                },
-                "description": {
-                    "type": "text",
-                    "analyzer": "text_analyzer"
-                },
-                "price": {
-                    "type": "float"
-                },
-                "brand": {
-                    "type": "text",
-                    "analyzer": "text_analyzer"
-                },
-                "dietary_info": {
-                    "type": "text"
-                },
-                "allergen_info": {
-                    "type": "text"
-                },
-                "weight": {
-                    "type": "text"
-                },
-                "avg_rating": {
-                    "type": "float"
-                },
-                "total_reviews_count": {
-                    "type": "integer"
-                }
-            }, 
+					"english_stop": {
+						"type": "stop",
+						"stopwords": "_english"
+					},
+					"english_stemmer": {
+						"type": "stemmer",
+						"language": "english"
+					},
+					"whitespace_remove": {
+						"type": "pattern_replace",
+						"pattern": "|-|\\.|:|,|\\'|\\s",
+						"replacement": ""
+					},
+					"english_possessive_stemmer": {
+						"type": "stemmer",
+						"language": "possessive_english"
+					}
+				},
 
-            "stores": {
-                "id": {
-                    "type": "integer"
-                },
-                "store_type_id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "text",
-                    "analyzer": "text_analyzer"
-                }
-            },
+				"char_filter": {
+					"custom_char_filter": {
+						"type": "mapping",
+						"mappings": [
+							"and => &",
+							"' =>"
+						]
+					}
+				},
 
-            "categories": {
-                "id": {
-                    "type": "integer"
-                },
-                "store_type_id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "text",
-                    "analyzer": "text_analyzer"
-                },
-                "type": {
-                    "type": "text"
-                }
-            },
+				"analyzer": {
+					"text_analyzer": {
+						"tokenizer": "standard",
+						"char_filter": [
+							"custom_char_filter"
+						],
+						"filter": [
+							"word_joiner",
+							"stop",
+							"english_possessive_stemmer",
+							"lowercase",
+							"english_stop",
+							"english_stemmer"
+						]
+					}
+				}
 
-            "promotions": {
-                "id": {
-                    "type": "integer"
-                },
-                "store_type_id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "text",
-                    "analyzer": "text_analyzer"
-                }
-            }
+			}
+		},
 
-        },
+		"indices": {
 
-        "create_index": 0,
-        "index_documents": 1
-    },
+			"products": {
+				"id": {
+					"type": "integer"
+				},
+				"store_type_id": {
+					"type": "integer"
+				},
+				"name": {
+					"type": "text",
+					"analyzer": "text_analyzer"
+				},
+				"description": {
+					"type": "text",
+					"analyzer": "text_analyzer"
+				},
+				"price": {
+					"type": "float"
+				},
+				"brand": {
+					"type": "text",
+					"analyzer": "text_analyzer"
+				},
+				"dietary_info": {
+					"type": "text"
+				},
+				"allergen_info": {
+					"type": "text"
+				},
+				"weight": {
+					"type": "text"
+				},
+				"avg_rating": {
+					"type": "float"
+				},
+				"total_reviews_count": {
+					"type": "integer"
+				}
+			},
 
-    "log_query": 1,
-    
-    "city": "Birmingham",
+			"stores": {
+				"id": {
+					"type": "integer"
+				},
+				"store_type_id": {
+					"type": "integer"
+				},
+				"name": {
+					"type": "text",
+					"analyzer": "text_analyzer"
+				}
+			},
 
-    "env": "prod",
+			"categories": {
+				"id": {
+					"type": "integer"
+				},
+				"store_type_id": {
+					"type": "integer"
+				},
+				"name": {
+					"type": "text",
+					"analyzer": "text_analyzer"
+				},
+				"type": {
+					"type": "text"
+				}
+			},
 
-    "continue": 1,
+			"promotions": {
+				"id": {
+					"type": "integer"
+				},
+				"store_type_id": {
+					"type": "integer"
+				},
+				"name": {
+					"type": "text",
+					"analyzer": "text_analyzer"
+				}
+			}
 
-    "test_files": {
-        "product": "Data/Asda/Product.json"
-    },
+		},
 
-    "images": {
-        "host": "192.168.1.187",
+		"create_index": 1,
+		"index_documents": 1
+	},
 
-        "saving_location": "aws",
+	"log_query": 1,
 
-        "type_locations": {
-            "logos": "logos",
-            "stores": "stores",
-            "products": "products"
-        },
+	"city": "Birmingham",
 
-        "local": {
-            "location": "Resources/Images"
-        },
+	"env": "prod",
 
-        "aws": {
+	"continue": 1,
 
-            "version": "latest",
-            "region": "eu-west-2",
+	"test_files": {
+		"product": "Data/Asda/Product.json"
+	},
 
-            "bucket": "superstore.images",
+	"images": {
+		"host": "192.168.1.187",
 
-            "credentials": {
-                "key": "AKIAUWEFB7PFX23FYSP3",
-                "secret": "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"
-            }
-        }
-    },
+		"saving_location": "aws",
 
-    "stores": {
+		"type_locations": {
+			"logos": "logos",
+			"stores": "stores",
+			"products": "products"
+		},
 
-        "asda": {
-        
-            "name": "Asda",
-            "country": "United Kingdom",
+		"local": {
+			"location": "Resources/Images"
+		},
 
-            "currency": "Pounds",
+		"aws": {
 
-            "run": 1,
-    
-            "monitor": 1,
-    
-            "stores": 0,
-    
-            "groceries": 1,
-            "recommended": 1,
-            "reviews": 1,
-            
-            "store_type_id": 1,
-            "user_id": 1
-        },
+			"version": "latest",
+			"region": "eu-west-2",
 
-        "real_canadian_superstore": {
-        
-            "name": "Real Canadian Superstore",
-    
-            "currency": "Canadian Dollars",
+			"bucket": "superstore.images",
 
-            "run": 1,
-    
-            "monitor": 1,
-    
-            "stores": 0,
-    
-            "groceries": 1,
-            "recommended": 1,
-            
-            "store_type_id": 2,
-            "user_id": 2
-        }
-    },
+			"credentials": {
+				"key": "AKIAUWEFB7PFX23FYSP3",
+				"secret": "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"
+			}
+		}
+	},
 
-    "endpoints": {
+	"stores": {
 
-        "asda": {
-            "groceries": "https://groceries.asda.com/api/bff/graphql",
-            "shelves": "https://groceries.asda.com/api/bff/graphql",
-            "products": "https://groceries.asda.com/api/items/catalog",
-            "reviews": "https://groceries.asda.com/review/reviews.json?requestorigin=gi&apiversion=5.4&passkey=92ffdz3h647mtzgbmu5vedbq&Filter=ProductId%3A",
-            "promotions": "https://groceries.asda.com/cmscontent/json/pages/overlays/linksave?requestorigin=gi&Nrpp=10000000&storeId=4565&promoid=",
-            "recommended": "https://groceries.asda.com/p13nservice/recommendations?storeId=4565&placement=item_page.pdp1&skuId=",
-            "stores": "https://storelocator.asda.com/directory"
-        },
+		"asda": {
 
-        "real_canadian_superstore": {
-            "groceries": "https://cdn.contentful.com/spaces/0dlg9rxz8nvy/environments/master/entries?content_type=navigationList&locale=en-CA&include=3",
-            
-            "categories": {
-                "v2": "https://api.pcexpress.ca/marketplace/v2/banners/superstore/products?pageSize=50&sorts=relevance&filter.category=",
-                "v3": "https://api.pcexpress.ca/v3/products/category/listing"
-            },
+			"name": "Asda",
+			"country": "United Kingdom",
 
-            "products": {
-                "v2": "https://api.pcexpress.ca/marketplace/v2/banners/superstore/products/",
-                "v3": "https://api.pcexpress.ca/v3/products/"
-            },
+			"currency": "Pounds",
 
-            "recommended": "https://www.realcanadiansuperstore.ca/api/product/",
+			"run": 1,
 
-            "stores": "https://www.realcanadiansuperstore.ca/api/pickup-locations"
-        }
+			"monitor": 1,
 
-    },
+			"stores": 0,
 
-    "retry": {
-        "request": {
-            "attempts": 5,
-            "wait": 60
-        },
+			"groceries": 1,
+			"recommended": 1,
+			"reviews": 1,
 
-        "database": {
-            "attempts": 20,
-            "wait": 300
-        },
+			"store_type_id": 1,
+			"user_id": 1
+		},
 
-        "image": {
-            "attempts": 3,
-            "wait": 60
-        }
-    },
+		"real_canadian_superstore": {
 
-    "notification": {
-        "url": "gateway.sandbox.push.apple.com:2195",
-        "pass_phrase": "GFDAxqVADmNa22Q6jJRVy9gtXSJYpfSPHcU9r8dL64yCkP5kkW",
-        "file_path": "Storage/apple_push_notification_production.pem"
-    },
-    
-    "exclusions": {
+			"name": "Real Canadian Superstore",
 
-        "categories": {
+			"currency": "Canadian Dollars",
 
-            "exclude": [
-                "Back to School",
-                "Summer Drinks",
-                "Wine",
-                "Alcohol",
-                "Champagne",
-                "Spirits",
-                "Beer",
-                "Cider",
-                "Liquers",
-                "Ales",
-                "Spirit",
-                "Whiskey",
-                "Gin",
-                "Rum",
-                "Prosecco",
-                "Tobac"
-            ],
+			"run": 1,
 
-            "include": [
-                "Fresh Food & Bakery",
-                "Chilled Food",
-                "Food Cupboard",
-                "Frozen Food",
-                "Vegan & Plant Based",
-                "Free From...",
-                "Drinks",
-                "Health & Beauty",
-                "Laundry & Household",
-                "Pets",
-                "Baby, Toddler & Kids",
-                "Home & Entertainment",
-                "Big Night In"
-            ]
+			"monitor": 1,
 
-        },
-    
-        "products": {
-            "check": [
-                "meat (?!alternatives)",
-                "poultry",
-                "meal",
-                "pizza",
-                "soup",
-                "pies",
-                "lamb",
-                "mutton",
-                "burger",
-                "sausages",
-                "chicken",
-                "wings",
-                "beef",
-                "steak",
-                "turkey",
-                "beef",
-                "pounder",
-                "hot dogs",
-                "pie"
-            ],
-            "exclude": [
-                "pork",
-                "bacon",
-                "ham",
-                "pig",
-                "nicotine",
-                "vape"
-            ]
-        },
+			"stores": 0,
 
-        "ingredients": {
-            "check": [],
-            
-            "exclude": [
-                "pork",
-                "gelatine",
-                "alcohol",
-                "animal",
-                "insect",
-                "nicotine"
-            ]
-        }
+			"groceries": 0,
+			"recommended": 1,
 
-    }
+			"store_type_id": 2,
+			"user_id": 2
+		}
+	},
+
+	"endpoints": {
+
+		"asda": {
+			"groceries": "https://groceries.asda.com/api/bff/graphql",
+			"shelves": "https://groceries.asda.com/api/bff/graphql",
+			"products": "https://groceries.asda.com/api/items/catalog",
+			"reviews": "https://groceries.asda.com/review/reviews.json?requestorigin=gi&apiversion=5.4&passkey=92ffdz3h647mtzgbmu5vedbq&Filter=ProductId%3A",
+			"promotions": "https://groceries.asda.com/cmscontent/json/pages/overlays/linksave?requestorigin=gi&Nrpp=10000000&storeId=4565&promoid=",
+			"recommended": "https://groceries.asda.com/p13nservice/recommendations?storeId=4565&placement=item_page.pdp1&skuId=",
+			"stores": "https://storelocator.asda.com/directory"
+		},
+
+		"real_canadian_superstore": {
+			"groceries": "https://cdn.contentful.com/spaces/0dlg9rxz8nvy/environments/master/entries?content_type=navigationList&locale=en-CA&include=3",
+
+			"categories": {
+				"v2": "https://api.pcexpress.ca/marketplace/v2/banners/superstore/products?pageSize=50&sorts=relevance&filter.category=",
+				"v3": "https://api.pcexpress.ca/v3/products/category/listing"
+			},
+
+			"products": {
+				"v2": "https://api.pcexpress.ca/marketplace/v2/banners/superstore/products/",
+				"v3": "https://api.pcexpress.ca/v3/products/"
+			},
+
+			"recommended": "https://www.realcanadiansuperstore.ca/api/product/",
+
+			"stores": "https://www.realcanadiansuperstore.ca/api/pickup-locations"
+		}
+
+	},
+
+	"retry": {
+		"request": {
+			"attempts": 5,
+			"wait": 60
+		},
+
+		"database": {
+			"attempts": 20,
+			"wait": 300
+		},
+
+		"image": {
+			"attempts": 3,
+			"wait": 60
+		}
+	},
+
+	"notification": {
+		"url": "gateway.sandbox.push.apple.com:2195",
+		"pass_phrase": "GFDAxqVADmNa22Q6jJRVy9gtXSJYpfSPHcU9r8dL64yCkP5kkW",
+		"file_path": "Storage/apple_push_notification_production.pem"
+	}
 
 }
