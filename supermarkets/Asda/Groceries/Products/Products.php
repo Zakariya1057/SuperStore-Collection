@@ -61,7 +61,7 @@ class Products extends Asda implements ProductInterface {
                 }
 
                 
-                $category_details = $this->child_category_model->like(['name'=> "$parent_site_category_name%"])->get();
+                $category_details = $this->child_category_model->like(['store_type_id' => $this->store_type_id, 'name'=> "$parent_site_category_name%"])->get();
 
                 if(count($category_details) > 0){
                     $category_details = $category_details[0];
