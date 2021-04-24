@@ -413,20 +413,31 @@ class Products extends CanadianSuperstore implements ProductInterface {
     }
 
     private function create_name($name, $brand = null){
+
+        $new_name = trim($name);
+
         // Add Brand to name if brand not null
-        if(is_null($brand)){
-            return $name;
+        if(!is_null($brand) && strtolower($brand) != 'no name'){
+
+            // If any part of brand found in name, then exclde
+            $brand_regex = str_replace(' ', '|', $brand);
+
+            preg_match("/$brand_regex/i", $name, $brand_matches);
+
+            if($brand_matches){
+                $this->logger->debug("Brand($brand) Found In Product Name: $name");
+            } else {
+                $this->logger->debug("Brand($brand) Not Found In Product Name: $name");
+                $new_name = trim(trim($brand) .' '. trim($name));
+            }
+
+            if(strlen($new_name) > 255){
+                $new_name = substr($new_name, 0, 248) . '...';
+            }
+
         }
 
-        preg_match("/$brand/i", $name, $brand_matches);
-
-        if($brand_matches){
-            $this->logger->debug("Brand($brand) Found In Product Name: $name");
-            return $name;
-        } else {
-            $this->logger->debug("Brand($brand) Not Found In Product Name: $name");
-            return $brand .' '. $name;
-        }
+        return $new_name;
     }
 
     private function seperate_description($description){
