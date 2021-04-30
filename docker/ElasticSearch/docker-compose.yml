@@ -6,7 +6,9 @@ services:
     image: docker.elastic.co/kibana/kibana:7.11.2
     environment:
       SERVER_NAME: kibana
-      ELASTICSEARCH_HOSTS: http://localhost:9200/
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200/
+    networks:
+      - elasticsearch
     depends_on: 
       - elasticsearch
 
@@ -20,7 +22,12 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
+    networks:
+      - elasticsearch
       
 volumes: 
   elastic:
+networks:
+  elasticsearch:
+
     

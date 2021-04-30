@@ -123,6 +123,15 @@
 				},
 				"total_reviews_count": {
 					"type": "integer"
+				},
+
+				"child_category_names": {
+					"type": "text",
+					"analyzer": "text_analyzer"
+				},
+				"parent_category_names": {
+					"type": "text",
+					"analyzer": "text_analyzer"
 				}
 			},
 
@@ -250,7 +259,7 @@
 
 			"stores": 0,
 
-			"groceries": 0,
+			"groceries": 1,
 			"recommended": 1,
 
 			"store_type_id": 2,
