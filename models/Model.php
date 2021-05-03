@@ -357,12 +357,16 @@ class Model {
 
         $sanitize = new Sanitize();
 
-        $data = $sanitize->sanitize_fields($data);
+        $sanitized_data = $sanitize->sanitize_fields($data);
 
-        foreach($data as $key => $value){
+        foreach($sanitized_data as $key => $value){
             if(is_null($value) || trim($value) == ''){
                 $wheres[] = "`$key` = NULL ";
             } else {
+                if(key_exists('exclude_sanitize', $this->table_fields[$key]) && $this->table_fields[$key]['exclude_sanitize'] ){
+                    $value = $data[$key]; 
+                }
+
                 $wheres[] = "`$key` = '$value' ";
             }
         }
