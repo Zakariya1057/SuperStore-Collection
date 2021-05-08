@@ -8,6 +8,8 @@ class PromotionModel extends Model {
 
     public 
         $name,
+        $title, 
+
         $quantity,
         $price,
         $for_quantity,
@@ -34,6 +36,10 @@ class PromotionModel extends Model {
 
         $fields = [
             'name' => [],
+
+            'title' => [
+                'nullable' => true
+            ],
 
             'quantity' => [
                 'nullable' => true,

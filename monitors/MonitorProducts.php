@@ -50,7 +50,7 @@ class MonitorProducts {
         ->join('grocery_list_items', 'grocery_list_items.product_id', 'products.id')
         ->join('monitored_products', 'monitored_products.product_id', 'products.id')
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
-        // ->where_raw(["products.id = 31688"])
+        // ->where_raw(["products.id = 58639"])
         // ->where_raw(["store_type_id = $store_type_id", 'products.large_image is null'])
         ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
         ->group_by('products.id')
