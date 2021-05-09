@@ -33,8 +33,6 @@ class Model {
 
         $table_fields_list = [];
         $insert_fields_list = [];
-
-        // print_r($data);
         
         $sanitized_data = $this->sanitize->sanitize_fields($data);
 

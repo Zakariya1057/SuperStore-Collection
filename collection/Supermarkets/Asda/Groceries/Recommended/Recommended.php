@@ -1,25 +1,35 @@
 <?php
 
-namespace Collection\Supermarkets\Asda\Groceries\Products;
+namespace Collection\Supermarkets\Asda\Groceries\Recommended;
 
 use Exception;
-use Models\Product\product_model;
-use Models\Product\ProductModel;
-use Models\Product\RecommendedModel;
+
+use Collection\Supermarkets\Asda\Asda;
+
 use Monolog\Logger;
 use Services\Config;
 use Services\Database;
 use Services\Remember;
-use Collection\Supermarkets\Asda\Asda;
+
+use Collection\Services\SharedProductService;
+use Collection\Supermarkets\Asda\Services\ProductService;
+use Collection\Supermarkets\Asda\Services\RecommendedService;
+
+use Models\Product\ProductModel;
+use Models\Category\ChildCategoryModel;
 
 class Recommended extends Asda {
 
-    public $product_model;
+    public $product_model, $recommended_service, $product_service;
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
+
         $this->product_model = new ProductModel($this->database);
+        $this->recommended_service = new RecommendedService($config,$logger,$database,$remember);
+        $this->product_service = new SharedProductService(new ProductService($config,$logger,$database));
+        $this->category_model = new ChildCategoryModel($this->database);
     }
 
     public function all_recommended_products(){
@@ -60,27 +70,17 @@ class Recommended extends Asda {
 
     }
 
+
+
     public function product_recommended($product_id, $site_product_id){
 
-        $recommendation_endpoint = $this->endpoints->recommended . $site_product_id;
-
-        if($this->env == 'dev'){
-            $recommended_response = file_get_contents(__DIR__."/../../data/Asda/Recommendations.json");
-        } else {
-            $recommended_response = $this->request->request($recommendation_endpoint);
-        }
-
-        $recommended_data = $this->request->parse_json($recommended_response);
-
-        $product = new ProductModel($this->database);
+        $recommended_data = $this->recommended_service->request_recommended($site_product_id);
 
         if(property_exists($recommended_data, 'results') && count($recommended_data->results) > 0){
         
             $results = $recommended_data->results[0]->items;
 
             $product_ids = [];
-
-            $recommended = new RecommendedModel($this->database);
 
             foreach($results as $item){
 
@@ -90,44 +90,49 @@ class Recommended extends Asda {
                     continue;
                 }
 
-                $new_prduct_details = $product->where(['site_product_id' => $item->id])->get()[0] ?? null;
+                $site_product_id = $item->id;
+                $site_category_id = $item->aisleId;
 
-                if(!is_null($new_prduct_details)){
-                    $recommended->product_id = $product_id;
-                    $recommended->recommended_product_id = $new_prduct_details->id;
-                    $recommended->insert_ignore = true;
-                    $recommended->save();
-                    $product_ids[] = $new_prduct_details->id;
+                if($recommended_product_id = $this->product_service->product_exists($site_product_id, $this->store_type_id)){
+                    $this->recommended_service->create($product_id, $recommended_product_id);
+                    $product_ids[] = $recommended_product_id;
                 } else {
                     $this->logger->warning('Similar Product Not Found In Database. Creating The Product, Then Setting As Recommened');
 
-                    $new_product = new Products($this->config,$this->logger,$this->database,$this->remember);
-                    $new_product_id = $new_product->create_product($item->id, null, $this->sanitize->sanitize_field($item->aisleName));
+                    $category_results = $this->category_model
+                    ->select([
+                        'child_categories.id as id', 
+                        'parent_categories.id as parent_category_id', 
+                        'parent_categories.parent_category_id as grand_parent_category_id'
+                    ])
+                    ->like(['child_categories.site_category_id' => "%$site_category_id"])
+                    ->where(['child_categories.store_type_id' => $this->store_type_id])
+                    ->join('parent_categories', 'parent_categories.id', 'child_categories.parent_category_id')
+                    ->get()[0] ?? null;
 
-                    if($new_product_id){
-                        $this->logger->debug('Setting New Product As Recommened');
+                    if(!is_null($category_results)){
 
-                        $recommended->product_id = $product_id;
-                        $recommended->recommended_product_id = $new_product_id;
-                        $recommended->insert_ignore = true;
-                        $recommended->save();
-                        $product_ids[] = $new_product_id;
+                        $this->logger->debug('Product Category Found In Database. Creating Product');
+
+                        // Creting Product
+                        $created_recommended_product_id = $this->product->create_product($site_product_id, $category_results);
+
+                        $this->logger->debug('Setting Product Recommended');
+
+                        $this->recommended_service->create($product_id, $created_recommended_product_id);
+                        $product_ids[] = $recommended_product_id;
                     } else {
-                        $this->logger->debug('New Product Not Added. Ignoring');
+                        $this->logger->error('No category found. Skipping product item for now.');
                     }
 
                 }
-
             }
 
-            if(count($product_ids) > 0){
-                // Delete older recommended not found.
-                $recommended->where(['product_id' => $product_id])->where_not_in('recommended_product_id',$product_ids)->delete();
-            }
+            $this->recommended_service->delete_not_found($product_id, $product_ids);
 
         }
 
-        $this->product_model->where(['id' => $product_id])->update(['recommended_searched' => 1]);
+        $this->recommended_service->recommended_complete($product_id);
 
     }
 

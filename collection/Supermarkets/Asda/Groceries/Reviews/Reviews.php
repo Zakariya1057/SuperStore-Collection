@@ -1,10 +1,9 @@
 <?php
 
-namespace Collection\Supermarkets\Asda\Groceries\Products;
+namespace Collection\Supermarkets\Asda\Groceries\Reviews;
 
 use Models\Product\ProductModel;
 use Models\Product\ReviewModel;
-use Exception;
 use Monolog\Logger;
 use Services\Config;
 use Services\Database;
@@ -13,12 +12,11 @@ use Collection\Supermarkets\Asda\Asda;
 
 class Reviews extends Asda {
 
-    public $product_model,$promotions;
+    public $product_model;
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
-        $this->promotions = new Promotions($this->config,$this->logger,$this->database,$this->remember);
         $this->product_model = new ProductModel($this->database);
     }
 

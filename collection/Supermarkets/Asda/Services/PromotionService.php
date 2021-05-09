@@ -1,14 +1,24 @@
 <?php
 
-namespace Collection\Supermarkets\Asda\Groceries\Products;
+namespace Collection\Supermarkets\Asda\Services;
 
 use Exception;
-use Models\Product\PriceModel;
-use Models\Product\PromotionModel;
+
 use Collection\Supermarkets\Asda\Asda;
 
-class Promotions extends Asda {
+use Models\Product\PriceModel;
+use Models\Product\PromotionModel;
 
+class PromotionService extends Asda {
+
+    private $promotion_model;
+
+    private function setupPromotionModel(){
+        if(is_null($this->promotion_model)){
+            $this->promotion_model = new PromotionModel($this->database);
+        }
+    }
+    
     public function product_prices($product_data){
 
         $promotion_info = $product_data->promotion_info[0];
@@ -67,10 +77,12 @@ class Promotions extends Asda {
 
     public function product_promotion($promotion_info,$price_details){
 
+        $this->setupPromotionModel();
+
         $promotion_details = $promotion_info->linksave;
         $promotion_site_id = $promotion_details->promo_id;
 
-        $promotion = new PromotionModel($this->database);
+        $promotion = clone $this->promotion_model;
         
         if(!is_null($promotion_details)){
             $this->logger->debug('Product Promotion Starting');
@@ -121,7 +133,7 @@ class Promotions extends Asda {
             $promotion_response = file_get_contents(__DIR__."/../../data/Asda/New_Promotion.json");
             $promotion_info = $this->request->parse_json($promotion_response);
         } else {
-            $promotion_info = $this->request_details('promotion', $promotion_site_id);
+            $promotion_info = $this->asda_service->request_details('promotion', $promotion_site_id);
         }
 
         foreach($promotion_info->zones as $promotion_item){
@@ -166,7 +178,7 @@ class Promotions extends Asda {
 
         return (object)['name' => $promotion_name, 'quantity' => $quantity, 'price' => $price, 'for_quantity' => $for_quantity];
     }
-
+    
 }
 
 ?>

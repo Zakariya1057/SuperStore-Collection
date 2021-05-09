@@ -9,6 +9,10 @@ use Models\Product\RecommendedModel;
 use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
 use Collection\Supermarkets\Canadian_Superstore\Groceries\Products\Products;
 use Collection\Supermarkets\Canadian_Superstore\Services\ProductService;
+use Monolog\Logger;
+use Services\Config;
+use Services\Database;
+use Services\Remember;
 
 class Recommended extends CanadianSuperstore {
 
@@ -16,25 +20,20 @@ class Recommended extends CanadianSuperstore {
     private $product_service;
 
     private $product;
-    
-    private function setupClasses(){
-        if(is_null($this->product_model) || is_null($this->category_model)){
-            $this->product_model = new ProductModel($this->database);
-            $this->category_model = new ChildCategoryModel($this->database);
-        }
 
-        if(is_null($this->product)){
-            $this->product = new Products($this->config,$this->logger,$this->database,$this->remember);
-        }
+    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
+    {
+        parent::__construct($config,$logger,$database,$remember);
 
-        if(is_null($this->product_service)){
-            $this->product_service = new ProductService($this->config, $this->logger, $this->database);
-        }
+        $this->product_model = new ProductModel($this->database);
+        $this->category_model = new ChildCategoryModel($this->database);
+
+        $this->product = new Products($this->config,$this->logger,$this->database,$this->remember);
+
+        $this->product_service = new ProductService($this->config, $this->logger, $this->database);
     }
 
     public function create_recommended(){
-        
-        $this->setupClasses();
 
         // Loop through all product in database without related products and set their related products.
         $this->logger->notice('------ Product Recommended Start ---------');
@@ -131,6 +130,7 @@ class Recommended extends CanadianSuperstore {
                         'parent_categories.parent_category_id as grand_parent_category_id'
                     ])
                     ->where_in('child_categories.site_category_id', $product_item->categories)
+                    ->where(['child_categories.store_type_id' => $this->store_type_id])
                     ->join('parent_categories', 'parent_categories.id', 'child_categories.parent_category_id')
                     ->get()[0] ?? null;
 

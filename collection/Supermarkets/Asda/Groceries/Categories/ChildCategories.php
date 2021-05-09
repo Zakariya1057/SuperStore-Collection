@@ -73,7 +73,7 @@ class ChildCategories extends Categories {
                 if(!is_null($product_item)){
 
                     $product = new Products($this->config,$this->logger,$this->database,$this->remember);
-                    $product->create_product($product_item, $child_category);
+                    $product->create_product($product_item->sku_id, $child_category);
         
                     //Between Each Products. Wait 1 Second
                     sleep(1);
@@ -104,14 +104,14 @@ class ChildCategories extends Categories {
 
             $this->set_category_details($products, $shelf_data);
         } else {
-            $shelf_data = $this->request_details('child_category', $category_site_id);
+            $shelf_data = $this->asda_service->request_details('child_category', $category_site_id);
             $total_pages = $this->set_category_details($products, $shelf_data);
 
             $this->logger->debug('Category Pages: '. $total_pages);
             
             if($total_pages > 1){
                 for($i = 1; $i < $total_pages; $i++){
-                    $shelf_data = $this->request_details('child_category', $category_site_id, $i + 1);
+                    $shelf_data = $this->asda_service->request_details('child_category', $category_site_id, $i + 1);
                     $this->set_category_details($products, $shelf_data);
                 }
             }

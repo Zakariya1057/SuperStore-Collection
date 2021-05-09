@@ -1,19 +1,30 @@
 <?php
 
-namespace Collection\Supermarkets\Asda\Groceries\Products;
+namespace Collection\Supermarkets\Asda\Services;
 
-use Exception;
 use Models\Category\ProductGroupModel;
-use Monolog\Logger;
 use Collection\Supermarkets\Asda\Asda;
 
-class ProductGroup extends Asda {
+class ProductGroupService extends Asda {
+
+    private $product_group_model;
+
+    private function setupProductGroupModel(){
+        if(is_null($this->product_group_model)){
+            $this->product_group_model = new ProductGroupModel($this->database);
+        }
+    }
+
     public function create($product_details, $child_category_id){
         // Create/Select Product Group
-        $product_group_model = new ProductGroupModel($this->database);
+        $this->setupProductGroupModel();
 
-        $site_product_group_id = $product_details->taxonomy_info->shelf_id;
-        $product_group_name = $product_details->taxonomy_info->shelf_name;
+        $product_group_model = clone $this->product_group_model;
+        
+        $product_group = $product_details->product_group;
+        
+        $site_product_group_id = $product_group->id;
+        $product_group_name = $product_group->name;
 
         $product_group_results = $product_group_model
         ->where([
@@ -30,11 +41,10 @@ class ProductGroup extends Asda {
 
             $product_group_model->id = $product_group_model->save();
 
-            return $product_group_model;
+            return $product_group_model->id;
         } else {
-            return $product_group_results;
+            return $product_group_results->id;
         }
-
     }
 }
 
