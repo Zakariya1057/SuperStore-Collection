@@ -34,6 +34,8 @@ class Model {
         $table_fields_list = [];
         $insert_fields_list = [];
 
+        // print_r($data);
+        
         $sanitized_data = $this->sanitize->sanitize_fields($data);
 
         foreach($sanitized_data as $key => $value){
@@ -260,7 +262,7 @@ class Model {
 
     private function run_query(){
 
-        $query = '';
+        $queries = [];
 
         $select_fields = $this->select;
         $table_name    = $this->table;
@@ -278,35 +280,35 @@ class Model {
         if(!is_null($create)){
 
             if(!is_null($this->insert_ignore)){
-                $query .= "INSERT IGNORE INTO $table_name $create";
+                $queries[] = "INSERT IGNORE INTO $table_name $create";
             } else {
-                $query .= "INSERT INTO $table_name $create";
+                $queries[] = "INSERT INTO $table_name $create";
             }
             
         } else {
 
             if($delete){
-                $query .= "DELETE FROM $table_name ";
+                $queries[] = "DELETE FROM $table_name";
             } else {
     
                 if(!is_null($update)){
-                    $query .= "UPDATE $table_name ";
+                    $queries[] =  "UPDATE $table_name";
                 } else {
                     if(!is_null($select_fields)){
-                        $query .= "SELECT $select_fields FROM $table_name ";
+                        $queries[] =  "SELECT $select_fields FROM $table_name";
                     } else {
-                        $query .= "SELECT * FROM $table_name ";
+                        $queries[] =  "SELECT * FROM $table_name";
                     }
                 }
         
                 if(!is_null($update)){
-                    $query .= "SET $update ";
+                    $queries[] =  "SET $update";
                 }
     
             }
     
             if(!is_null($join)){
-                $query .= " $join ";
+                $queries[] =  " $join ";
             }
 
             if(!is_null($where_fields)){
@@ -314,32 +316,34 @@ class Model {
                     $where_fields .= " AND $like";
                 }
     
-                $query .= "WHERE $where_fields ";
+                $queries[] =  "WHERE $where_fields";
             } else {
                 if(!is_null($like)){
-                    $query .= "WHERE $like";
+                    $queries[] =  "WHERE $like";
                 }
             }
 
             if(!is_null($not_in)){
-                $query .= "$not_in";
+                $queries[] =  "$not_in";
             }
 
             if(!is_null($group_by)){
-                $query .= "GROUP BY $group_by";
+                $queries[] =  "GROUP BY $group_by";
             }
 
             if(!is_null($order)){
-                $query .= " $order ";
+                $queries[] =  "$order";
             }
 
             if(!is_null($limit)){
-                $query .= "LIMIT $limit";
+                $queries[] =  "LIMIT $limit";
             }
 
         }
 
         $this->reset_data();
+
+        $query = join(" ", $queries);
 
         $results = $this->database->query($query);
         

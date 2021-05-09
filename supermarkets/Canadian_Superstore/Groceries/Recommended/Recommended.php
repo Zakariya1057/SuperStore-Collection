@@ -1,26 +1,40 @@
 <?php
 
-namespace Supermarkets\Canadian_Superstore\Groceries\Products;
+namespace Supermarkets\Canadian_Superstore\Groceries\Recommended;
 
 use Exception;
-use Models\Category\Childcategory_model;
 use Models\Category\ChildCategoryModel;
-use Models\Product\product;
-use Models\Product\product_model;
 use Models\Product\ProductModel;
 use Models\Product\RecommendedModel;
 use Supermarkets\Canadian_Superstore\CanadianSuperstore;
+use Supermarkets\Canadian_Superstore\Groceries\Products\Products;
+use Supermarkets\Canadian_Superstore\Services\ProductService;
 
 class Recommended extends CanadianSuperstore {
 
-    private $product_model, $category_model, $product;
+    private $product_model, $category_model;
+    private $product_service;
+
+    private $product;
     
+    private function setupClasses(){
+        if(is_null($this->product_model) || is_null($this->category_model)){
+            $this->product_model = new ProductModel($this->database);
+            $this->category_model = new ChildCategoryModel($this->database);
+        }
+
+        if(is_null($this->product)){
+            $this->product = new Products($this->config,$this->logger,$this->database,$this->remember);
+        }
+
+        if(is_null($this->product_service)){
+            $this->product_service = new ProductService($this->config, $this->logger, $this->database);
+        }
+    }
+
     public function create_recommended(){
         
-        $this->product_model = new ProductModel($this->database);
-        $this->category_model = new ChildCategoryModel($this->database);
-
-        $this->product = new Products($this->config,$this->logger,$this->database,$this->remember);
+        $this->setupClasses();
 
         // Loop through all product in database without related products and set their related products.
         $this->logger->notice('------ Product Recommended Start ---------');
@@ -28,7 +42,7 @@ class Recommended extends CanadianSuperstore {
          // After recommended product run additonal product will be created. These will require an addtional run.
         while(true){
 
-            $products_without_recommended = $this->product_model->select(['id','site_product_id','name'])->where(['store_type_id' => $this->store_type_id, 'recommended_searched' => null])->order_by('id','ASC')->get();
+            $products_without_recommended = $this->product_model->select(['id','site_product_id','name'])->where(['store_type_id' => $this->store_type_id, 'recommended_searched' => null])->order_by('id','DESC')->get();
         
             if($products_without_recommended){
     
@@ -91,12 +105,13 @@ class Recommended extends CanadianSuperstore {
                 $recommended = new RecommendedModel($this->database);
                 $product_code = $product_data->code;
 
-                $product_results = $this->product_model->where(['site_product_id' => $product_code])->get()[0] ?? null;
+                $product_results = $this->product_model->where(['store_type_id' => $this->store_type_id, 'site_product_id' => $product_code])->get()[0] ?? null;
 
                 if(is_null($product_results)){
                     // New product, check to see if any existing categories found. For each found category, create it under.
 
                     $product_item = $this->product->product_details($product_code);
+
                     $this->logger->debug('New Product Found. Find Correct Category');
 
                     if(is_null($product_item)){

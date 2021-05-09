@@ -22,20 +22,25 @@ use Models\Product\BarcodeModel;
 
 class Products extends Asda implements ProductInterface {
 
-    public $promotions, $image;
+    private $promotions, $product_group;
+    private $child_category_model;
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
         $this->promotions = new Promotions($this->config,$this->logger,$this->database,$this->remember);
+        $this->product_group = new ProductGroup($this->config,$this->logger,$this->database,$this->remember);
 
         $this->child_category_model = new ChildCategoryModel($this->database);
     }
 
-    public function create_product($site_product_id, $child_category, $parent_site_category_name=null){
+    public function create_product($product_details, $child_category, $parent_site_category_name=null){
         //Get product details for each product and insert into database.
 
-        $site_product_id = '1000134959131';
+        $site_product_id = $product_details->sku_id;
+        // $site_product_id = '1000134959131';
+
+        $product_group = $this->product_group->create($product_details, $child_category->id);
 
         $this->logger->info("Product ID: $site_product_id");
 
@@ -59,7 +64,6 @@ class Products extends Asda implements ProductInterface {
                 if(is_null($parent_site_category_name)){
                     throw new Exception('Parent Category Id or Parent Category Name Required');
                 }
-
                 
                 $category_details = $this->child_category_model->like(['store_type_id' => $this->store_type_id, 'name'=> "$parent_site_category_name%"])->get();
 
@@ -102,6 +106,7 @@ class Products extends Asda implements ProductInterface {
                 $product_id = $product_details->save();
 
                 $product_categories->product_id = $product_id;
+                $product_categories->product_group_id = $product_group->id;
                 $product_categories->child_category_id = $child_category->id;
                 $product_categories->parent_category_id = $child_category->parent_category_id;
                 $product_categories->grand_parent_category_id = $child_category->grand_parent_category_id;
@@ -128,11 +133,18 @@ class Products extends Asda implements ProductInterface {
             $results = $product_categories->where(['product_id' => $product_results->id, 'child_category_id' => $child_category->id])->get()[0] ?? null;
             if(is_null($results)){
                 $this->logger->info("No Product Under Category: $site_product_id");
+
                 $product_categories->product_id = $product_results->id;
+                $product_categories->product_group_id = $product_group->id;
                 $product_categories->child_category_id = $child_category->id;
                 $product_categories->parent_category_id = $child_category->parent_category_id;
                 $product_categories->grand_parent_category_id = $child_category->grand_parent_category_id;
+                
                 $product_categories->save();
+            } else {
+                // Temporarily using to set product group against category products.
+                // Remove After Complete Scrape
+                $product_categories->where(['product_id' => $product_results->id, 'child_category_id' => $child_category->id])->update(['product_group_id' => $product_group->id]);
             }
 
         }

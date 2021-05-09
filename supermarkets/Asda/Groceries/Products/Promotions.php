@@ -5,10 +5,6 @@ namespace Supermarkets\Asda\Groceries\Products;
 use Exception;
 use Models\Product\PriceModel;
 use Models\Product\PromotionModel;
-use Monolog\Logger;
-use Services\Config;
-use Services\Database;
-use Services\Remember;
 use Supermarkets\Asda\Asda;
 
 class Promotions extends Asda {

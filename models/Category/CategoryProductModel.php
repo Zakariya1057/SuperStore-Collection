@@ -8,6 +8,7 @@ class CategoryProductModel extends Model {
 
     public 
     $product_id,
+    $product_group_id,
     $child_category_id,
     $parent_category_id,
     $grand_parent_category_id,
@@ -21,6 +22,7 @@ class CategoryProductModel extends Model {
 
         $fields = [
             'product_id' => ['type' => 'int'],
+            'product_group_id' => ['type' => 'int'],
             'child_category_id' => ['type' => 'int'],
             'parent_category_id' => ['type' => 'int'],
             'grand_parent_category_id' => ['type' => 'int'],

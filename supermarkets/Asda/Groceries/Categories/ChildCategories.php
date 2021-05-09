@@ -61,19 +61,19 @@ class ChildCategories extends Categories {
         
             $products = array_slice($products,$last_product_index);
     
-            $first_product = $products[0];
+            $first_product_name = $products[0]->name;
     
-            $this->logger->notice("Starting With Product: [$last_product_index] $first_product");
+            $this->logger->notice("Starting With Product: [$last_product_index] $first_product_name");
     
             //Loop through and insert into database
-            foreach($products as $index => $site_product_id){
+            foreach($products as $index => $product_item){
     
                 $this->remember->set('product_index', $index + $last_product_index);
 
-                if(!is_null($site_product_id)){
+                if(!is_null($product_item)){
 
                     $product = new Products($this->config,$this->logger,$this->database,$this->remember);
-                    $product->create_product($site_product_id, $child_category);
+                    $product->create_product($product_item, $child_category);
         
                     //Between Each Products. Wait 1 Second
                     sleep(1);
@@ -137,8 +137,7 @@ class ChildCategories extends Categories {
                 $items = $category_details->products->items;
 
                 foreach($items as $product){
-                    $item = $product->item;
-                    $products[] = $item->sku_id;
+                    $products[] = $product->item;
                 }
             }
         }

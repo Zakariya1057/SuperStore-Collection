@@ -1,6 +1,6 @@
 <?php
 
-namespace Supermarkets\Canadian_Superstore\Groceries\Products;
+namespace Supermarkets\Canadian_Superstore\Groceries\Promotions;
 
 use Exception;
 use Models\Product\PromotionModel;
@@ -8,7 +8,7 @@ use Supermarkets\Canadian_Superstore\CanadianSuperstore;
 
 class Promotions extends CanadianSuperstore {
 
-    public function parse_promotion_v3($promotion_details, $site_category_id){
+    public function parse_promotion($promotion_details, $site_category_id){
         $promotion_name = $promotion_details->text;
         $promotion_expires = $promotion_details->expiryDate ?? null;
 

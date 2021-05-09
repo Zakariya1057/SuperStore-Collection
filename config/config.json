@@ -1,13 +1,13 @@
 {
 
 	"database": {
-		"env": "prod",
+		"env": "dev",
 
 		"dev": {
 			"host": "192.168.1.124",
 			"username": "zakariya",
 			"password": "umU5-,PGN43P[eVnr5[+r!R.Mnd!6T",
-			"database": "superstore_database"
+			"database": "superstore_testing"
 		},
 
 		"prod": {
@@ -179,7 +179,7 @@
 
 		},
 
-		"create_index": 1,
+		"create_index": 0,
 		"index_documents": 1
 	},
 
@@ -237,9 +237,9 @@
 
 			"monitor": 1,
 
-			"stores": 0,
+			"stores": 1,
 
-			"groceries": 1,
+			"groceries": 0,
 			"recommended": 1,
 			"reviews": 1,
 

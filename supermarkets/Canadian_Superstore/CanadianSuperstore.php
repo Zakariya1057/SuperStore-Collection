@@ -13,8 +13,7 @@ use Services\Requests;
 use Services\Sanitize;
 
 use Supermarkets\Canadian_Superstore\Groceries\Groceries;
-use Supermarkets\Canadian_Superstore\Groceries\Products\Recommended;
-use Supermarkets\Canadian_Superstore\Stores\Stores;
+use Supermarkets\Canadian_Superstore\Groceries\Recommended\Recommended;
 
 class CanadianSuperstore {
 
