@@ -11,7 +11,7 @@ use Monolog\Logger;
 use Services\Config;
 use Services\Database;
 use Services\Notification;
-use Supermarkets\Asda\Stores\Stores;
+use Collection\Supermarkets\Asda\Stores\Stores;
 
 class MonitorStores {
 

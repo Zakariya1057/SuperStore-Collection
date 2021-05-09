@@ -13,11 +13,11 @@ use Services\Config;
 use Services\Loggers;
 use Services\Database;
 
-use Supermarkets\Asda\Groceries\Products\Products as AsdaProducts;
-use Supermarkets\Canadian_Superstore\Groceries\Products\Products as CanadianSuperStoreProducts;
+use Collection\Supermarkets\Asda\Groceries\Products\Products as AsdaProducts;
+use Collection\Supermarkets\Canadian_Superstore\Groceries\Products\Products as CanadianSuperStoreProducts;
 
-use Supermarkets\Asda\Stores\Stores as AsdaStores;
-use Supermarkets\Canadian_Superstore\Stores\Stores as CanadianSuperStoreStores;
+use Collection\Supermarkets\Asda\Stores\Stores as AsdaStores;
+use Collection\Supermarkets\Canadian_Superstore\Stores\Stores as CanadianSuperStoreStores;
 
 $cli = new CLIService();
 $cli->run();

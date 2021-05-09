@@ -4,7 +4,7 @@
 		"env": "dev",
 
 		"dev": {
-			"host": "192.168.1.124",
+			"host": "192.168.1.69",
 			"username": "zakariya",
 			"password": "umU5-,PGN43P[eVnr5[+r!R.Mnd!6T",
 			"database": "superstore_testing"
@@ -237,9 +237,9 @@
 
 			"monitor": 1,
 
-			"stores": 1,
+			"stores": 0,
 
-			"groceries": 0,
+			"groceries": 1,
 			"recommended": 1,
 			"reviews": 1,
 

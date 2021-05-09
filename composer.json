@@ -15,7 +15,7 @@
             "Models\\": "models/",
             "Monitors\\": "monitors/",
             "Interfaces\\": "interfaces/",
-            "Supermarkets\\": "supermarkets/",
+            "Collection\\": "collection/",
             "Search\\": "search/"
         }
     },

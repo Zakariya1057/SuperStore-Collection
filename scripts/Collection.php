@@ -10,8 +10,8 @@ use Services\Loggers;
 use Services\Database;
 use Services\Remember;
 
-use Supermarkets\Asda\Asda;
-use Supermarkets\Canadian_Superstore\CanadianSuperstore;
+use Collection\Supermarkets\Asda\Asda;
+use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
 
 $cli = new CLIService();
 $cli->run();
