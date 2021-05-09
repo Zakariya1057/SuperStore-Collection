@@ -53,7 +53,14 @@ class Products extends CanadianSuperstore implements ProductInterface {
 
     public function create_product($site_product_id, $category_details, $request_type = null){
         $parsed_product = $this->product_details($site_product_id, false, $request_type);
-        $product_id = $this->shared_product_create_service->create($site_product_id, $parsed_product, $category_details, $this->store_type_id);
+
+        if(!is_null($parsed_product)){
+            $product_id = $this->shared_product_create_service->create($site_product_id, $parsed_product, $category_details, $this->store_type_id);
+        } else {
+            $this->logger->error('Product details not found. Skipping');
+            return null;
+        }
+
         return $product_id;
     }
 
