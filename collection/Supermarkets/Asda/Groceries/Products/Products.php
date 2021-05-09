@@ -6,7 +6,8 @@ use Exception;
 
 use Collection\Supermarkets\Asda\Asda;
 
-use Collection\Services\CategoryService;
+use Collection\Services\SharedCategoryService;
+use Collection\Services\SharedProductCreateService;
 use Collection\Services\SharedProductService;
 use Collection\Supermarkets\Asda\Services\ProductDetailService;
 use Collection\Supermarkets\Asda\Services\ProductGroupService;
@@ -28,54 +29,26 @@ class Products extends Asda implements ProductInterface {
 
     public $product_detail_service;
 
+    private $shared_product_create_service;
+
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
 
         $this->product_service = new SharedProductService(new ProductService($config,$logger,$database));
 
-        $this->category_service = new CategoryService($config, $logger, $database);
+        $this->category_service = new SharedCategoryService($database);
+
         $this->product_group_service = new ProductGroupService($config, $logger, $database);
 
         $this->product_detail_service = new ProductDetailService($config, $logger, $database);
+
+        $this->shared_product_create_service = new SharedProductCreateService($database, $this->product_service, $this->product_group_service, $this->category_service);
     }
 
     public function create_product($site_product_id, $category_details, $request_type = null){
-        
-        $this->database->start_transaction();
-
-        // 1. Request Product Details
-        // 2. Parse Response Into Model
-        // 3, Create Product Model
-        // 4. Save Product
-        // 5. Create/Update Category Product
-
         $parsed_product = $this->product_details($site_product_id, false, $request_type);
-
-        $product_id = $this->product_service->product_exists($site_product_id, $this->store_type_id);
-
-        $product_group_id = $this->product_group_service->create($parsed_product, $category_details->id);
-
-        if(is_null($product_id)){
-            $product_id = $this->product_service->create_product($parsed_product);
-
-            $this->product_service->create_promotion($parsed_product);
-
-            $this->product_service->create_images($product_id, $parsed_product);
-            $this->product_service->create_ingredients($product_id, $parsed_product);
-            $this->product_service->create_barcodes($product_id, $parsed_product);
-
-            $this->category_service->create($category_details, $product_id, $product_group_id);
-        } else {
-            if($this->category_service->category_exists($category_details, $product_id)){
-                $this->category_service->update($category_details, $product_id, $product_group_id);
-            } else {
-                $this->category_service->create($category_details, $product_id, $product_group_id);
-            }
-        }
-
-        $this->database->commit_transaction();
-
+        $product_id = $this->shared_product_create_service->create($site_product_id, $parsed_product, $category_details, $this->store_type_id);
         return $product_id;
     }
 

@@ -49,8 +49,6 @@ class ProductService  extends CanadianSuperstore implements ProductRequestInterf
             }
 
         }
-        
-        // dd($request_type);
 
         return ['response' => $product_details, 'type' => $request_type];
     }

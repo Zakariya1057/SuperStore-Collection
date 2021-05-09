@@ -2,31 +2,23 @@
 
 namespace Collection\Services;
 
-use Exception;
 use Models\Category\CategoryProductModel;
-use Monolog\Logger;
 use Services\Database;
-use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
 
-class CategoryService extends CanadianSuperstore {
+class SharedCategoryService {
 
-    private $category_product;
+    private $database, $category_product;
 
-    private function setupCategoryProductModel(){
-        if(is_null($this->category_product)){
-            $this->category_product = new CategoryProductModel($this->database);
-        }
+    public function __construct(Database $database){
+        $this->database = $database;
+        $this->category_product = new CategoryProductModel($this->database);
     }
 
     public function category_exists($category_details, $product_id){
-        $this->setupCategoryProductModel();
-
         return !is_null($this->category_product->where(['product_id' => $product_id, 'child_category_id' => $category_details->id])->get()[0] ?? null);
     }
 
     public function create($category_details, $product_id, $product_group_id){
-        $this->setupCategoryProductModel();
-
         $category_product = clone $this->category_product;
 
         $category_product->product_id = $product_id;
@@ -40,8 +32,6 @@ class CategoryService extends CanadianSuperstore {
     }
 
     public function update($category_details, $product_id, $product_group_id){
-        $this->setupCategoryProductModel();
-
         $this->category_product->where([
         'product_id' => $product_id, 
         'child_category_id' => $category_details->id
