@@ -87,7 +87,7 @@ class Products extends Asda implements ProductInterface {
 
         $product->images = [];
 
-        if(!is_null($product_details->price)){
+        if(is_null($product_details->price)){
             $this->logger->notice('Product Not Available. No Price Details Found.');
             $product->available = 0;
             return null;

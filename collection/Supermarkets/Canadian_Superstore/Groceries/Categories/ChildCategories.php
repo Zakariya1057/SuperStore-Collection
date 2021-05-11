@@ -9,7 +9,17 @@ use Collection\Supermarkets\Canadian_Superstore\Groceries\Products\Products;
 
 class ChildCategories extends Categories {
 
+    private $product;
+
+    private function setupClasses(){
+        if(is_null($this->product)){
+            $this->product = new Products($this->config,$this->logger,$this->database,$this->remember);
+        }
+    }
+
     public function create_category($parent_category_model, $parent_category){
+        
+        $this->setupClasses();
 
         $categories = $parent_category->child_categories;
 
@@ -67,8 +77,7 @@ class ChildCategories extends Categories {
             foreach($products as $index => $site_product_id){
                 $this->remember->set('product_index', $index + $last_product_index);
     
-                $product = new Products($this->config,$this->logger,$this->database,$this->remember);
-                $product->create_product($site_product_id, $category_details, $request_type);
+                $this->product->create_product($site_product_id, $category_details, $request_type);
     
                 // Between Each Products. Wait 1 Second
                 sleep(1);

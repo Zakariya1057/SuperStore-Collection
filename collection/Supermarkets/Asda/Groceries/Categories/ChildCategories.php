@@ -8,7 +8,17 @@ use Collection\Supermarkets\Asda\Groceries\Products\Products;
 
 class ChildCategories extends Categories {
 
+    private $product;
+
+    private function setupClasses(){
+        if(is_null($this->product)){
+            $this->product = new Products($this->config,$this->logger,$this->database,$this->remember);
+        }
+    }
+
     public function create_category($parent_category, $child_categories){
+
+        $this->setupClasses();
 
         $last_category_index = $this->remember->get('child_category_index') ?? 0;
 
@@ -71,13 +81,9 @@ class ChildCategories extends Categories {
                 $this->remember->set('product_index', $index + $last_product_index);
 
                 if(!is_null($product_item)){
-
-                    $product = new Products($this->config,$this->logger,$this->database,$this->remember);
-                    $product->create_product($product_item->sku_id, $child_category);
-        
+                    $this->product->create_product($product_item->sku_id, $child_category);
                     //Between Each Products. Wait 1 Second
                     sleep(1);
-
                 }
 
             }

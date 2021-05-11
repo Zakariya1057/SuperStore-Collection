@@ -19,7 +19,6 @@ use Collection\Supermarkets\Canadian_Superstore\Services\ProductDetailService;
 use Collection\Supermarkets\Canadian_Superstore\Services\ProductGroupService;
 use Collection\Supermarkets\Canadian_Superstore\Services\ProductService;
 
-
 class Products extends CanadianSuperstore implements ProductInterface {
     private $product_v2, $product_v3;
 
