@@ -7,6 +7,7 @@ use Models\Category\CategoryProductModel;
 use Models\Category\ChildCategoryModel;
 use Models\Category\GrandParentCategoryModel;
 use Models\Category\ParentCategoryModel;
+use Models\Category\ProductGroupModel;
 use Models\Product\ProductModel;
 use Models\Product\PromotionModel;
 use Models\Store\StoreTypeModel;
@@ -18,7 +19,7 @@ use Services\Database;
 class Indices extends Search {
 
     private $product_model, $promotion_model, $store_model, $category_product_model;
-    private $child_category_model, $parent_category_model, $grand_parent_category_model;
+    private $product_group_model,$child_category_model, $parent_category_model, $grand_parent_category_model;
 
     private $parent_categories, $child_categories;
 
@@ -31,6 +32,7 @@ class Indices extends Search {
 
         $this->category_product_model = new CategoryProductModel($database);
 
+        $this->product_group_model = new ProductGroupModel($database);
         $this->child_category_model = new ChildCategoryModel($database);
         $this->parent_category_model = new ParentCategoryModel($database);
         $this->grand_parent_category_model = new GrandParentCategoryModel($database);
@@ -124,6 +126,7 @@ class Indices extends Search {
 
         $categories = array_merge(
             $this->child_category_model->select_raw(['*', '"child_categories" as "type"'])->where(['enabled' => 1])->get(), 
+            $this->product_group_model->select_raw(['*', '"product_groups" as "type"'])->where(['enabled' => 1])->get(), 
             $this->parent_category_model->select_raw(['*', '"parent_categories" as "type"'])->where(['enabled' => 1])->get(),
             $this->grand_parent_category_model->select_raw(['*', '"grand_parent_categories" as "type"'])->where(['enabled' => 1])->get()
         );
