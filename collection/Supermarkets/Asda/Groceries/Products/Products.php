@@ -35,7 +35,7 @@ class Products extends Asda implements ProductInterface {
     {
         parent::__construct($config,$logger,$database,$remember);
 
-        $this->product_service = new SharedProductService(new ProductService($config,$logger,$database));
+        $this->product_service = new SharedProductService($database, new ProductService($config,$logger,$database));
 
         $this->category_service = new SharedCategoryService($database);
 

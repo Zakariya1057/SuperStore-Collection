@@ -2,6 +2,7 @@
 
 namespace Monitors;
 
+use Collection\Services\SharedProductService;
 use Exception;
 use Interfaces\ProductInterface;
 use Interfaces\PromotionInterface;
@@ -25,6 +26,8 @@ class MonitorProducts {
     
     private $product_collection;
 
+    private $product_service;
+
     function __construct(Config $config, Logger $logger, Database $database, ProductInterface $product_collection, PromotionInterface $promotion_collection = null){
         $this->logger = $logger;
         $this->database = $database;
@@ -39,6 +42,8 @@ class MonitorProducts {
 
         $this->sanitize_service = new Sanitize();
         $this->currency_service = new Currency();
+
+        $this->product_service = new SharedProductService($database);
     }
 
     // Shared Monitor, check if data has changed, if so update in database.
@@ -234,7 +239,7 @@ class MonitorProducts {
             }
         } else {
             $this->logger->debug('Promotion Found For Product');
-            $this->product_collection->create_promotion($new_product);
+            $this->product_service->create_promotion($new_product);
 
             if(is_null($old_product->promotion_id) || $old_product->promotion_id != $new_product->promotion_id){
                 $this->logger->debug('Updating Changed Product Promotion');

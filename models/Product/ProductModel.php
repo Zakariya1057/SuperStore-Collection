@@ -44,7 +44,9 @@ class ProductModel extends Model {
         $recommended_searched,
 
         $store_type_id,
-        $site_product_id;
+        $site_product_id,
+        
+        $last_checked;
     
     function __construct($database=null){
 
@@ -158,6 +160,10 @@ class ProductModel extends Model {
             'store_type_id' => [
                 'type' => 'int'
             ],
+
+            'last_checked' => [
+                'nullable' => true
+            ]
         ];
 
         $this->fields($fields);

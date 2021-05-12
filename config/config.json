@@ -4,10 +4,10 @@
 		"env": "dev",
 
 		"dev": {
-			"host": "192.168.1.69",
+			"host": "192.168.1.100",
 			"username": "zakariya",
 			"password": "umU5-,PGN43P[eVnr5[+r!R.Mnd!6T",
-			"database": "superstore_testing"
+			"database": "superstore_database"
 		},
 
 		"prod": {
@@ -132,6 +132,10 @@
 				"parent_category_names": {
 					"type": "text",
 					"analyzer": "text_analyzer"
+				},				
+				"product_group_names": {
+					"type": "text",
+					"analyzer": "text_analyzer"
 				}
 			},
 
@@ -240,7 +244,7 @@
 			"stores": 0,
 
 			"groceries": 1,
-			"recommended": 1,
+			"recommended": 0,
 			"reviews": 1,
 
 			"store_type_id": 1,
