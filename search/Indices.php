@@ -18,10 +18,10 @@ use Services\Database;
 // Index Documents
 class Indices extends Search {
 
-    private $product_model, $promotion_model, $store_model, $category_product_model;
-    private $product_group_model,$child_category_model, $parent_category_model, $grand_parent_category_model;
+    private $product_model, $promotion_model, $store_model;
+    private $product_group_model, $child_category_model, $parent_category_model, $grand_parent_category_model;
 
-    private $parent_categories, $child_categories;
+    private $parent_categories, $child_categories, $product_groups;
 
     function __construct(Config $config, Logger $logger, Database $database, Client $client){
         parent::__construct($config, $logger, $database, $client);
@@ -50,12 +50,16 @@ class Indices extends Search {
         $product_count = $results[0]->total_count;
 
         // Loop through groups of 5000 products.
-        for($i = 0; $i < $product_count; $i += 1000){
-            $products = $this->product_model->limit("$i,1000")->get();
-            $this->logger->debug("Indexing Product Groups: $i,1000");
+        for($index = 0; $index < $product_count; $index += 1000){
+            $products = $this->get_products($index);
+
+            if(count($products) == 0){
+                break;
+            }
+
+            $this->logger->debug("Indexing Product Groups: $index,1000");
             $this->index_product_group($products);
         }
-
     }
 
     public function index_stores(){
@@ -166,8 +170,6 @@ class Indices extends Search {
                     '_id'    => $product->id
                 ]
             ];
-        
-            [$parent_category_names, $child_category_names] = $this->get_all_category_names($product->id);
 
             $params['body'][] = [
                 'id' => (int)$product->id,
@@ -182,9 +184,11 @@ class Indices extends Search {
                 'avg_rating' => (float)$product->avg_rating,
                 'total_reviews_count' => (float)$product->total_reviews_count,
 
-                'parent_category_names' => $parent_category_names,
-                'child_category_names' => $child_category_names,
+                'parent_category_names' => $product->parent_categories,
+                'child_category_names' => $product->child_categories,
+                'product_group_names' => $product->product_groups
             ];
+            
         }
 
         return $this->client->bulk($params);
@@ -203,44 +207,92 @@ class Indices extends Search {
     }
 
 
+    private function get_products($index){
+        $product_results = $this->product_model
+        ->select(['products.*', 'child_category_id', 'parent_category_id', 'product_group_id'])
+        ->join('category_products', 'category_products.product_id', 'products.id')
+        ->where_not_in('product_group_id', [0])
+        ->limit("$index,1000")
+        ->get();
+
+        $products = [];
+
+        foreach($product_results as $product){
+            $product_id = $product->id;
+
+            $child_category_name = $this->child_categories[$product->child_category_id];
+            $product_group_name = $this->product_groups[$product->product_group_id] ?? null;
+            $parent_category_name = $this->parent_categories[$product->parent_category_id];
+
+            if(key_exists($product->id, $products)){
+                $product_item = $products[$product_id];
+
+                $child_category_names_list = $product_item->child_category_names_list;
+                $product_group_names_list =  $product_item->product_group_names_list;
+                $parent_category_names_list = $product_item->parent_category_names_list;
+
+                $child_category_names_list[] = $child_category_name;
+
+                if(!is_null($product_group_name)){
+                    $product_group_names_list[] = $product_group_name;
+                }
+
+                $parent_category_names_list[] = $parent_category_name;
+
+                $products[$product_id]->child_category_names_list = $child_category_names_list;
+                $products[$product_id]->product_group_names_list = $product_group_names_list;
+                $products[$product_id]->parent_category_names_list = $parent_category_names_list;
+            } else {
+                $product->child_category_names_list = [ $child_category_name ];
+                $product->product_group_names_list = [ $product_group_name ];
+                $product->parent_category_names_list = [ $parent_category_name ];
+
+                $products[$product_id] = $product;
+            }
+        }
+
+        $category_fields = [
+            'child_categories' => 'child_category_names_list',
+            'product_groups' => 'product_group_names_list',
+            'parent_categories' => 'parent_category_names_list'
+        ];
+
+        foreach($products as $product){
+            foreach($category_fields as $category_type => $category_field){
+                $product->{$category_type} = join(' ', array_unique($product->{$category_field}));
+                unset($product->{$category_field});
+            }
+        }
+
+        return $products;
+    }
+
     private function set_categories(){
         // For Store Type Set Categories.
         // [Category ID] -> [Name]
-        $parent_categories_results = $this->parent_category_model->select(['id', 'name'])->get();
-        $child_categories_results = $this->child_category_model->select(['id', 'name'])->get();
+        $parent_category_results = $this->parent_category_model->select(['id', 'name'])->get();
+        $child_category_results = $this->child_category_model->select(['id', 'name'])->get();
+        $product_group_results = $this->product_group_model->select(['id', 'name'])->get();
 
-        foreach($parent_categories_results as $parent_category){
+        foreach($parent_category_results as $parent_category){
             $id = $parent_category->id;
             $name = $parent_category->name;
             $this->parent_categories[$id] = $name;
         }
 
-        foreach($child_categories_results as $child_category){
+        foreach($child_category_results as $child_category){
             $id = $child_category->id;
             $name = $child_category->name;
             $this->child_categories[$id] = $name;
         }
-    }
 
-    private function get_all_category_names($product_id){
-        // Combined All Product Categories
-        $category_product_results = $this->category_product_model
-        ->where(['product_id' => $product_id])
-        ->get();
-
-        $parent_category_names_list = [];
-        $child_category_names_list = [];
-
-        foreach($category_product_results as $category_product){
-            $parent_category_names_list[] = $this->parent_categories[$category_product->parent_category_id];
-            $child_category_names_list[] = $this->child_categories[$category_product->child_category_id];
+        foreach($product_group_results as $product_group){
+            $id = $product_group->id;
+            $name = $product_group->name;
+            $this->product_groups[$id] = $name;
         }
-
-        $parent_categories = join(' ', $parent_category_names_list);
-        $child_categories = join(' ', $child_category_names_list);
-
-        return [$parent_categories, $child_categories];
     }
+
 }
 
 ?>
