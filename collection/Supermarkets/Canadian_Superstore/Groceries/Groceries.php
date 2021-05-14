@@ -51,7 +51,7 @@ class Groceries extends CanadianSuperstore {
         $categories = [];
 
         $acceptable_categories = [
-            // '27988' => 'Pet Supplies',
+            '27988' => 'Pet Supplies',
             '27985' => 'Food',
             '27987' => 'Baby',
             '27995' => 'Lawn, Garden & Patio',

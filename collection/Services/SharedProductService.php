@@ -4,13 +4,14 @@ namespace Collection\Services;
 
 use Interfaces\ProductRequestInterface;
 use Models\Product\ProductModel;
+use Services\Database;
 
 class SharedProductService {
     
     private $product_model, $request_service;
 
-    public function __construct(ProductRequestInterface $request_service){
-        $this->product_model = new ProductModel($request_service->database);
+    public function __construct(Database $database, ProductRequestInterface $request_service = null){
+        $this->product_model = new ProductModel($database);
         $this->request_service = $request_service;
     }
 

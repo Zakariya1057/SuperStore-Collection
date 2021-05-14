@@ -40,6 +40,11 @@ class ProductV3 extends Products {
         $product->weight = $product_details->packageSize;
         $product->currency = $this->currency;
         
+        if($product_details->breadcrumbs == []){
+            $this->logger->error('No Product Category Found.');
+            return null;
+        }
+
         $this->set_prices($product, $product_details);
 
         $this->set_product_group($product, $product_details);
@@ -140,7 +145,7 @@ class ProductV3 extends Products {
         $price_details = $product_details->prices;
 
         $breadcrumbs = $product_details->breadcrumbs;
-        $site_category_id = end($breadcrumbs)->categoryCode;
+        $site_category_id = is_null($breadcrumbs) ? null : end($breadcrumbs)->categoryCode;
 
         if(is_null($site_category_id)){
             throw new Exception('Site Category ID Not Found');
