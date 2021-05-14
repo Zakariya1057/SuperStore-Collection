@@ -55,7 +55,7 @@ class MonitorProducts {
         ->join('grocery_list_items', 'grocery_list_items.product_id', 'products.id')
         ->join('monitored_products', 'monitored_products.product_id', 'products.id')
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
-        // ->where_raw(["products.id = 58639"])
+        // ->where_raw(["products.id = 18854"])
         // ->where_raw(["store_type_id = $store_type_id", 'products.large_image is null'])
         ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
         ->group_by('products.id')
@@ -139,7 +139,11 @@ class MonitorProducts {
 
         foreach($monitored_users as $user){
             $notification_message = $this->create_notification_message($product, $old_product);
-            $this->notification->send_notification($user, $data, $notification_message);
+            try {
+                $this->notification->send_notification($user, $data, $notification_message);
+            } catch(Exception $e){
+                $this->logger->error('Notification Error: '. $e->getMessage());
+            }
         }
     }
 
