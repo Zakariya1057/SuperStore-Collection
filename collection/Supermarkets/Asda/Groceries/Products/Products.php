@@ -61,7 +61,7 @@ class Products extends Asda implements ProductInterface {
 
     public function product_details($site_product_id, $ignore_image=false,$ignore_promotion=false): ?ProductModel {
         $product_response = $this->product_service->request_product($site_product_id);
-        return $this->parse_product($product_response);
+        return $this->parse_product($product_response, $ignore_image, $ignore_promotion);
     }
 
     public function parse_product($product_response, $ignore_image = false, $ignore_promotion = false){
