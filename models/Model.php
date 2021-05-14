@@ -388,9 +388,11 @@ class Model {
         $data = [];
 
         foreach($this->table_fields as $name => $validation){
-            $data[$name] = $this->{$name};
+            if(!(key_exists('ignore', $validation) && is_null($data[$name]) && $validation['ignore'])){
+                $data[$name] = $this->{$name};
+            }
         }
-        
+
         $this->reset_data();
         
         $this->create($data);

@@ -162,6 +162,7 @@ class ProductModel extends Model {
             ],
 
             'last_checked' => [
+                'ignore' => true,
                 'nullable' => true
             ]
         ];
