@@ -388,7 +388,8 @@ class Model {
         $data = [];
 
         foreach($this->table_fields as $name => $validation){
-            if(!(key_exists('ignore', $validation) && is_null($data[$name]) && $validation['ignore'])){
+            // If this is ignore and its empty then its fine, just ignore it
+            if(!( (key_exists('ignore', $validation) && $validation['ignore']) && (key_exists($name, $data) && is_null($data[$name])) )){
                 $data[$name] = $this->{$name};
             }
         }

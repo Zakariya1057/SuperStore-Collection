@@ -24,6 +24,9 @@ class Validator extends Sanitize {
             $nullable = $validate['nullable'] ?? false;
             $boolean =  $validate['boolean'] ?? null;
             $type = $validate['type'] ?? null;
+
+            $options = $validate['options'] ?? null;
+
             $regex = null;
 
             $max_length = $validate['max_length'] ?? null;
@@ -60,6 +63,15 @@ class Validator extends Sanitize {
 
             if(!$nullable && is_null($value)){
                 throw new Exception("Field: $field_name Cannot Be Null");
+            }
+
+            if(!is_null($options)){
+                $option_regex = join('|', $options);
+                preg_match("/$option_regex/i", $value, $option_found);
+
+                if(!$option_found){
+                    throw new Exception("Unknown Option Found - $field_name($value)");
+                }
             }
 
             if(!is_null($type)){
