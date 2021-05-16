@@ -9,6 +9,8 @@ class ProductModel extends Model {
     public 
         $name,
 
+        $availability_type, 
+        
         $description,
         $features,
         $dimensions,
@@ -71,6 +73,10 @@ class ProductModel extends Model {
             'dimensions' => [
                 'nullable' => true,
                 'exclude_sanitize' => true
+            ],
+
+            'availability_type' => [
+                'options' => ['in-store','ship to home']
             ],
 
             'country_of_origin' => [

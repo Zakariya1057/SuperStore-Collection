@@ -11,6 +11,8 @@ class ProductV2 extends Products {
     public function parse_product($product_details, $ignore_image=false): ?ProductModel {
         $product = new ProductModel($this->database);
 
+        $product->availability_type = 'ship to home';
+
         $product->name = $this->product_detail_service->create_name( $product_details->title, $product_details->brand);
 
         $product->available = 1;
@@ -25,6 +27,8 @@ class ProductV2 extends Products {
 
         $this->set_prices($product, $price_details);
 
+        $this->set_product_group($product, $product_details);
+
         $product->store_type_id = $this->store_type_id;
         $product->site_product_id = $product_details->productId;
 
@@ -36,7 +40,7 @@ class ProductV2 extends Products {
         
         $product->currency = $this->currency;
 
-        $product->url = "https://www.realcanadiansuperstore.ca" . $product_details->uri;
+        $product->url = 'https://www.realcanadiansuperstore.ca' . $product_details->uri;
 
         return $product;
     }
@@ -77,6 +81,15 @@ class ProductV2 extends Products {
 
             }
         }
+    }
+
+    private function set_product_group($product, $product_details){
+        $product_group = $product_details->breadcrumbs[3] ?? last($product_details->breadcrumbs);
+
+        $site_product_group_id = $product_group->categoryCode;
+        $product_group_name = $product_group->name;
+
+        $product->product_group = (object)['id' => $site_product_group_id, 'name' => $product_group_name];
     }
 
     private function set_barcodes(&$product, $inventory){

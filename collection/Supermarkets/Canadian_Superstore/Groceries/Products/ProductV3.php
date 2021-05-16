@@ -31,8 +31,10 @@ class ProductV3 extends Products {
 
         $product = clone $this->product_model;
 
-        $product->name = $this->product_detail_service->create_name( $product_details->name, $product_details->brand);
+        $product->name = $this->product_detail_service->create_name($product_details->name, $product_details->brand);
         
+        $product->availability_type = 'in-store';
+
         $product->available = 1;
         $product->site_product_id = $product_details->code;
         $product->store_type_id = $this->store_type_id;
