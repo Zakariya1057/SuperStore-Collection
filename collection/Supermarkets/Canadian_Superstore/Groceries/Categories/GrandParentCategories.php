@@ -21,7 +21,7 @@ class GrandParentCategories extends Categories {
             foreach($categories_list as $index => $grand_parent_category){
                 $this->remember->set('grand_parent_category_index',$index + $last_category_index);
                 
-                $grand_parent_category_model = $this->select_category($grand_parent_category,'grand_parent');
+                $grand_parent_category_model = $this->select_category($grand_parent_category, 'grand_parent', $index);
 
                 $parent_categories->create_category($grand_parent_category_model, $grand_parent_category);
             }

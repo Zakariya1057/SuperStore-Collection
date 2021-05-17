@@ -34,7 +34,7 @@ class ParentCategories extends Categories {
 
                 $parent_category->parent_category_id = $grand_parent_category_model->id;
 
-                $parent_category_item = $this->select_category($parent_category,'parent');
+                $parent_category_item = $this->select_category($parent_category, 'parent', $index);
 
                 $child_categories->create_category($parent_category_item, $parent_category);
 

@@ -36,7 +36,7 @@ class ChildCategories extends Categories {
                 $this->logger->notice("-- Child Category: [$site_category_id] $child_category_data->name");
 
                 $child_category_data->parent_category_id = $parent_category->id;
-                $child_category = $this->select_category($child_category_data, "child");
+                $child_category = $this->select_category($child_category_data, 'child', $index);
 
                 // If the site_category_id has changed from previous then update it
                 if($child_category_data->id != $child_category->site_category_id){

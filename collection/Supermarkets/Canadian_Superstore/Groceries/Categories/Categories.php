@@ -18,7 +18,7 @@ class Categories extends CanadianSuperstore {
         $grand_parent_categories->create_categories($categories);
     }
 
-    public function select_category($category,$type){
+    public function select_category($category, $type, $index){
 
         $category = (object)$category;
 
@@ -30,7 +30,8 @@ class Categories extends CanadianSuperstore {
             'name' => $category_name,
             'site_category_id' => $category_number,
             'parent_category_id' => $parent_category_id,
-            'store_type_id' => $this->store_type_id 
+            'store_type_id' => $this->store_type_id,
+            'index' => $index
         ];
 
         if($type == 'grand_parent'){
