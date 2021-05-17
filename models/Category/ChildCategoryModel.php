@@ -15,6 +15,8 @@ class ChildCategoryModel extends CategoryModel {
             'parent_category_id' => [],
             'store_type_id' => [],
             'site_category_id' => [],
+
+            'index' => ['type' => 'int'],
         ];
 
         $this->fields($fields);
