@@ -42,14 +42,16 @@ class ChildCategories extends Categories {
     
             foreach($categories_list as $index => $child_category){
 
+                $category_index = $index + $last_category_index;
+
                 $child_category = (object)$child_category;
                 $child_category->parent_category_id = $parent_category_model->id;
-                $child_category_details = $this->select_category($child_category, 'child', $index);
+                $child_category_details = $this->select_category($child_category, 'child', $category_index);
 
                 $child_category_details->number = $child_category->number;
                 $child_category_details->grand_parent_category_id = $grand_parent_category_id;
 
-                $this->remember->set('child_category_index',$index + $last_category_index);
+                $this->remember->set('child_category_index', $category_index);
                 $this->category_products($child_category_details);
             }
 

@@ -31,12 +31,14 @@ class ChildCategories extends Categories {
     
             foreach($categories_list as $index => $child_category_data){
                 
+                $category_index = $index + $last_category_index;
+
                 $site_category_id = $child_category_data->id;
 
                 $this->logger->notice("-- Child Category: [$site_category_id] $child_category_data->name");
 
                 $child_category_data->parent_category_id = $parent_category->id;
-                $child_category = $this->select_category($child_category_data, 'child', $index);
+                $child_category = $this->select_category($child_category_data, 'child', $category_index);
 
                 // If the site_category_id has changed from previous then update it
                 if($child_category_data->id != $child_category->site_category_id){
@@ -46,7 +48,8 @@ class ChildCategories extends Categories {
 
                 $child_category->grand_parent_category_id = $parent_category->parent_category_id;
 
-                $this->remember->set('child_category_index',$index + $last_category_index);
+                $this->remember->set('child_category_index', $category_index);
+                
                 $this->category_products($child_category); 
 
             }

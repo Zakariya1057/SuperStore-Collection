@@ -17,11 +17,14 @@ class ParentCategories extends Categories {
             $this->logger->notice("Starting With Parent Category: [$last_category_index] " . $first_category->name);
 
             foreach($categories_list as $index => $parent_category_data){
+
+                $category_index = $index + $last_category_index;
+
                 $this->logger->notice("- Parent Category: $parent_category_data->name");
-                $this->remember->set('parent_category_index',$index + $last_category_index);
+                $this->remember->set('parent_category_index', $category_index);
 
                 $parent_category_data->parent_category_id = $grand_parent_category->id;
-                $parent_category = $this->select_category($parent_category_data ,'parent', $index);
+                $parent_category = $this->select_category($parent_category_data ,'parent', $category_index);
 
                 $parent_category->parent_category_id = $grand_parent_category->id;
 

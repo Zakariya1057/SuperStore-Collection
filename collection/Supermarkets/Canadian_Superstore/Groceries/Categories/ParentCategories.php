@@ -30,11 +30,13 @@ class ParentCategories extends Categories {
             foreach($categories_list as $index => $parent_category){
                 $parent_category = (object)$parent_category;
 
-                $this->remember->set('parent_category_index',$index + $last_category_index);
+                $category_index = $index + $last_category_index;
+
+                $this->remember->set('parent_category_index', $category_index);
 
                 $parent_category->parent_category_id = $grand_parent_category_model->id;
 
-                $parent_category_item = $this->select_category($parent_category, 'parent', $index);
+                $parent_category_item = $this->select_category($parent_category, 'parent', $category_index);
 
                 $child_categories->create_category($parent_category_item, $parent_category);
 
