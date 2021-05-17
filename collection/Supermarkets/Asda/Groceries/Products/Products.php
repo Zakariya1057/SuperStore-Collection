@@ -82,6 +82,8 @@ class Products extends Asda implements ProductInterface {
 
         $product = new ProductModel($this->database);
         
+        $product->availability_type = 'in-store';
+
         $product->name = $this->product_detail_service->clean_product_name($name);
         $product->available = 1;
 
