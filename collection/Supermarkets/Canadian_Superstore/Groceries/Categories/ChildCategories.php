@@ -28,8 +28,7 @@ class ChildCategories extends Categories {
 
         $categories = $parent_category->child_categories;
 
-        // $last_category_index = $this->remember->get('child_category_index') ?? 0;
-        $last_category_index = 0;
+        $last_category_index = $this->remember->get('child_category_index') ?? 0;
 
         $grand_parent_category_id = $parent_category->parent_category_id;
         

@@ -20,18 +20,21 @@ class CategoryService extends CanadianSuperstore {
     }
 
     private function request_category_products($category_number){
-        $size = 50;
-        $page_number = 0;
-
         $products = [];
 
         // Send Two Request. One for In-Store, One for Ship-To-Home
         // V2 - Ship To Home 
         // V3 - In Store
 
-        $category_sources = ['v2', 'v3'];
+        $category_sources = ['v3', 'v2'];
 
         foreach($category_sources as $type){
+            
+            $size = 50;
+            $page_number = 0;
+
+            $this->logger->notice('--- Fetching Category Products: ' . $type);
+
             $category_results = $this->request_category_data($category_number, $size, $page_number, $type);
 
             $pagination_data = $category_results->pagination;
@@ -41,7 +44,7 @@ class CategoryService extends CanadianSuperstore {
     
             if($total_results > $size){
                 $total_pages = ceil($total_results / $size);
-                $this->logger->debug("$type Total Pages: $total_pages");
+                $this->logger->debug("Total Pages: $total_pages");
     
                 for($page_number = 1; $page_number < $total_pages; $page_number++){
                     $category_data =  $this->request_category_data($category_number, $size, $page_number, $type);
@@ -49,7 +52,7 @@ class CategoryService extends CanadianSuperstore {
                 }
     
             } else {
-                $this->logger->debug("$type Total Pages: 1");
+                $this->logger->debug('Total Pages: 1');
             }
         }
 
