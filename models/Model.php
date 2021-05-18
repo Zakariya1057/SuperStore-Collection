@@ -37,17 +37,26 @@ class Model {
         $sanitized_data = $this->sanitize->sanitize_fields($data);
 
         foreach($sanitized_data as $key => $value){
-            $table_fields_list[] = "`$key`";
+            $validation = $this->table_fields[$key];
 
-            if( key_exists('exclude_sanitize', $this->table_fields[$key]) && $this->table_fields[$key]['exclude_sanitize'] ){
-                $value = $data[$key]; 
-            } 
-            
-            if(is_null($value)){
-                $insert_fields_list[] = "NULL";
+            if(key_exists('ignore', $validation)){
+                $this->logger->debug('Ignoring Field: ' . $key);
             } else {
-                $insert_fields_list[] = "'$value'";
+
+                $table_fields_list[] = "`$key`";
+                
+                if( key_exists('exclude_sanitize', $validation) && $validation['exclude_sanitize'] ){
+                    $value = $data[$key]; 
+                } 
+                
+                if(is_null($value)){
+                    $insert_fields_list[] = "NULL";
+                } else {
+                    $insert_fields_list[] = "'$value'";
+                }
+
             }
+
         }
 
         try {
@@ -101,7 +110,11 @@ class Model {
 
         $query = $this->create_query($data);
 
-        $this->where = $query;
+        if(is_null($this->where)){
+            $this->where = $query;
+        } else {
+            $this->where = $this->where . " AND $query";            
+        }
 
         return $this;
     }
@@ -109,9 +122,13 @@ class Model {
     public function where_raw($query){
 
         $query = $this->convert_string_to_array($query);
-
         $query = implode(" AND ",$query);
-        $this->where = $query;
+
+        if(is_null($this->where)){
+            $this->where = $query;
+        } else {
+            $this->where = $this->where . " AND $query";            
+        }
 
         return $this;
     }
@@ -215,7 +232,6 @@ class Model {
         } else {
             $this->where = $this->where . " AND $field IN ($query_list)";
         }
-        // $this->not_in = 
 
         return $this;
     }
