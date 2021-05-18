@@ -147,7 +147,7 @@ class ProductV3 extends Products {
         $price_details = $product_details->prices;
 
         $breadcrumbs = $product_details->breadcrumbs;
-        $site_category_id = is_null($breadcrumbs) ? null : end($breadcrumbs)->categoryCode;
+        $site_category_id = is_null($breadcrumbs) ? null : ($breadcrumbs[3]->categoryCode ?? end($breadcrumbs)->categoryCode);
 
         if(is_null($site_category_id)){
             throw new Exception('Site Category ID Not Found');
