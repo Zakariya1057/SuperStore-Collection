@@ -47,9 +47,9 @@ class ProductV3 extends Products {
             return null;
         }
 
-        $this->set_prices($product, $product_details);
-
         $this->set_product_group($product, $product_details);
+
+        $this->set_prices($product, $product_details);
 
         $this->product_detail_service->set_description($product, $product_details->description);
 
@@ -146,8 +146,11 @@ class ProductV3 extends Products {
 
         $price_details = $product_details->prices;
 
-        $breadcrumbs = $product_details->breadcrumbs;
-        $site_category_id = is_null($breadcrumbs) ? null : ($breadcrumbs[3]->categoryCode ?? end($breadcrumbs)->categoryCode);
+        $site_category_id = $product->product_group->id;
+        $site_category_name = $product->product_group->name;
+
+        // $breadcrumbs = $product_details->breadcrumbs;
+        // $site_category_id = is_null($breadcrumbs) ? null : ($breadcrumbs[3]->categoryCode ?? end($breadcrumbs)->categoryCode);
 
         if(is_null($site_category_id)){
             throw new Exception('Site Category ID Not Found');
@@ -167,7 +170,7 @@ class ProductV3 extends Products {
             $product->old_price = $price_details->wasPrice->value;
 
         } else if(!is_null($product_details->badges->dealBadge)){
-            $product->promotion = $this->promotion_service->parse_promotion($deal, $site_category_id);
+            $product->promotion = $this->promotion_service->parse_promotion($deal, $site_category_id, $site_category_name);
         }
 
     }

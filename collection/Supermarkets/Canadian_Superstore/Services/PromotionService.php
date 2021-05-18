@@ -16,7 +16,7 @@ class PromotionService extends CanadianSuperstore {
         }
     }
 
-    public function parse_promotion($promotion_details, $site_category_id){
+    public function parse_promotion($promotion_details, $site_category_id, $site_category_name){
 
         $this->setupPromotionModel();
         
@@ -68,6 +68,8 @@ class PromotionService extends CanadianSuperstore {
 
             $promotion->store_type_id = $store_type_id;
 
+            $promotion->title = $site_category_name;
+            
             $promotion->name = $promotion_name;
             $promotion->price = $price;
             $promotion->minimum = $minimum;
