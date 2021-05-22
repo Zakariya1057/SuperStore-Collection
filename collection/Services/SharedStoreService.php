@@ -29,6 +29,15 @@ class SharedStoreService {
         $this->create_location($store->location, $store_id);
         $this->create_hours($store->opening_hours, $store_id);
         $this->create_facilitites($store->facilities, $store_id);
+
+        return $store_id;
+    }
+
+    public function create_flyers($flyers, $store_id){
+        foreach($flyers as $flyer){
+            $flyer->store_id = $store_id;
+            $flyer->save();
+        }
     }
 
     private function create_location($location, $store_id){

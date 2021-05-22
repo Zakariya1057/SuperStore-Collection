@@ -10,21 +10,9 @@ use Models\Store\OpeningHoursModel;
 use Models\Store\StoreModel;
 
 class StoreService extends CanadianSuperstore {
-
-    private $flyer_service;
-
-    private function setupFlyerService(){
-        if(is_null($this->flyer_service)){
-            $this->flyer_service = new FlyerService($this->config_service, $this->logger, $this->database_service);
-        }
-    }
-
+    
     public function store_details(string $site_store_id, $url = null): ?StoreModel {
-
-        $this->setupFlyerService();
-
-        $this->flyer_service->get_flyers($site_store_id, 1);
-
+        
         $this->logger->notice('-- Start Store Details: '. $site_store_id);
 
         $store = new StoreModel($this->database_service);
@@ -38,7 +26,7 @@ class StoreService extends CanadianSuperstore {
 
         $store_data = $this->request_service->parse_json($store_response);
 
-        if(is_null($store_data)){
+        if(is_null($store_data) || !property_exists($store_data, 'storeDetails')){
             $this->logger->error('Leaving No Store Details Found: ' . $site_store_id);
             return null;
         }
@@ -52,6 +40,8 @@ class StoreService extends CanadianSuperstore {
         $store->name = $store_data->name;
         $store->manager = $store_details->manager;
         $store->telephone = $store_details->phoneNumber;
+
+        $store->flyers = [];
 
         $this->set_location($store, $store_data);
         $this->set_hours($store, $store_details->storeHours);
