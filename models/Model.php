@@ -44,7 +44,7 @@ class Model {
             } else {
 
                 $table_fields_list[] = "`$key`";
-                
+
                 if( key_exists('exclude_sanitize', $validation) && $validation['exclude_sanitize'] ){
                     $value = $data[$key]; 
                 } 
@@ -87,7 +87,7 @@ class Model {
             $query .= "*";
         }
 
-        $this->select = $query;
+        $this->select = trim($query);
         return $this;
     }
 

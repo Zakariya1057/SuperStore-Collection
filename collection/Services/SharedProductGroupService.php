@@ -1,32 +1,29 @@
 <?php
 
-namespace Collection\Supermarkets\Asda\Services;
+namespace Collection\Services;
 
 use Models\Category\ProductGroupModel;
-use Collection\Supermarkets\Asda\Asda;
+use Models\Product\ProductModel;
+use Services\Database;
 
-class ProductGroupService extends Asda {
+class SharedProductGroupService {
 
     private $product_group_model;
 
-    private function setupProductGroupModel(){
-        if(is_null($this->product_group_model)){
-            $this->product_group_model = new ProductGroupModel($this->database);
-        }
+    public function __construct(Database $database){
+        $this->product_group_model = new ProductGroupModel($database);
     }
 
-    public function create($product_details, $child_category_id){
+    public function create(ProductModel $product_details, int $child_category_id, int $store_type_id): int {
         // Create/Select Product Group
-        $this->setupProductGroupModel();
-
         $product_group_model = clone $this->product_group_model;
         
         $product_group = $product_details->product_group;
-        
+
         $site_product_group_id = $product_group->id;
         $product_group_name = $product_group->name;
 
-        $product_group_results = $product_group_model
+        $product_group_results = $this->product_group_model
         ->where([
             'child_category_id' => $child_category_id, 
             'name' => $product_group_name
@@ -37,7 +34,7 @@ class ProductGroupService extends Asda {
             $product_group_model->name = $product_group_name;
             $product_group_model->site_product_group_id = $site_product_group_id;
             $product_group_model->child_category_id = $child_category_id;
-            $product_group_model->store_type_id = $this->store_type_id;
+            $product_group_model->store_type_id = $store_type_id;
 
             $product_group_model->id = $product_group_model->save();
 

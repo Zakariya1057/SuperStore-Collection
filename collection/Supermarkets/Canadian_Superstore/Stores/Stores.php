@@ -17,10 +17,10 @@ class Stores extends CanadianSuperstore implements StoreInterface {
         $store_model = new StoreModel($this->database);
 
         
-        $this->logger->notice($this->store_name . " Finding All Stores");
+        $this->logger->notice($this->store_name . ' Finding All Stores');
 
         if($this->env == 'dev'){
-            $stores_response = file_get_contents(__DIR__."/../../../data/Canadian_Superstore/Stores.json");
+            $stores_response = file_get_contents(__DIR__.'/../../../data/Canadian_Superstore/Stores.json');
         } else {
             $stores_response = $this->request->request($this->endpoints->stores . '?bannerIds=superstore');
         }
@@ -104,7 +104,7 @@ class Stores extends CanadianSuperstore implements StoreInterface {
         $store = new StoreModel($this->database);
 
         if($this->env == 'dev'){
-            $store_response = file_get_contents(__DIR__."/../../data/Canadian_Superstore/Store.json");
+            $store_response = file_get_contents(__DIR__.'/../../data/Canadian_Superstore/Store.json');
         } else {
             $url = $this->endpoints->stores . '/' . $site_store_id;
             $store_response = $this->request->request($url, 'GET', [], ['Site-Banner' => 'superstore']);
@@ -145,7 +145,7 @@ class Stores extends CanadianSuperstore implements StoreInterface {
         $location->postcode = $location_data->postalCode;
 
         $location->address_line1 = $location_data->line1;
-        $location->address_line2 = $location_data->line2 == "" ? null : $location_data->line2;
+        $location->address_line2 = $location_data->line2 == '' ? null : $location_data->line2;
 
         $location->city = $location_data->town;
         $location->region = $location_data->region;
@@ -175,8 +175,8 @@ class Stores extends CanadianSuperstore implements StoreInterface {
             $time_matches = explode(' - ', $store_hour->hours);
 
             if($time_matches && count($time_matches) == 2){
-                $opens_at = date("H:i:s", strtotime($time_matches[0]));
-                $closes_at =  date("H:i:s", strtotime($time_matches[1]));
+                $opens_at = date('H:i:s', strtotime($time_matches[0]));
+                $closes_at =  date('H:i:s', strtotime($time_matches[1]));
                 
                 $hour->opens_at = $opens_at;
                 $hour->closes_at = $closes_at;

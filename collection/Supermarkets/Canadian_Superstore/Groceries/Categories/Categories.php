@@ -48,6 +48,8 @@ class Categories extends CanadianSuperstore {
         $category_item = $category->where(['store_type_id' => $this->store_type_id, 'site_category_id' => $category_number])->get()[0] ?? null;
 
         if(!is_null($category_item)){
+            // Update Index
+            $category->where(['store_type_id' => $this->store_type_id, 'site_category_id' => $category_number])->update(['index' => $index]);
             $this->logger->debug($category_name . ' Category: Found In Database');
             return $category_item;
         } else {

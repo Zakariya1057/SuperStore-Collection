@@ -2,8 +2,6 @@
 
 namespace Collection\Supermarkets\Canadian_Superstore\Groceries\Products;
 
-use Collection\Services\SharedCategoryService;
-use Collection\Services\SharedProductCreateService;
 use Collection\Services\SharedProductService;
 use Interfaces\ProductInterface;
 use Models\Product\ProductModel;
@@ -16,31 +14,19 @@ use Services\Database;
 use Services\Remember;
 
 use Collection\Supermarkets\Canadian_Superstore\Services\ProductDetailService;
-use Collection\Supermarkets\Canadian_Superstore\Services\ProductGroupService;
 use Collection\Supermarkets\Canadian_Superstore\Services\ProductService;
 
 class Products extends CanadianSuperstore implements ProductInterface {
     private $product_v2, $product_v3;
 
-    public $product_service, $category_service, $product_group_service;
-
-    public $product_detail_service;
-
-    private $shared_product_create_service;
+    public $product_service, $product_detail_service;
 
     function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
     {
         parent::__construct($config,$logger,$database,$remember);
 
         $this->product_service = new SharedProductService($database, new ProductService($config,$logger,$database));
-
-        $this->category_service = new SharedCategoryService($database);
-
-        $this->product_group_service = new ProductGroupService($config, $logger, $database);
-
         $this->product_detail_service = new ProductDetailService($config, $logger, $database);
-
-        $this->shared_product_create_service = new SharedProductCreateService($database, $this->product_service, $this->product_group_service, $this->category_service);
     }
 
     private function setupProductSources(){
@@ -54,7 +40,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
         $parsed_product = $this->product_details($site_product_id, false, $request_type);
 
         if(!is_null($parsed_product)){
-            $product_id = $this->shared_product_create_service->create($site_product_id, $parsed_product, $category_details, $this->store_type_id);
+            $product_id = $this->product_service->create($site_product_id, $parsed_product, $category_details, $this->store_type_id);
         } else {
             $this->logger->error('Product details not found. Skipping');
             return null;

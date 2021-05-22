@@ -17,7 +17,7 @@ class ProductDetailService extends CanadianSuperstore {
             // If any part of brand found in name, then exclde
             $brand_regex = str_replace(' ', '|', $brand);
 
-            preg_match("/$brand_regex/i", $name, $brand_matches);
+            preg_match('/' . $brand_regex . '/i', $name, $brand_matches);
 
             if($brand_matches){
                 $this->logger->debug("Brand($brand) Found In Product Name: $name");

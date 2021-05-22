@@ -17,7 +17,53 @@ class ProductDetailService extends Asda {
         }
     }
 
-    public function set_ingredients($product, $product_data){
+    public function parse_product($product_response, $ignore_image = false, $ignore_promotion = false){
+        $product_details = $product_response->data->uber_item->items[0];
+
+        $item = $product_details->item;
+        $name = $item->name;
+        $item_enrichment = $product_details->item_enrichment->enrichment_info;
+        $inventory = $product_details->inventory;
+
+        $is_bundle_product = $product_details->is_bundle ?? false;
+        if($is_bundle_product){
+            return $this->logger->debug('Bundle Product Found');
+            return null;
+        }
+
+        $this->logger->notice('----- Start Product('.$item->sku_id.'): '.$item->name .' -----');
+
+        $product = new ProductModel($this->database);
+        
+        $product->availability_type = 'in-store';
+
+        $product->name = $this->clean_product_name($name);
+        $product->available = 1;
+
+        $product->images = [];
+
+        if(is_null($product_details->price)){
+            $this->logger->notice('Product Not Available. No Price Details Found.');
+            $product->available = 0;
+            return null;
+        }
+
+        $this->set_product_description($product, $item, $item_enrichment);
+
+        $this->set_product_details($product, $item_enrichment, $item, $inventory, $ignore_image);
+
+        $this->set_product_prices($product, $product_details, $ignore_promotion);
+
+        $this->set_product_group($product, $product_details);
+
+        $this->set_ingredients($product, $product_details);
+
+        $this->logger->notice('----- Complete Product('.$item->sku_id.'): '.$item->name .' -----');
+
+        return $product;
+    }
+
+    private function set_ingredients($product, $product_data){
         $ingredients_response = $product_data->item_enrichment->enrichment_info->ingredients_formatted ?? '';
         $ingredients_list = explode(' , ',$ingredients_response);
 
@@ -39,25 +85,25 @@ class ProductDetailService extends Asda {
         $product->ingredients = $ingredients;
     }
 
-    public function product_image($site_product_id, $image_id,$size,$size_name){
+    private function product_image($site_product_id, $image_id,$size,$size_name){
         $url = "https://ui.assets-asda.com/dm/asdagroceries/{$image_id}?defaultImage=asdagroceries/noImage&resMode=sharp2&id=8daSB3&fmt=jpg&fit=constrain,1&wid={$size}&hei={$size}";
         $file_name = $this->image->save($site_product_id,$url,$size_name);
         return $file_name;
     }
     
-    public function clean_product_name($name){
+    private function clean_product_name($name){
         $name = preg_replace('/\s\s/',' ',$name);
         return preg_replace('/\s*\(.+/','',$name);
     }
 
-    public function set_product_group(&$product, $product_details){
+    private function set_product_group(&$product, $product_details){
         $site_product_group_id = $product_details->item->taxonomy_info->shelf_id;
         $product_group_name = $product_details->item->taxonomy_info->shelf_name;
 
         $product->product_group = (object)['id' => $site_product_group_id, 'name' => $product_group_name];
     }
 
-    public function set_product_description($product, $item, $item_enrichment){
+    private function set_product_description($product, $item, $item_enrichment){
         // $product->store_type_id = $this->store_type_id;
         $product->description = $item->description == '.' ? NULL : $item->description;
 
@@ -79,7 +125,7 @@ class ProductDetailService extends Asda {
         $product->description = trim($product->description) == '' ? NULL : $product->description;
     }
 
-    public function set_product_prices($product, $product_details, $ignore_promotion){
+    private function set_product_prices($product, $product_details, $ignore_promotion){
         // Promotion Types:
         // 1. 2 for £10. Product Grouped
         // 2. Rollback
@@ -99,7 +145,7 @@ class ProductDetailService extends Asda {
         }
     }
 
-    public function set_product_details(ProductModel $product, $item_enrichment, $item, $inventory, $ignore_image){
+    private function set_product_details(ProductModel $product, $item_enrichment, $item, $inventory, $ignore_image){
 
         $rating_review = $item->rating_review;
 
@@ -134,7 +180,7 @@ class ProductDetailService extends Asda {
         }
     }
 
-    public function set_optional_details(&$product, $item_enrichment){
+    private function set_optional_details(&$product, $item_enrichment){
 
         $optional_details = [
             'safety_warning' => 'warning',
@@ -152,7 +198,7 @@ class ProductDetailService extends Asda {
 
     }
 
-    public function set_barcodes(&$product, $item, $inventory){
+    private function set_barcodes(&$product, $item, $inventory){
         $barcodes_data = [
             'cin' => $inventory->cin,
         ];
