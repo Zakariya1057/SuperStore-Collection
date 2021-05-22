@@ -31,7 +31,7 @@ class ProductV3 extends Products {
 
         $product = clone $this->product_model;
 
-        $product->name = $this->product_detail_service->create_name($product_details->name, $product_details->brand);
+        $product->name = $this->product_service->create_name($product_details->name, $product_details->brand);
         
         $product->availability_type = 'in-store';
 
@@ -51,10 +51,10 @@ class ProductV3 extends Products {
 
         $this->set_prices($product, $product_details);
 
-        $this->product_detail_service->set_description($product, $product_details->description);
+        $this->product_service->set_description($product, $product_details->description);
 
         $product->brand = $product_details->brand;
-        $product->url = "https://www.realcanadiansuperstore.ca" . $product_details->link;
+        $product->url = 'https://www.realcanadiansuperstore.ca' . $product_details->link;
 
         $this->set_categories($product, $product_details->breadcrumbs);
 
@@ -109,7 +109,7 @@ class ProductV3 extends Products {
             if($index == 0){
                 
                 if(!is_null($image_url)){
-                    $saved_image_url = $this->product_detail_service->create_image($product->site_product_id, $image_url, 'large');
+                    $saved_image_url = $this->product_service->create_image($product->site_product_id, $image_url, 'large');
 
                     if(!is_null($saved_image_url)){
                         $product->small_image = $saved_image_url;
@@ -121,7 +121,7 @@ class ProductV3 extends Products {
                 if(!is_null($image_url)){
                     $image = new ProductImageModel($this->database);
 
-                    $saved_image_url = $this->product_detail_service->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
+                    $saved_image_url = $this->product_service->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
     
                     if(!is_null($saved_image_url)){
                         $image->name = $saved_image_url;

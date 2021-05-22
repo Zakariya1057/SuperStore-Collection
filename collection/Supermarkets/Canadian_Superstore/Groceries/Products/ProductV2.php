@@ -13,11 +13,11 @@ class ProductV2 extends Products {
 
         $product->availability_type = 'ship to home';
 
-        $product->name = $this->product_detail_service->create_name( $product_details->title, $product_details->brand);
+        $product->name = $this->product_service->create_name( $product_details->title, $product_details->brand);
 
         $product->available = 1;
 
-        $this->product_detail_service->set_description($product, $product_details->longDescription);
+        $this->product_service->set_description($product, $product_details->longDescription);
         $product->brand = $product_details->brand;
 
         $variant = $product_details->variants[0];
@@ -62,7 +62,7 @@ class ProductV2 extends Products {
 
         foreach($images as $index => $image_url){
             if($index == 0){
-                $saved_image_url = $this->product_detail_service->create_image($product->site_product_id, $image_url, 'large');
+                $saved_image_url = $this->product_service->create_image($product->site_product_id, $image_url, 'large');
 
                 if(!is_null($saved_image_url)){
                     $product->small_image = $saved_image_url;
@@ -71,7 +71,7 @@ class ProductV2 extends Products {
             } else {
                 $image = new ProductImageModel($this->database);
 
-                $image_name = $this->product_detail_service->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
+                $image_name = $this->product_service->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
 
                 if(!is_null($image_name)){
                     $image->name = $image_name;

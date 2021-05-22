@@ -25,8 +25,8 @@ class Products extends CanadianSuperstore implements ProductInterface {
     {
         parent::__construct($config,$logger,$database,$remember);
 
-        $this->product_service = new SharedProductService($database, new ProductService($config,$logger,$database));
-        $this->product_detail_service = new ProductDetailService($config, $logger, $database);
+        $this->shared_product_service = new SharedProductService($database);
+        $this->product_service = new ProductService($config,$logger,$database);
     }
 
     private function setupProductSources(){
@@ -40,7 +40,7 @@ class Products extends CanadianSuperstore implements ProductInterface {
         $parsed_product = $this->product_details($site_product_id, false, $request_type);
 
         if(!is_null($parsed_product)){
-            $product_id = $this->product_service->create($site_product_id, $parsed_product, $category_details, $this->store_type_id);
+            $product_id = $this->shared_product_service->create($site_product_id, $parsed_product, $category_details, $this->store_type_id);
         } else {
             $this->logger->error('Product details not found. Skipping');
             return null;

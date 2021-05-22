@@ -12,18 +12,13 @@ class SharedProductService {
     private $product_model, $request_service;
     private $category_service, $product_group_service;
 
-    public function __construct(Database $database, ProductRequestInterface $request_service = null){
+    public function __construct(Database $database){
         $this->database = $database;
 
         $this->product_model = new ProductModel($database);
-        $this->request_service = $request_service;
 
         $this->category_service = new SharedCategoryService($database);
         $this->product_group_service = new SharedProductGroupService($database);
-    }
-
-    public function request_product($site_product_id, $request_type = null){
-        return $this->request_service->request_product($site_product_id, $request_type);
     }
 
     public function product_exists($site_product_id, $store_type_id){
