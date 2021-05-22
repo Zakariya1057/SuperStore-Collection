@@ -22,7 +22,6 @@ class Search {
 
         if(!$client){
             $host = $config->get('elasticsearch.host');
-            // $this->client = ClientBuilder::create()->setRetries(3)->setHosts([$details])->setLogger($logger)->build();
             $this->client = ClientBuilder::create()->setRetries(3)->setHosts([$host])->build();
         } else {
             $this->client = $client;

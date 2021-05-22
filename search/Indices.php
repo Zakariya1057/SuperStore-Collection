@@ -270,9 +270,9 @@ class Indices extends Search {
     private function set_categories(){
         // For Store Type Set Categories.
         // [Category ID] -> [Name]
-        $parent_category_results = $this->parent_category_model->select(['id', 'name'])->get();
-        $child_category_results = $this->child_category_model->select(['id', 'name'])->get();
-        $product_group_results = $this->product_group_model->select(['id', 'name'])->get();
+        $parent_category_results = $this->parent_category_model->select(['id', 'name'])->where(['enabled' => 1])->get();
+        $child_category_results = $this->child_category_model->select(['id', 'name'])->where(['enabled' => 1])->get();
+        $product_group_results = $this->product_group_model->select(['id', 'name'])->where(['enabled' => 1])->get();
 
         foreach($parent_category_results as $parent_category){
             $id = $parent_category->id;
