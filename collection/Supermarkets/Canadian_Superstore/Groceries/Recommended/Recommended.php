@@ -10,9 +10,9 @@ use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
 use Collection\Supermarkets\Canadian_Superstore\Groceries\Products\Products;
 use Collection\Supermarkets\Canadian_Superstore\Services\ProductService;
 use Monolog\Logger;
-use Services\Config;
-use Services\Database;
-use Services\Remember;
+use Services\ConfigService;
+use Services\DatabaseService;
+use Services\RememberService;
 
 class Recommended extends CanadianSuperstore {
 
@@ -21,16 +21,16 @@ class Recommended extends CanadianSuperstore {
 
     private $product;
 
-    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
+    function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, RememberService $remember_service=null)
     {
-        parent::__construct($config,$logger,$database,$remember);
+        parent::__construct($config_service,$logger,$database_service,$remember_service);
 
-        $this->product_model = new ProductModel($this->database);
-        $this->category_model = new ChildCategoryModel($this->database);
+        $this->product_model = new ProductModel($this->database_service);
+        $this->category_model = new ChildCategoryModel($this->database_service);
 
-        $this->product = new Products($this->config,$this->logger,$this->database,$this->remember);
+        $this->product = new Products($this->config_service,$this->logger,$this->database_service,$this->remember_service);
 
-        $this->product_service = new ProductService($this->config, $this->logger, $this->database);
+        $this->product_service = new ProductService($this->config_service, $this->logger, $this->database_service);
     }
 
     public function create_recommended(){
@@ -56,11 +56,11 @@ class Recommended extends CanadianSuperstore {
         
                     $this->logger->debug("New Product To Find Recommended Item: [$product_id] $name");
         
-                    $this->database->start_transaction();
+                    $this->database_service->start_transaction();
     
                     $this->product_recommended($product_id, $site_product_id);
     
-                    $this->database->commit_transaction();
+                    $this->database_service->commit_transaction();
                 }
     
             } else {
@@ -85,7 +85,7 @@ class Recommended extends CanadianSuperstore {
             $recommended_response = file_get_contents(__DIR__."/../../../../data/Canadian_Superstore/Recommendations.json");
         } else {
             try {
-                $recommended_response = $this->request->request($recommendation_endpoint, 'GET', [] , ['Site-Banner' => 'superstore'], 300, 1);
+                $recommended_response = $this->request_service->request($recommendation_endpoint, 'GET', [] , ['Site-Banner' => 'superstore'], 300, 1);
             } catch(Exception $e){
                 $recommended_response = '{}';
                 $this->logger->error('Failed To Find Recommended Products: '. $e->getMessage());
@@ -95,14 +95,14 @@ class Recommended extends CanadianSuperstore {
 
         $product_ids = [];
 
-        $recommended_data = $this->request->parse_json($recommended_response);
+        $recommended_data = $this->request_service->parse_json($recommended_response);
 
         if(!is_null($recommended_data)){
             if(property_exists($recommended_data, 'relatedProducts')){
                 $recommended_products = $recommended_data->relatedProducts;
     
                 foreach($recommended_products as $product_data){
-                    $recommended = new RecommendedModel($this->database);
+                    $recommended = new RecommendedModel($this->database_service);
                     $product_code = $product_data->code;
     
                     $product_results = $this->product_model->where(['store_type_id' => $this->store_type_id, 'site_product_id' => $product_code])->get()[0] ?? null;

@@ -75,8 +75,8 @@ class CategoryService extends CanadianSuperstore {
         $this->logger->debug('V2 Category Request Page Number: '. $page_number);
 
         try {
-            $response = $this->request->request($category_endpoint_v2, 'GET', [], ['Is-Pcs-Catalog' => 'true']);
-            return $this->request->parse_json($response); 
+            $response = $this->request_service->request($category_endpoint_v2, 'GET', [], ['Is-Pcs-Catalog' => 'true']);
+            return $this->request_service->parse_json($response); 
         } catch(Exception $e){
             $this->logger->debug('V2 Category Request Error: ' . $e->getMessage());
         }
@@ -94,7 +94,7 @@ class CategoryService extends CanadianSuperstore {
         $this->logger->debug('V3 Category Request Page Number: '. $page_number);
 
         try {
-            $response = $this->request->request($category_endpoint_v3, 'POST', [
+            $response = $this->request_service->request($category_endpoint_v3, 'POST', [
                 'pagination' => [
                     'from' => $page_number,
                     'size' => $size
@@ -110,7 +110,7 @@ class CategoryService extends CanadianSuperstore {
 
             ], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, 1);
 
-            return $this->request->parse_json($response); 
+            return $this->request_service->parse_json($response); 
         } catch(Exception $e){
             $this->logger->debug('V3 Category Request Error: ' . $e->getMessage());
         }

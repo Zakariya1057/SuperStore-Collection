@@ -3,15 +3,15 @@
 namespace Collection\Services;
 
 use Models\Category\CategoryProductModel;
-use Services\Database;
+use Services\DatabaseService;
 
 class SharedCategoryService {
 
-    private $database, $category_product;
+    private $database_service, $category_product;
 
-    public function __construct(Database $database){
-        $this->database = $database;
-        $this->category_product = new CategoryProductModel($this->database);
+    public function __construct(DatabaseService $database_service){
+        $this->database_service = $database_service;
+        $this->category_product = new CategoryProductModel($this->database_service);
     }
 
     public function category_exists($category_details, $product_id){

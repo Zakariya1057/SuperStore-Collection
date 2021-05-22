@@ -15,7 +15,7 @@ class PromotionService extends Asda {
 
     private function setupPromotionModel(){
         if(is_null($this->promotion_model)){
-            $this->promotion_model = new PromotionModel($this->database);
+            $this->promotion_model = new PromotionModel($this->database_service);
         }
     }
     
@@ -54,7 +54,7 @@ class PromotionService extends Asda {
         if($price_data->is_on_sale == true){
             $this->logger->debug('Product Sale Found');
             $price_details->old_price = $price_details->price;
-            $price_details->price = $this->sanitize->removeCurrency($product_data->price->price_info->sale_price);
+            $price_details->price = $this->sanitize_service->removeCurrency($product_data->price->price_info->sale_price);
             $price_details->is_on_sale = true;
         } else {
             throw new Exception('Product Not On Sale');
@@ -68,7 +68,7 @@ class PromotionService extends Asda {
 
         if(!is_null($rollback) ){
             $this->logger->debug('RollBack Product Found');
-            $price_details->old_price = $this->sanitize->removeCurrency( $rollback->was_price );
+            $price_details->old_price = $this->sanitize_service->removeCurrency( $rollback->was_price );
         } else {
             throw new Exception('Not A RollBack Product');
         }
@@ -104,7 +104,7 @@ class PromotionService extends Asda {
 
             $promotion->site_promotion_id = $promotion_site_id;
 
-            $promotion->store_type_id = $this->config->get('stores.asda.store_type_id');
+            $promotion->store_type_id = $this->config_service->get('stores.asda.store_type_id');
            
             $promotion->url = "https://groceries.asda.com/promotion/$promotion_name/$promotion_site_id";
             
@@ -124,14 +124,14 @@ class PromotionService extends Asda {
     }
 
     public function product_item_price($product_data){
-        return $this->sanitize->removeCurrency($product_data->price->price_info->price);
+        return $this->sanitize_service->removeCurrency($product_data->price->price_info->price);
     }
 
     public function promotion_info($promotion_site_id){
 
         if($this->env == 'dev'){
             $promotion_response = file_get_contents(__DIR__."/../../data/Asda/New_Promotion.json");
-            $promotion_info = $this->request->parse_json($promotion_response);
+            $promotion_info = $this->request_service->parse_json($promotion_response);
         } else {
             $promotion_info = $this->asda_service->request_details('promotion', $promotion_site_id);
         }

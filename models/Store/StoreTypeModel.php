@@ -3,18 +3,17 @@
 namespace Models\Store;
 
 use Models\Model;
+use Services\DatabaseService;
 
-//Each store location.
 class StoreTypeModel extends Model {
     
     public $id, $name, $currency, $description, $large_logo, $small_logo, $user_id;
     
-    // Name, Logo Small, Logo Big
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
-        $this->table("store_types");
+        $this->table('store_types');
 
         $fields = [
             'name' => [],

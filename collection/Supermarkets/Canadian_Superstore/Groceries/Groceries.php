@@ -17,7 +17,7 @@ class Groceries extends CanadianSuperstore {
         
         $groceries = $this->grocery_categories();
 
-        $category = new Categories($this->config,$this->logger,$this->database,$this->remember);
+        $category = new Categories($this->config_service,$this->logger,$this->database_service,$this->remember_service);
         $category->categories($groceries);
         
         $this->logger->notice("------- Real Canadian Superstore Groceries Complete --------");
@@ -30,10 +30,10 @@ class Groceries extends CanadianSuperstore {
         if($this->env == 'dev'){
             $groceries_response = file_get_contents(__DIR__."/../../../data/Canadian_Superstore/Groceries.json");
         } else {
-            $groceries_response = $this->request->request($groceries_endpoint, 'GET', [], ['authorization' => 'Bearer ' . $this->header_token]);
+            $groceries_response = $this->request_service->request($groceries_endpoint, 'GET', [], ['authorization' => 'Bearer ' . $this->header_token]);
         }
 
-        $grocery_data = $this->request->parse_json($groceries_response);
+        $grocery_data = $this->request_service->parse_json($groceries_response);
 
         $categories = $this->grand_parent_categories($grocery_data);
 

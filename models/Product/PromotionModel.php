@@ -3,6 +3,7 @@
 namespace Models\Product;
 
 use Models\Model;
+use Services\DatabaseService;
 
 class PromotionModel extends Model {
 
@@ -28,9 +29,9 @@ class PromotionModel extends Model {
         $ends_at;
 
     // Promotion Id, Name, URL, expires, starts_at,ends_at
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
         $this->table('promotions');
 

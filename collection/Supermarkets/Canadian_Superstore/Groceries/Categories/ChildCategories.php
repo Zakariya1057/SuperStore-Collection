@@ -14,11 +14,11 @@ class ChildCategories extends Categories {
 
     private function setupClasses(){
         if(is_null($this->product)){
-            $this->product = new Products($this->config,$this->logger,$this->database,$this->remember);
+            $this->product = new Products($this->config_service,$this->logger,$this->database_service,$this->remember_service);
         }
 
         if(is_null($this->category_service)){
-            $this->category_service = new CategoryService($this->config,$this->logger,$this->database,$this->remember);
+            $this->category_service = new CategoryService($this->config_service,$this->logger,$this->database_service,$this->remember_service);
         }
     }
 
@@ -28,7 +28,7 @@ class ChildCategories extends Categories {
 
         $categories = $parent_category->child_categories;
 
-        $last_category_index = $this->remember->get('child_category_index') ?? 0;
+        $last_category_index = $this->remember_service->get('child_category_index') ?? 0;
 
         $grand_parent_category_id = $parent_category->parent_category_id;
         
@@ -51,11 +51,11 @@ class ChildCategories extends Categories {
                 $child_category_details->number = $child_category->number;
                 $child_category_details->grand_parent_category_id = $grand_parent_category_id;
 
-                $this->remember->set('child_category_index', $category_index);
+                $this->remember_service->set('child_category_index', $category_index);
                 $this->category_products($child_category_details);
             }
 
-            $this->remember->set('child_category_index',0);
+            $this->remember_service->set('child_category_index',0);
 
         }
 
@@ -73,13 +73,13 @@ class ChildCategories extends Categories {
 
         if($product_count > 0){
 
-            $last_product_index = $this->remember->get('product_index') ?? 0;
+            $last_product_index = $this->remember_service->get('product_index') ?? 0;
         
             $products = array_slice($products, $last_product_index);
     
             //Loop through and insert into database
             foreach($products as $index => $site_product_id){
-                $this->remember->set('product_index', $index + $last_product_index);
+                $this->remember_service->set('product_index', $index + $last_product_index);
     
                 $this->product->create_product($site_product_id, $category_details);
     
@@ -91,13 +91,13 @@ class ChildCategories extends Categories {
         } else {
             $this->logger->info('No Products Found For Category: '. $category_details->id);
 
-            $product_categories = new CategoryProductModel($this->database);
+            $product_categories = new CategoryProductModel($this->database_service);
             $products_count = count($product_categories->where(['child_category_id' => $category_details->id])->get());
 
             if($products_count == 0){
                 $this->logger->debug('No Products Found For Matching Product Categories. Deleting Child Category');
                 // Check if no products for category
-                $category_model = new ChildCategoryModel($this->database);
+                $category_model = new ChildCategoryModel($this->database_service);
                 $category_model->where(['id' => $category_details->id])->delete();
             } else {
                 $this->logger->debug('Products Found In Database For Category. Not Deleting Child Category');
@@ -105,7 +105,7 @@ class ChildCategories extends Categories {
 
         }
 
-        $this->remember->set('product_index', 0);
+        $this->remember_service->set('product_index', 0);
     }
 
 }

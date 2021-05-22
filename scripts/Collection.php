@@ -5,10 +5,10 @@ ini_set('memory_limit', '-1');
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Services\CLIService;
-use Services\Config;
-use Services\Loggers;
-use Services\Database;
-use Services\Remember;
+use Services\ConfigService;
+use Services\LoggerService;
+use Services\DatabaseService;
+use Services\RememberService;
 
 use Collection\Supermarkets\Asda\Asda;
 use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
@@ -17,18 +17,18 @@ $cli = new CLIService();
 $cli->run();
 $store_type = $cli->get_store_type();
 
-$config = new Config();
-$log = new Loggers('Collection', $store_type);
+$config_service = new ConfigService();
+$logger_service = new LoggerService('Collection', $store_type);
 
-$logger = $log->logger_handler;
+$logger = $logger_service->logger_handler;
 
-$database = new Database($config,$logger);
+$database_service = new DatabaseService($config_service, $logger);
 
-$remember = new Remember($config,$logger,$database);
+$remember_service = new RememberService($config_service, $logger, $database_service);
 
 $logger->notice("---------------------------- Collection Script Start ----------------------------");
 
-if($config->get('env') == 'dev'){
+if($config_service->get('env') == 'dev'){
     $logger->notice('Running In Development Environment.');
 } else {
     $logger->notice('Running In Live Environment.');
@@ -36,18 +36,18 @@ if($config->get('env') == 'dev'){
 
 try {
 
-    $asda_conf = $config->get('stores.asda');
+    $asda_conf = $config_service->get('stores.asda');
 
     if(strtolower($store_type) == 'asda'){
 
         if($asda_conf->run){
 
-            $remember->store_type_id = $asda_conf->store_type_id;
-            $remember->retrieve_data();
+            $remember_service->store_type_id = $asda_conf->store_type_id;
+            $remember_service->retrieve_data();
     
             $logger->notice("----------  Asda Scraping Start ----------");
             
-            $asda = new Asda($config,$logger,$database,$remember);
+            $asda = new Asda($config_service, $logger, $database_service, $remember_service);
         
             // Generate Asda Store Type
             $asda->store_type();
@@ -76,16 +76,16 @@ try {
 
     } else {
 
-        $canadian_superstore_conf = $config->get('stores.real_canadian_superstore');
+        $canadian_superstore_conf = $config_service->get('stores.real_canadian_superstore');
 
         if($canadian_superstore_conf->run){
     
-            $remember->store_type_id = $canadian_superstore_conf->store_type_id;
-            $remember->retrieve_data();
+            $remember_service->store_type_id = $canadian_superstore_conf->store_type_id;
+            $remember_service->retrieve_data();
     
             $logger->notice("----------  Real Canadian Superstore Scraping Start ----------");
     
-            $canadian_superstore = new CanadianSuperstore($config,$logger,$database,$remember);
+            $canadian_superstore = new CanadianSuperstore($config_service,$logger,$database_service,$remember_service);
     
             $canadian_superstore->store_type();
     

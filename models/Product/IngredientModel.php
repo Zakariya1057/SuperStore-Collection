@@ -3,16 +3,17 @@
 namespace Models\Product;
 
 use Models\Model;
+use Services\DatabaseService;
 
 class IngredientModel extends Model {
 
-    public $database, $logger,$product;
+    public $database_service, $logger,$product;
 
     public $product_id, $name;
     
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
         $this->table('ingredients');
 

@@ -6,22 +6,22 @@ use Exception;
 use Symfony\Component\DomCrawler\Crawler;
 use \Symfony\Component\HttpClient\HttpClient;
 
-class Requests {
+class RequestService {
  
     public $logger, $config, $validator, $client;
 
-    function __construct($config,$logger){
-        $this->logger  = $logger;
-        $this->config  = $config;
+    function __construct($config_service, $logger){
+        $this->logger = $logger;
+        $this->config_service = $config_service;
 
-        $this->validator = new Validator();
+        $this->validator_service = new ValidatorService();
 
         $this->client = HttpClient::create(['verify_peer' => false]);
     }
 
     public function request($url, $method='GET', $data=[], $headers=[], $timeout=300, $retry_attempts = null, $raw_data = false){
 
-        $retry_config = $this->config->get('retry.request');
+        $retry_config = $this->config_service->get('retry.request');
 
         $times_retried = 0;
 

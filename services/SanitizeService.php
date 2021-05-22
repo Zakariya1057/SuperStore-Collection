@@ -2,7 +2,7 @@
 
 namespace Services;
 
-class Sanitize {
+class SanitizeService {
 
     public function sanitize_fields($data){
         $data = (array)$data;

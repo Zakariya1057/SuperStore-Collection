@@ -2,13 +2,15 @@
  
 namespace Models\Category;
 
+use Services\DatabaseService;
+
 class ParentCategoryModel extends CategoryModel {
 
-    public $database, $logger,$product;
+    public $database_service, $logger,$product;
 
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
         $this->table('parent_categories');
 

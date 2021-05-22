@@ -4,7 +4,7 @@ namespace Services;
 
 use Exception;
 
-class Validator extends Sanitize {
+class ValidatorService extends SanitizeService {
 
     public function validate_fields($validation,$data){
 

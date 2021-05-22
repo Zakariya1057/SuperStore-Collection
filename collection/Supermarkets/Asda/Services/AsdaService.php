@@ -6,16 +6,16 @@ use Exception;
 
 use Collection\Supermarkets\Asda\Asda;
 use Monolog\Logger;
-use Services\Config;
-use Services\Requests;
+use Services\ConfigService;
+use Services\RequestService;
 
 class AsdaService {
 
     private $endpoints, $logger, $request;
 
-    function __construct(Config $config, Logger $logger){
-        $this->request = new Requests($config,$logger);
-        $this->endpoints = $config->get('endpoints')->asda;
+    function __construct(ConfigService $config_service, Logger $logger){
+        $this->request_service = new RequestService($config_service, $logger);
+        $this->endpoints = $config_service->get('endpoints')->asda;
         $this->logger = $logger;
     }
 
@@ -56,9 +56,9 @@ class AsdaService {
 
         $request_data = http_build_query($request_data);
 
-        $response = $this->request->request( $this->endpoints->groceries, 'POST', $request_data, ['content-type' => 'application/x-www-form-urlencoded; charset=utf-8', 'request-origin' => 'gi'], 300, null, true);
+        $response = $this->request_service->request( $this->endpoints->groceries, 'POST', $request_data, ['content-type' => 'application/x-www-form-urlencoded; charset=utf-8', 'request-origin' => 'gi'], 300, null, true);
     
-        $data = $this->request->parse_json($response);
+        $data = $this->request_service->parse_json($response);
     
 
         if(!property_exists($data, 'data')){

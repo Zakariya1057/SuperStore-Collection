@@ -12,24 +12,23 @@ use Collection\Supermarkets\Asda\Services\ProductService;
 
 use Models\Product\ProductModel;
 
-use Monolog\Logger;
-
-use Services\Config;
-use Services\Database;
-use Services\Remember;
+use Services\DatabaseService;
 
 use Interfaces\ProductInterface;
+use Monolog\Logger;
+use Services\ConfigService;
+use Services\RememberService;
 
 class Products extends Asda implements ProductInterface {
 
     private $product_service;
     private $shared_product_service;
 
-    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
+    function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, RememberService $remember_service=null)
     {
-        parent::__construct($config,$logger,$database,$remember);
-        $this->shared_product_service = new SharedProductService($database, new ProductService($config,$logger,$database));
-        $this->product_service = new ProductService($config, $logger, $database);
+        parent::__construct($config_service, $logger, $database_service, $remember_service);
+        $this->shared_product_service = new SharedProductService($database_service, new ProductService($config_service, $logger, $database_service));
+        $this->product_service = new ProductService($config_service, $logger, $database_service);
     }
 
     public function create_product($site_product_id, $category_details, $request_type = null){

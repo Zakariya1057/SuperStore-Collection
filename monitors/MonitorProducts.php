@@ -5,20 +5,20 @@ namespace Monitors;
 use Collection\Services\SharedProductService;
 use Exception;
 use Interfaces\ProductInterface;
-use Interfaces\PromotionInterface;
 use Models\Product\IngredientModel;
 use Models\Product\ProductModel;
 use Models\Shared\MonitoredProductModel;
-use Services\Notification;
 use Monolog\Logger;
-use Services\Database;
-use Services\Config;
-use Services\Currency;
-use Services\Sanitize;
+use Services\ConfigService;
+use Services\CurrencyService;
+use Services\DatabaseService;
+use Services\LoggerService;
+use Services\NotificationService;
+use Services\SanitizeService;
 
 class MonitorProducts {
     
-    private $notification, $logger, $database;
+    private $notification_service, $logger, $database_service;
     
     private $product_model, $monitor_model, $ingredients_model;
 
@@ -28,22 +28,22 @@ class MonitorProducts {
 
     private $product_service;
 
-    function __construct(Config $config, Logger $logger, Database $database, ProductInterface $product_collection, PromotionInterface $promotion_collection = null){
+    function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, ProductInterface $product_collection){
         $this->logger = $logger;
-        $this->database = $database;
+        $this->database_service = $database_service;
 
-        $this->product_model = new ProductModel($database);
-        $this->monitor_model = new MonitoredProductModel($database);
-        $this->ingredients_model = new IngredientModel($database);
+        $this->product_model = new ProductModel($database_service);
+        $this->monitor_model = new MonitoredProductModel($database_service);
+        $this->ingredients_model = new IngredientModel($database_service);
 
         $this->product_collection = $product_collection;
 
-        $this->notification = new Notification($config, $logger);
+        $this->notification_service = new NotificationService($config_service, $logger);
 
-        $this->sanitize_service = new Sanitize();
-        $this->currency_service = new Currency();
+        $this->sanitize_service = new SanitizeService();
+        $this->currency_service = new CurrencyService();
 
-        $this->product_service = new SharedProductService($database);
+        $this->product_service = new SharedProductService($database_service);
     }
 
     // Shared Monitor, check if data has changed, if so update in database.
@@ -57,7 +57,8 @@ class MonitorProducts {
         ->join('favourite_products', 'favourite_products.product_id', 'products.id')
         // ->where_raw(["products.id = 18854"])
         // ->where_raw(["store_type_id = $store_type_id", 'products.large_image is null'])
-        ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
+        // ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
+        ->where_raw(["store_type_id = $store_type_id", 'products.promotion_id is not null'])
         ->group_by('products.id')
         ->order_by('num_monitoring')
         // ->limit(100)
@@ -99,7 +100,7 @@ class MonitorProducts {
     }
 
     public function check_product_change(ProductModel $new_product, $old_product){
-        $this->database->start_transaction();
+        $this->database_service->start_transaction();
 
         $product_id = $old_product->id;
 
@@ -118,7 +119,7 @@ class MonitorProducts {
         
         $this->product_model->where(['id' => $product_id])->update($update_fields);
 
-        $this->database->commit_transaction();
+        $this->database_service->commit_transaction();
 
         if($price_changed){
             $this->notify_product_changed($new_product, $old_product);
@@ -130,7 +131,7 @@ class MonitorProducts {
 
         $this->logger->debug('Product Price Changed. Sending Notification');
 
-        $monitored_users  = $this->monitor_model
+        $monitored_users = $this->monitor_model
         ->where(['product_id' => $old_product->id, 'send_notifications' => 1])
         ->join('users', 'monitored_products.user_id', 'users.id')
         ->group_by('user_id')->get();
@@ -140,7 +141,7 @@ class MonitorProducts {
         foreach($monitored_users as $user){
             $notification_message = $this->create_notification_message($product, $old_product);
             try {
-                $this->notification->send_notification($user, $data, $notification_message);
+                $this->notification_service->send_notification($user, $data, $notification_message);
             } catch(Exception $e){
                 $this->logger->error('Notification Error: '. $e->getMessage());
             }

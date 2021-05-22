@@ -3,6 +3,7 @@
 namespace Models\Product;
 
 use Models\Model;
+use Services\DatabaseService;
 
 class ProductModel extends Model {
 
@@ -50,9 +51,9 @@ class ProductModel extends Model {
         
         $last_checked;
     
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
         $this->table('products');
 

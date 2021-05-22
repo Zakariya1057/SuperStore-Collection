@@ -4,14 +4,14 @@ namespace Search;
 
 use Elasticsearch\Client;
 use Monolog\Logger;
-use Services\Config;
-use Services\Database;
+use Services\ConfigService;
+use Services\DatabaseService;
 
 // Map Documents
 class Mapping extends Search {
         
-    function __construct(Config $config, Logger $logger, Database $database, Client $client){
-        parent::__construct($config, $logger, $database, $client);
+    function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, Client $client){
+        parent::__construct($config_service, $logger, $database_service, $client);
     }
 
     public function map_products(){
@@ -39,8 +39,8 @@ class Mapping extends Search {
         $this->logger->debug('Creating Index For: '. $index);
         // $this->client->indices()->delete(['index' => $index]);
 
-        $mappings_properties = $this->config->get('elasticsearch.indices.'.$index);
-        $mapping_settings = $this->config->get('elasticsearch.settings');
+        $mappings_properties = $this->config_service->get('elasticsearch.indices.'.$index);
+        $mapping_settings = $this->config_service->get('elasticsearch.settings');
 
         $params = [
             'index' => $index,

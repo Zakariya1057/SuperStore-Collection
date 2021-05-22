@@ -12,8 +12,8 @@ use Models\Product\ProductModel;
 use Models\Product\PromotionModel;
 use Models\Store\StoreTypeModel;
 use Monolog\Logger;
-use Services\Config;
-use Services\Database;
+use Services\ConfigService;
+use Services\DatabaseService;
 
 // Index Documents
 class Indices extends Search {
@@ -23,19 +23,19 @@ class Indices extends Search {
 
     private $parent_categories, $child_categories, $product_groups;
 
-    function __construct(Config $config, Logger $logger, Database $database, Client $client){
-        parent::__construct($config, $logger, $database, $client);
+    function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, Client $client){
+        parent::__construct($config_service, $logger, $database_service, $client);
 
-        $this->product_model = new ProductModel($database);
-        $this->store_model = new StoreTypeModel($database);
-        $this->promotion_model = new PromotionModel($database);
+        $this->product_model = new ProductModel($database_service);
+        $this->store_model = new StoreTypeModel($database_service);
+        $this->promotion_model = new PromotionModel($database_service);
 
-        $this->category_product_model = new CategoryProductModel($database);
+        $this->category_product_model = new CategoryProductModel($database_service);
 
-        $this->product_group_model = new ProductGroupModel($database);
-        $this->child_category_model = new ChildCategoryModel($database);
-        $this->parent_category_model = new ParentCategoryModel($database);
-        $this->grand_parent_category_model = new GrandParentCategoryModel($database);
+        $this->product_group_model = new ProductGroupModel($database_service);
+        $this->child_category_model = new ChildCategoryModel($database_service);
+        $this->parent_category_model = new ParentCategoryModel($database_service);
+        $this->grand_parent_category_model = new GrandParentCategoryModel($database_service);
     }
 
     public function index_products(){

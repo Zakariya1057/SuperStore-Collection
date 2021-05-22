@@ -14,7 +14,7 @@ use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
 class Categories extends CanadianSuperstore {
 
     public function categories($categories){
-        $grand_parent_categories = new GrandParentCategories($this->config, $this->logger, $this->database, $this->remember);
+        $grand_parent_categories = new GrandParentCategories($this->config_service, $this->logger, $this->database_service, $this->remember_service);
         $grand_parent_categories->create_categories($categories);
     }
 
@@ -35,12 +35,12 @@ class Categories extends CanadianSuperstore {
         ];
 
         if($type == 'grand_parent'){
-            $category = new GrandParentCategoryModel($this->database);
+            $category = new GrandParentCategoryModel($this->database_service);
             unset($insert_fields['parent_category_id']);
         } elseif($type == 'parent'){
-            $category = new ParentCategoryModel($this->database);
+            $category = new ParentCategoryModel($this->database_service);
         } elseif($type == 'child'){
-            $category = new ChildCategoryModel($this->database);
+            $category = new ChildCategoryModel($this->database_service);
         } else {
             throw new Exception("Unknown Category Type Found: $type");
         }

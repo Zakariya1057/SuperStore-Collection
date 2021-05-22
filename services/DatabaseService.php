@@ -3,24 +3,25 @@
 namespace Services;
 
 use Exception;
+use Monolog\Logger;
 
-class Database {
+class DatabaseService {
 
-    private $config, $connection, $database_config,$log_query;
+    private $config_service, $connection, $database_config, $log_query;
 
     public $logger;
 
-    function __construct($config, $logger) {
+    function __construct(ConfigService $config_service, Logger $logger) {
 
         $this->logger = $logger;
-        $this->config = $config;
+        $this->config_service = $config_service;
         
         $this->logger->notice('Connecting To Database');
 
-        $database_env =  $config->get('database.env');
-        $this->logger->info('Database Environment: '. ucwords($database_env));
+        $database_service_env = $config_service->get('database.env');
+        $this->logger->info('Database Environment: '. ucwords($database_service_env));
 
-        $this->database_config = $config->get('database.'.$database_env);
+        $this->database_config = $config_service->get('database.'.$database_service_env);
 
         $this->database_connect();
 
@@ -30,18 +31,18 @@ class Database {
             $this->logger->notice("Successfully Connect To Database");
         }
 
-        $this->log_query = $config->get('log_query');
+        $this->log_query = $config_service->get('log_query');
     }
 
     private function database_connect(){
-        $host     = $this->database_config->host;
+        $host    = $this->database_config->host;
         $username = $this->database_config->username;
         $password = $this->database_config->password;
         $database = $this->database_config->database;
 
         $this->logger->debug('Initialising Database Connection.');
 
-        $this->connection = new \mysqli($host,$username,$password,$database);
+        $this->connection = new \mysqli($host, $username, $password, $database);
 
     }
 
@@ -61,8 +62,8 @@ class Database {
                 $this->logger->debug("Query: $query");
             }
 
-            $database_results = $this->connection->query($query);
-            return $this->process_results( $database_results );
+            $database_service_results = $this->connection->query($query);
+            return $this->process_results( $database_service_results );
 
         } catch(Exception $e){
             $error = $e->getMessage();
@@ -74,7 +75,7 @@ class Database {
             } else {
                 $this->logger->error('Connection To MYSQL Server Has Gone Away');
                 
-                $retry_config = $this->config->get('retry.database');
+                $retry_config = $this->config_service->get('retry.database');
 
                 $retry_times = $retry_config->attempts;
                 $wait = $retry_config->wait;

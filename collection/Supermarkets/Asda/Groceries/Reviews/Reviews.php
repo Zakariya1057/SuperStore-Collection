@@ -5,19 +5,19 @@ namespace Collection\Supermarkets\Asda\Groceries\Reviews;
 use Models\Product\ProductModel;
 use Models\Product\ReviewModel;
 use Monolog\Logger;
-use Services\Config;
-use Services\Database;
-use Services\Remember;
+use Services\ConfigService;
+use Services\DatabaseService;
+use Services\RememberService;
 use Collection\Supermarkets\Asda\Asda;
 
 class Reviews extends Asda {
 
     public $product_model;
 
-    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
+    function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, RememberService $remember_service=null)
     {
-        parent::__construct($config,$logger,$database,$remember);
-        $this->product_model = new ProductModel($this->database);
+        parent::__construct($config_service,$logger,$database_service,$remember_service);
+        $this->product_model = new ProductModel($this->database_service);
     }
 
     public function reviews(){
@@ -42,9 +42,9 @@ class Reviews extends Asda {
     
                 $this->logger->debug("New Product Review Item: [$product_id] $name");
     
-                $this->database->start_transaction();
+                $this->database_service->start_transaction();
                 $this->create_review($product_id, $site_product_id);
-                $this->database->commit_transaction();
+                $this->database_service->commit_transaction();
             }
 
         } else {
@@ -63,11 +63,11 @@ class Reviews extends Asda {
 
         if($this->env == 'dev'){
             $reviews_response = file_get_contents(__DIR__."/../../data/Asda/Reviews.json");
-            $reviews_results = $this->request->parse_json($reviews_response);
+            $reviews_results = $this->request_service->parse_json($reviews_response);
             $this->process_reviews($product_id, $reviews_results->Results);
         } else {
-            $reviews_response = $this->request->request($reviews_endpoint);
-            $reviews_results = $this->request->parse_json($reviews_response);
+            $reviews_response = $this->request_service->request($reviews_endpoint);
+            $reviews_results = $this->request_service->parse_json($reviews_response);
 
             $total_reviews = $reviews_results->TotalResults;
             $this->logger->notice($total_reviews . ' Reviews Found');
@@ -84,8 +84,8 @@ class Reviews extends Asda {
 
                 $this->logger->debug("Reviews Page $review_page");
 
-                $reviews_response = $this->request->request($reviews_endpoint . '&Limit=100&Offset=' . $review_page * 100);
-                $reviews_results = $this->request->parse_json($reviews_response);
+                $reviews_response = $this->request_service->request($reviews_endpoint . '&Limit=100&Offset=' . $review_page * 100);
+                $reviews_results = $this->request_service->parse_json($reviews_response);
 
                 $this->process_reviews($product_id, $reviews_results->Results);
             }
@@ -105,7 +105,7 @@ class Reviews extends Asda {
         $this->logger->debug("Found $unique_reviews_count Unique Reviews");
     
         foreach($unique_reviews as $review_item){
-            $review = new ReviewModel($this->database);
+            $review = new ReviewModel($this->database_service);
             $review->rating = $review_item->Rating;
             $review->text = preg_replace('/\s*\\\\$/','', ucfirst($review_item->ReviewText ?? ''));
             $review->title = preg_replace('/\s*\\\\$/','', ucfirst( $review_item->Title ?? ''));
@@ -123,7 +123,7 @@ class Reviews extends Asda {
             $this->logger->debug("Review Details: $review->title \t $review->rating/5 \t $review->created_at");
 
             $review->product_id = $product_id;
-            $review->database = $this->database;
+            $review->database = $this->database_service;
             $review->save();
 
         }
@@ -136,7 +136,7 @@ class Reviews extends Asda {
         
         $this->logger->debug('Total Reviews Count: ' . count($reviews));
 
-        $review_model = new ReviewModel($this->database);
+        $review_model = new ReviewModel($this->database_service);
 
         foreach($reviews as $review){
             $site_review_id = $review->Id;

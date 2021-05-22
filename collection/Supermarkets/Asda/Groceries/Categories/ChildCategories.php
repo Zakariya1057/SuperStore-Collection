@@ -12,7 +12,7 @@ class ChildCategories extends Categories {
 
     private function setupClasses(){
         if(is_null($this->product)){
-            $this->product = new Products($this->config,$this->logger,$this->database,$this->remember);
+            $this->product = new Products($this->config_service,$this->logger,$this->database_service,$this->remember_service);
         }
     }
 
@@ -20,7 +20,7 @@ class ChildCategories extends Categories {
 
         $this->setupClasses();
 
-        $last_category_index = $this->remember->get('child_category_index') ?? 0;
+        $last_category_index = $this->remember_service->get('child_category_index') ?? 0;
 
         $categories_list = array_slice( $child_categories, $last_category_index );
 
@@ -48,13 +48,13 @@ class ChildCategories extends Categories {
 
                 $child_category->grand_parent_category_id = $parent_category->parent_category_id;
 
-                $this->remember->set('child_category_index', $category_index);
+                $this->remember_service->set('child_category_index', $category_index);
                 
                 $this->category_products($child_category); 
 
             }
 
-            $this->remember->set('child_category_index',0);
+            $this->remember_service->set('child_category_index',0);
 
         } 
 
@@ -70,7 +70,7 @@ class ChildCategories extends Categories {
 
         if(count($products) > 0){
 
-            $last_product_index = $this->remember->get('product_index') ?? 0;
+            $last_product_index = $this->remember_service->get('product_index') ?? 0;
         
             $products = array_slice($products,$last_product_index);
     
@@ -81,7 +81,7 @@ class ChildCategories extends Categories {
             //Loop through and insert into database
             foreach($products as $index => $product_item){
     
-                $this->remember->set('product_index', $index + $last_product_index);
+                $this->remember_service->set('product_index', $index + $last_product_index);
 
                 if(!is_null($product_item)){
                     $this->product->create_product($product_item->sku_id, $child_category);
@@ -93,12 +93,12 @@ class ChildCategories extends Categories {
 
         } else {
             $this->logger->info('No product found for category. Removing it');
-            $category_model = new ChildCategoryModel($this->database);
+            $category_model = new ChildCategoryModel($this->database_service);
             $category_model->where(['id' => $child_category->id])->delete();
         }
 
 
-        $this->remember->set('product_index',0);
+        $this->remember_service->set('product_index',0);
     }
 
     public function get_category_products($category_site_id){
@@ -109,7 +109,7 @@ class ChildCategories extends Categories {
 
         if($this->env == 'dev'){
             $shelf_results = file_get_contents(__DIR__."/../../data/Asda/New_Shelf.json");
-            $shelf_data = $this->request->parse_json($shelf_results)->data->tempo_cms_content;
+            $shelf_data = $this->request_service->parse_json($shelf_results)->data->tempo_cms_content;
 
             $this->set_category_details($products, $shelf_data);
         } else {

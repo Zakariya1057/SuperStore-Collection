@@ -3,6 +3,7 @@
 namespace Models\Shared;
 
 use Models\Model;
+use Services\DatabaseService;
 
 class UserModel extends Model {
 
@@ -19,9 +20,9 @@ class UserModel extends Model {
         $logged_in_at,
         $logged_out_at;
     
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
         $this->table('users');
 

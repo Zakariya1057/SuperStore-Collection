@@ -1,13 +1,20 @@
 {
 
 	"database": {
-		"env": "dev",
+		"env": "testing",
 
 		"dev": {
-			"host": "192.168.1.100",
+			"host": "192.168.1.213",
 			"username": "zakariya",
 			"password": "umU5-,PGN43P[eVnr5[+r!R.Mnd!6T",
 			"database": "superstore_database"
+		},
+
+		"testing": {
+			"host": "192.168.1.213",
+			"username": "zakariya",
+			"password": "umU5-,PGN43P[eVnr5[+r!R.Mnd!6T",
+			"database": "superstore_testing"
 		},
 
 		"prod": {
@@ -183,7 +190,7 @@
 
 		},
 
-		"create_index": 0,
+		"create_index": 1,
 		"index_documents": 1
 	},
 
@@ -211,7 +218,7 @@
 		},
 
 		"local": {
-			"location": "Resources/Images"
+			"location": "resources/Images"
 		},
 
 		"aws": {
@@ -243,8 +250,8 @@
 
 			"stores": 0,
 
-			"groceries": 1,
-			"recommended": 0,
+			"groceries": 0,
+			"recommended": 1,
 			"reviews": 1,
 
 			"store_type_id": 1,
@@ -263,7 +270,7 @@
 
 			"stores": 0,
 
-			"groceries": 1,
+			"groceries": 0,
 			"recommended": 1,
 
 			"store_type_id": 2,
@@ -298,7 +305,12 @@
 
 			"recommended": "https://www.realcanadiansuperstore.ca/api/product/",
 
-			"stores": "https://www.realcanadiansuperstore.ca/api/pickup-locations"
+			"stores": "https://www.realcanadiansuperstore.ca/api/pickup-locations",
+
+			"flyers": {
+				"page": "https://flyers.realcanadiansuperstore.ca/flyers/realcanadiansuperstore?type=1&store_code=",
+				"flyers": "https://flyers.realcanadiansuperstore.ca/flyer_data/"
+			}
 		}
 
 	},
@@ -323,7 +335,7 @@
 	"notification": {
 		"url": "gateway.sandbox.push.apple.com:2195",
 		"pass_phrase": "GFDAxqVADmNa22Q6jJRVy9gtXSJYpfSPHcU9r8dL64yCkP5kkW",
-		"file_path": "Storage/apple_push_notification_production.pem"
+		"file_path": "storage/apple_push_notification_production.pem"
 	}
 
 }

@@ -3,14 +3,14 @@
 namespace Models\Category;
 
 use Models\Model;
-
+use Services\DatabaseService;
 class ProductGroupModel extends Model {
 
     public $name, $child_category_id, $site_product_group_id, $store_type_id;
 
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
         $this->table('product_groups');
 

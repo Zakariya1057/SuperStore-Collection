@@ -4,8 +4,9 @@ namespace Services;
 
 use Exception;
 use Models\ScriptHistory\ScriptHistory;
+use Monolog\Logger;
 
-class Remember {
+class RememberService {
 
     private $config,$logger;
 
@@ -13,14 +14,12 @@ class Remember {
 
     private $history;
 
-    private $error_file,$error_message,$error_stack;
     private $grand_parent_category_index,$parent_category_index,$child_category_index,$product_index, $error_line_number;
 
-    function __construct($config,$logger,$database) {
+    function __construct(ConfigService $config_service,Logger $logger, DatabaseService $database_service) {
         $this->logger = $logger;
-        $this->config = $config;
-
-        $this->history = new ScriptHistory($database);
+        $this->config_service = $config_service;
+        $this->history = new ScriptHistory($database_service);
     }
 
     public function get($name){
@@ -45,7 +44,7 @@ class Remember {
     public function retrieve_data(){
         //Retrieve data from config and store in params
 
-        if($this->config->get('continue')){
+        if($this->config_service->get('continue')){
 
             $details = $this->history->where(['store_type_id' => $this->store_type_id])->get()[0] ?? null;
 
@@ -71,11 +70,7 @@ class Remember {
             'grand_parent_category_index' => $this->grand_parent_category_index,
             'parent_category_index' => $this->parent_category_index,
             'child_category_index' => $this->child_category_index,
-            'product_index' => $this->product_index,
-
-            'error_message' => $this->error_message,
-            'error_line_number' => $this->error_line_number,
-            'error_file' => $this->error_file
+            'product_index' => $this->product_index
         ]);
 
     }

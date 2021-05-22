@@ -3,7 +3,7 @@
 namespace Models\Category;
 
 use Models\Model;
-
+use Services\DatabaseService;
 class CategoryProductModel extends Model {
 
     public 
@@ -14,9 +14,9 @@ class CategoryProductModel extends Model {
     $grand_parent_category_id,
     $store_id;
 
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
         $this->table('category_products');
 

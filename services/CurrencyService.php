@@ -4,7 +4,7 @@ namespace Services;
 
 use Exception;
 
-class Currency {
+class CurrencyService {
 
     public function get_currency_symbol($currency_name){
         $currency_name = strtolower($currency_name);

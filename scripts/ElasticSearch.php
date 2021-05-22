@@ -3,23 +3,23 @@
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Search\Search;
-use Services\Config;
-use Services\Loggers;
-use Services\Database;
+use Services\ConfigService;
+use Services\DatabaseService;
+use Services\LoggerService;
 
-$config = new Config();
+$config_service = new ConfigService();
 
-$index_documents = $config->get('elasticsearch.index_documents');
-$create_index = $config->get('elasticsearch.create_index');
+$index_documents = $config_service->get('elasticsearch.index_documents');
+$create_index = $config_service->get('elasticsearch.create_index');
 
-$log = new Loggers('ElasticSearch');
-$logger = $log->logger_handler;
+$logger_service = new LoggerService('ElasticSearch');
+$logger = $logger_service->logger_handler;
 
 $logger->notice("---------------------------- ElasticSearch Script Start ----------------------------");
 
-$database = new Database($config,$logger);
+$database_service = new DatabaseService($config_service, $logger);
 
-$search = new Search($config, $logger, $database);
+$search = new Search($config_service, $logger, $database_service);
 
 if($create_index){
     $search->mappings();

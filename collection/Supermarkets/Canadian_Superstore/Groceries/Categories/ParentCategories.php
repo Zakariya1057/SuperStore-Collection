@@ -11,16 +11,16 @@ class ParentCategories extends Categories {
 
         $categories = $grand_parent_category['parent_categories'];
 
-        $child_categories = new ChildCategories($this->config, $this->logger, $this->database, $this->remember);
+        $child_categories = new ChildCategories($this->config_service, $this->logger, $this->database_service, $this->remember_service);
 
         $this->logger->notice("- Parent Category: $grand_parent_category_model->name");
 
-        $last_category_index = $this->remember->get('parent_category_index') ?? 0;
+        $last_category_index = $this->remember_service->get('parent_category_index') ?? 0;
 
         $categories_list = array_slice($categories, $last_category_index);
 
-        $child_category_model = new ChildCategoryModel($this->database);
-        $parent_category_model = new ParentCategoryModel($this->database);
+        $child_category_model = new ChildCategoryModel($this->database_service);
+        $parent_category_model = new ParentCategoryModel($this->database_service);
 
         if(count($categories_list) != 0){
             $first_category = (object)$categories_list[0];
@@ -32,7 +32,7 @@ class ParentCategories extends Categories {
 
                 $category_index = $index + $last_category_index;
 
-                $this->remember->set('parent_category_index', $category_index);
+                $this->remember_service->set('parent_category_index', $category_index);
 
                 $parent_category->parent_category_id = $grand_parent_category_model->id;
 
@@ -49,7 +49,7 @@ class ParentCategories extends Categories {
                 }
             }
 
-            $this->remember->set('parent_category_index',0);
+            $this->remember_service->set('parent_category_index',0);
 
         }
 

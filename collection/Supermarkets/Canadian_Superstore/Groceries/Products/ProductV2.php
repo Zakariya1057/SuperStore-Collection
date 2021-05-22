@@ -9,7 +9,7 @@ use Models\Product\BarcodeModel;
 class ProductV2 extends Products {
 
     public function parse_product($product_details, $ignore_image=false): ?ProductModel {
-        $product = new ProductModel($this->database);
+        $product = new ProductModel($this->database_service);
 
         $product->availability_type = 'ship to home';
 
@@ -38,7 +38,7 @@ class ProductV2 extends Products {
         
         $this->set_barcodes($product, $inventory);
         
-        $product->currency = $this->currency;
+        $product->currency = $this->currency_service;
 
         $product->url = 'https://www.realcanadiansuperstore.ca' . $product_details->uri;
 
@@ -69,7 +69,7 @@ class ProductV2 extends Products {
                     $product->large_image = $saved_image_url;
                 }
             } else {
-                $image = new ProductImageModel($this->database);
+                $image = new ProductImageModel($this->database_service);
 
                 $image_name = $this->product_service->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
 
@@ -105,7 +105,7 @@ class ProductV2 extends Products {
         foreach($barcodes_data as $type => $value){
 
             if(!is_null($value) && $value != ''){
-                $barcode = new BarcodeModel($this->database);
+                $barcode = new BarcodeModel($this->database_service);
                 $barcode->type = $type;
                 $barcode->value = $value;
                 $barcode->store_type_id = $this->store_type_id;

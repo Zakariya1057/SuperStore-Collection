@@ -24,8 +24,8 @@ class ProductService extends CanadianSuperstore implements ProductRequestInterfa
             $endpoint_v3 = $product_endpoints->v3 . "$site_product_id?lang=en&storeId=1077&banner=superstore";
             
             try {
-                $product_response = $this->request->request($endpoint_v3, 'GET', [], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, $retry_times);
-                $product_details = $this->request->parse_json($product_response);
+                $product_response = $this->request_service->request($endpoint_v3, 'GET', [], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, $retry_times);
+                $product_details = $this->request_service->parse_json($product_response);
 
                 $request_type = 'v3';
     
@@ -39,8 +39,8 @@ class ProductService extends CanadianSuperstore implements ProductRequestInterfa
             $endpoint_v2 = $product_endpoints->v2 . $site_product_id;
 
             try {
-                $product_response = $this->request->request($endpoint_v2, 'GET', [], [], 300, $retry_times);
-                $product_details = $this->request->parse_json($product_response);
+                $product_response = $this->request_service->request($endpoint_v2, 'GET', [], [], 300, $retry_times);
+                $product_details = $this->request_service->parse_json($product_response);
 
                 $request_type = 'v2';
             } catch(Exception $e){
@@ -125,12 +125,12 @@ class ProductService extends CanadianSuperstore implements ProductRequestInterfa
     public function clean_description_name($description){
         $description = preg_replace('/^-\s+|^:|Specifications\//','', $description);
         $description = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "", $description);
-        $description = $this->sanitize->sanitize_field($description);
+        $description = $this->sanitize_service->sanitize_field($description);
         return strip_tags($description);
     }
 
     public function create_image($name, $url, $size): ?string {
-        return $this->image->save($name, $url, $size, "products", $this->store_name);
+        return $this->image_service->save($name, $url, $size, "products", $this->store_name);
     }
 
 }

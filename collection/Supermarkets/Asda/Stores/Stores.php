@@ -20,10 +20,10 @@ class Stores extends Asda implements StoreInterface {
         if($this->env == 'dev'){
             $stores_response = file_get_contents(__DIR__."/../../data/Asda/Stores.json");
         } else {
-            $stores_response = $this->request->request($this->endpoints->stores, 'GET');
+            $stores_response = $this->request_service->request($this->endpoints->stores, 'GET');
         }
 
-        $county_results = $this->request->parse_html($stores_response);
+        $county_results = $this->request_service->parse_html($stores_response);
 
         $county_results->filter('a.Directory-listLink')->each(function(Crawler $node, $i){
             $url = 'https://storelocator.asda.com/' . $node->attr('href');
@@ -31,8 +31,8 @@ class Stores extends Asda implements StoreInterface {
 
             $this->logger->debug("County $name - $url");
 
-            $stores_response = $this->request->request($url, 'GET');
-            $area_results = $this->request->parse_html($stores_response);
+            $stores_response = $this->request_service->request($url, 'GET');
+            $area_results = $this->request_service->parse_html($stores_response);
 
             $area_results->filter('a.Directory-listLink')->each(function(Crawler $node, $i){
                 $url = 'https://storelocator.asda.com/' . $node->attr('href');
@@ -41,8 +41,8 @@ class Stores extends Asda implements StoreInterface {
                 $this->logger->debug("- Area $name - $url");
 
 
-                $stores_response = $this->request->request($url, 'GET');
-                $store_results = $this->request->parse_html($stores_response);
+                $stores_response = $this->request_service->request($url, 'GET');
+                $store_results = $this->request_service->parse_html($stores_response);
 
                 $store_results->filter('a.Teaser-titleLink')->each(function(Crawler $node, $i){
                     $url = 'https://storelocator.asda.com/' . str_replace('../', '', $node->attr('href'));
@@ -50,9 +50,9 @@ class Stores extends Asda implements StoreInterface {
         
                     $this->logger->debug("-- Store $name - $url");
 
-                    $this->database->start_transaction();
+                    $this->database_service->start_transaction();
                     $this->store_details(null, $url, false);
-                    $this->database->commit_transaction();
+                    $this->database_service->commit_transaction();
                 });
             });
 
@@ -66,10 +66,10 @@ class Stores extends Asda implements StoreInterface {
 
     public function page_store_details($url, $retrieve = true){
         // Get Store details from store url
-        $response = $this->request->request($url);
-        $content = $this->request->parse_html($response);
+        $response = $this->request_service->request($url);
+        $content = $this->request_service->parse_html($response);
 
-        $json_body = $this->request->parse_json($content->filter('script#js-map-config-dir-map')->eq(0)->text());
+        $json_body = $this->request_service->parse_json($content->filter('script#js-map-config-dir-map')->eq(0)->text());
 
         return $this->parse_store_data($json_body->entities[0], $retrieve);
     }
@@ -81,7 +81,7 @@ class Stores extends Asda implements StoreInterface {
         $id = $item_details->meta->id;
         $name = trim(preg_replace('/\s*supermarket|superstore/i','',$item_details->name));
 
-        $store = new StoreModel($this->database);
+        $store = new StoreModel($this->database_service);
 
         $description = $item_details->c_aboutSectionDescription ?? NULL;
         $site_image = $item_details->googleCoverPhoto->image->sourceUrl ?? NULL;
@@ -125,7 +125,7 @@ class Stores extends Asda implements StoreInterface {
 
     public function location($store_id,$location_details, $retrieve){
 
-        $location = new LocationModel($this->database);
+        $location = new LocationModel($this->database_service);
 
         $store_results = $location->where(['store_id' => $store_id])->get()[0] ?? null;
 
@@ -180,7 +180,7 @@ class Stores extends Asda implements StoreInterface {
 
         foreach($normal_hours as $day_of_week => $hour_item){
 
-            $opening_hours = new OpeningHoursModel($this->database);
+            $opening_hours = new OpeningHoursModel($this->database_service);
 
             $hour_results = $opening_hours->where(['store_id' => $store_id,'day_of_week' => $day_of_week])->get()[0] ?? null;
 
@@ -255,7 +255,7 @@ class Stores extends Asda implements StoreInterface {
         }
 
         foreach($facilities_list as $facility_name){
-            $facility = new FacilitiesModel($this->database);
+            $facility = new FacilitiesModel($this->database_service);
 
             $facilities_results = $facility->where(['store_id' => $store_id, 'name' => $facility_name])->get()[0] ?? null;
             

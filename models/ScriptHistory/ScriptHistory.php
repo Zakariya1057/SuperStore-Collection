@@ -3,17 +3,15 @@
 namespace Models\ScriptHistory;
 
 use Models\Model;
-
-//id,site_name, grand_parent_category_index, parent_category_index, child_category_index, product_index, error_file, error_message, host, created_at, updated_at
+use Services\DatabaseService;
 
 class ScriptHistory extends Model {
-
-    public $database, $logger,$product;
     
     public $store_type_id, $grand_parent_category_index, $parent_category_index, $child_category_index, $product_index, $error_file, $error_message,$error_line_number;
-    function __construct($database=null){
 
-        parent::__construct($database);
+    function __construct(DatabaseService $database_service=null){
+
+        parent::__construct($database_service);
 
         $this->table('script_histories');
 

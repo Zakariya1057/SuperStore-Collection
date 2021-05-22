@@ -7,12 +7,11 @@ use Exception;
 use Collection\Supermarkets\Asda\Asda;
 
 use Monolog\Logger;
-use Services\Config;
-use Services\Database;
-use Services\Remember;
+use Services\ConfigService;
+use Services\DatabaseService;
+use Services\RememberService;
 
 use Collection\Services\SharedProductService;
-use Collection\Supermarkets\Asda\Services\ProductService;
 use Collection\Supermarkets\Asda\Services\RecommendedService;
 
 use Models\Product\ProductModel;
@@ -22,14 +21,14 @@ class Recommended extends Asda {
 
     public $product_model, $recommended_service, $product_service;
 
-    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
+    function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, RememberService $remember_service=null)
     {
-        parent::__construct($config,$logger,$database,$remember);
+        parent::__construct($config_service, $logger, $database_service, $remember_service);
 
-        $this->product_model = new ProductModel($this->database);
-        $this->recommended_service = new RecommendedService($config,$logger,$database,$remember);
-        $this->product_service = new SharedProductService(new ProductService($config,$logger,$database));
-        $this->category_model = new ChildCategoryModel($this->database);
+        $this->product_model = new ProductModel($this->database_service);
+        $this->recommended_service = new RecommendedService($config_service,$logger,$database_service,$remember_service);
+        $this->product_service = new SharedProductService($database_service);
+        $this->category_model = new ChildCategoryModel($this->database_service);
     }
 
     public function all_recommended_products(){
@@ -54,9 +53,9 @@ class Recommended extends Asda {
         
                     $this->logger->debug("New Product To Find Recommended Item: [$product_id] $name");
         
-                    $this->database->start_transaction();
+                    $this->database_service->start_transaction();
                     $this->product_recommended($product_id, $site_product_id);
-                    $this->database->commit_transaction();
+                    $this->database_service->commit_transaction();
                 }
 
             } else {

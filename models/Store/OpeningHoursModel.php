@@ -3,14 +3,15 @@
 namespace Models\Store;
 
 use Models\Model;
+use Services\DatabaseService;
 
 class OpeningHoursModel extends Model {
 
     public $store_id, $day_of_week, $opens_at,$closes_at,$closed_today;
 
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
         $this->table("opening_hours");
 

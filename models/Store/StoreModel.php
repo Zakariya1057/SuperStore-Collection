@@ -2,16 +2,16 @@
  
 namespace Models\Store;
 
-use Services\Loggers;
 use Models\Model;
+use Services\DatabaseService;
 
 class StoreModel extends Model {
 
     public $name, $description, $manager, $telephone, $store_image, $uber_url, $google_url, $url, $site_store_id, $store_type_id;
 
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
         $this->table("stores");
 

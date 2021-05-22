@@ -3,19 +3,19 @@
 namespace Services;
 
 use Exception;
-use Models\Product\ProductModel;
+use Monolog\Logger;
 
-class Notification {
+class NotificationService {
 
     private $logger;
     private $file_path, $pass_phrase, $url;
 
-    function __construct($config,$logger){
+    function __construct(ConfigService $config_service, Logger $logger){
         $this->logger = $logger;
 
-        $this->file_path = __DIR__ .'/../'. $config->get('notification.file_path');
-        $this->pass_phrase = $config->get('notification.pass_phrase');
-        $this->url = $config->get('notification.url');
+        $this->file_path = __DIR__ .'/../'. $config_service->get('notification.file_path');
+        $this->pass_phrase = $config_service->get('notification.pass_phrase');
+        $this->url = $config_service->get('notification.url');
     }
 
     // Send notification to user phone.

@@ -15,7 +15,7 @@ class ProductService extends Asda implements ProductRequestInterface {
 
     private function setupPromotionService(){
         if(is_null($this->promotion_service)){
-            $this->promotion_service = new PromotionService($this->config, $this->logger, $this->database);
+            $this->promotion_service = new PromotionService($this->config_service, $this->logger, $this->database_service);
         }
     }
 
@@ -25,10 +25,10 @@ class ProductService extends Asda implements ProductRequestInterface {
         $this->logger->debug("Product Details ID: $site_product_id");
 
         if($this->env == 'dev'){
-            $product_response = file_get_contents( __DIR__. '/../../' . $this->config->get('test_files.product'));
+            $product_response = file_get_contents( __DIR__. '/../../' . $this->config_service->get('test_files.product'));
         } else {
 
-            $product_response = $this->request->request($shelf_endpoint,'POST',[
+            $product_response = $this->request_service->request($shelf_endpoint,'POST',[
                 'item_ids' => [$site_product_id], 
                 'consumer_contract' => 'webapp_pdp',
                 'store_id' => '4565', // Change for different regions. Different stores, different prices
@@ -44,7 +44,7 @@ class ProductService extends Asda implements ProductRequestInterface {
             return null;
         }
 
-        return $this->request->parse_json($product_response);
+        return $this->request_service->parse_json($product_response);
 
     }
 
@@ -64,7 +64,7 @@ class ProductService extends Asda implements ProductRequestInterface {
 
         $this->logger->notice('----- Start Product('.$item->sku_id.'): '.$item->name .' -----');
 
-        $product = new ProductModel($this->database);
+        $product = new ProductModel($this->database_service);
         
         $product->availability_type = 'in-store';
 
@@ -106,7 +106,7 @@ class ProductService extends Asda implements ProductRequestInterface {
             if(!key_exists($ingredient_item, $unique_ingredients)){
                 $unique_ingredients[$ingredient_name] = 1;
 
-                $ingredient = new IngredientModel($this->database);
+                $ingredient = new IngredientModel($this->database_service);
                 $ingredient->name = $ingredient_name;
 
                 $ingredients[] = $ingredient;
@@ -118,7 +118,7 @@ class ProductService extends Asda implements ProductRequestInterface {
 
     private function product_image($site_product_id, $image_id,$size,$size_name){
         $url = "https://ui.assets-asda.com/dm/asdagroceries/{$image_id}?defaultImage=asdagroceries/noImage&resMode=sharp2&id=8daSB3&fmt=jpg&fit=constrain,1&wid={$size}&hei={$size}";
-        $file_name = $this->image->save($site_product_id,$url,$size_name);
+        $file_name = $this->image_service->save($site_product_id,$url,$size_name);
         return $file_name;
     }
     
@@ -186,10 +186,10 @@ class ProductService extends Asda implements ProductRequestInterface {
 
         $this->set_barcodes($product, $item, $inventory);
 
-        $product->currency = $this->currency;
+        $product->currency = $this->currency_service;
 
         $product->total_reviews_count = $rating_review->total_review_count;
-        $product->avg_rating          = $rating_review->avg_star_rating;
+        $product->avg_rating         = $rating_review->avg_star_rating;
 
         $product->url = "https://groceries.asda.com/product/{$item->sku_id}";
 
@@ -242,7 +242,7 @@ class ProductService extends Asda implements ProductRequestInterface {
         foreach($barcodes_data as $type => $value){
 
             if(!is_null($value) && $value != ''){
-                $barcode = new BarcodeModel($this->database);
+                $barcode = new BarcodeModel($this->database_service);
                 $barcode->type = $type;
                 $barcode->value = $value;
                 $barcode->store_type_id = $this->store_type_id;

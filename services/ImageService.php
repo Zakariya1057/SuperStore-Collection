@@ -5,23 +5,24 @@ namespace Services;
 use Exception;
 use Aws\S3\S3Client; 
 use Aws\Credentials\Credentials;
+use Monolog\Logger;
 
-class Image {
+class ImageService {
 
-    private $logger, $img_config, $aws_credentials, $request, $retry_conf;
+    private $logger, $img_config, $aws_credentials, $request_service, $retry_conf;
 
-    function __construct($config,$logger,Requests $request){
+    function __construct(ConfigService $config_service, Logger $logger, RequestService $request_service){
         $this->logger = $logger;
 
-        $this->img_config = $config->get('images');
+        $this->img_config = $config_service->get('images');
         $this->host = $this->img_config->host;
 
         $credentials = $this->img_config->aws->credentials;
         $this->aws_credentials = new \Aws\Credentials\Credentials($credentials->key, $credentials->secret);
 
-        $this->request = $request;
+        $this->request_service = $request_service;
 
-        $this->retry_conf = $config->get('retry.image');
+        $this->retry_conf = $config_service->get('retry.image');
     }
 
     public function save($name, $image_url,$size='',$type='products', $store='Asda'){
@@ -125,7 +126,7 @@ class Image {
 
     private function get_image($url){
         try {
-            return $this->request->request($url, 'GET', [], [], 300, 1);
+            return $this->request_service->request($url, 'GET', [], [], 300, 1);
         } catch (Exception $e){
             $this->logger->error('Failed To Get Image: '. $e->getMessage());
             return;

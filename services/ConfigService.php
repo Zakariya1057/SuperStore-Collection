@@ -2,7 +2,7 @@
 
 namespace Services;
 
-class Config {
+class ConfigService {
 
     private $conf;
 

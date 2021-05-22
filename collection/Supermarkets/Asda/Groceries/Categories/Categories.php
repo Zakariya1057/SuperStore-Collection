@@ -11,28 +11,28 @@ use Models\Category\ParentCategoryModel;
 use Models\Product\ProductModel;
 
 use Monolog\Logger;
-use Services\Config;
-use Services\Database;
-use Services\Remember;
+use Services\DatabaseService;
 
 use Collection\Supermarkets\Asda\Asda;
+use Services\ConfigService;
+use Services\RememberService;
 
 class Categories extends Asda {
 
     public $grand_parent_category_model, $parent_category_model, $child_category_model, $product_model;
 
-    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
+    function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, RememberService $remember_service=null)
     {
-        parent::__construct($config, $logger, $database, $remember);
+        parent::__construct($config_service, $logger, $database_service, $remember_service);
 
-        $this->grand_parent_category_model = new ParentCategoryModel($this->database);
-        $this->parent_category_model = new ParentCategoryModel($this->database);
-        $this->child_category_model = new ChildCategoryModel($this->database);
-        $this->product_model = new ProductModel($this->database);
+        $this->grand_parent_category_model = new ParentCategoryModel($this->database_service);
+        $this->parent_category_model = new ParentCategoryModel($this->database_service);
+        $this->child_category_model = new ChildCategoryModel($this->database_service);
+        $this->product_model = new ProductModel($this->database_service);
     }
     
     public function categories($categories){
-        $grand_parent_categories = new GrandParentCategories($this->config, $this->logger, $this->database, $this->remember);
+        $grand_parent_categories = new GrandParentCategories($this->config_service, $this->logger, $this->database_service, $this->remember_service);
         $grand_parent_categories->create_categories($categories);
     }
 
@@ -62,12 +62,12 @@ class Categories extends Asda {
         ];
 
         if($type == "grand_parent"){
-            $category = new GrandParentCategoryModel($this->database);
+            $category = new GrandParentCategoryModel($this->database_service);
             unset($insert_fields['parent_category_id']);
         } elseif($type == "parent"){
-            $category = new ParentCategoryModel($this->database);
+            $category = new ParentCategoryModel($this->database_service);
         } elseif($type == "child"){
-            $category = new ChildCategoryModel($this->database);
+            $category = new ChildCategoryModel($this->database_service);
         } else {
             throw new Exception("Unknown Category Type Found: $type");
         }

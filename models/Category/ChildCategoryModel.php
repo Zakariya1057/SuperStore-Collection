@@ -2,11 +2,12 @@
  
 namespace Models\Category;
 
+use Services\DatabaseService;
 class ChildCategoryModel extends CategoryModel {
 
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
         $this->table('child_categories');
 

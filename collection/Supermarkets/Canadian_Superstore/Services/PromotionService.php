@@ -12,7 +12,7 @@ class PromotionService extends CanadianSuperstore {
 
     private function setupPromotionModel(){
         if(is_null($this->promotion_model)){
-            $this->promotion_model = new PromotionModel($this->database);
+            $this->promotion_model = new PromotionModel($this->database_service);
         }
     }
 

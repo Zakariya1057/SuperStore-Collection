@@ -8,27 +8,26 @@ use Models\Store\FacilitiesModel;
 use Models\Store\LocationModel;
 use Models\Store\StoreModel;
 use Monolog\Logger;
-use Services\Config;
-use Services\Database;
-use Services\Notification;
-use Collection\Supermarkets\Asda\Stores\Stores;
+use Services\ConfigService;
+use Services\DatabaseService;
+use Services\NotificationService;
 
 class MonitorStores {
 
-    public $notification, $config, $logger, $database, $store_model;
+    public $notification, $config_service, $logger, $database_service, $store_model;
     
     public $store_collection;
 
-    function __construct(Config $config, Logger $logger, Database $database, StoreInterface $store_collection){
-        $this->config = $config;
+    function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, StoreInterface $store_collection){
+        $this->config_service = $config_service;
         $this->logger = $logger;
-        $this->database = $database;
+        $this->database_service = $database_service;
 
-        $this->store_model = new StoreModel($database);
+        $this->store_model = new StoreModel($database_service);
 
         $this->store_collection = $store_collection;
 
-        $this->notification = new Notification($config, $logger);
+        $this->notification_service = new NotificationService($config_service, $logger);
     }
 
     public function monitor_stores($store_type){
@@ -71,7 +70,7 @@ class MonitorStores {
         }
 
 
-        $this->database->start_transaction();
+        $this->database_service->start_transaction();
 
 
         // Update hours
@@ -87,7 +86,7 @@ class MonitorStores {
         $this->update_details($store_id, $new_store);
 
 
-        $this->database->commit_transaction();
+        $this->database_service->commit_transaction();
 
     }
 
@@ -103,7 +102,7 @@ class MonitorStores {
 
         $new_location = $new_store->location;
 
-        $location = new LocationModel($this->database);
+        $location = new LocationModel($this->database_service);
         $location->where(['store_id' => $store_id])->update([
             'city' => $new_location->city,
             'postcode' => $new_location->postcode,
@@ -136,7 +135,7 @@ class MonitorStores {
         }
 
         if(count($found_facilities) > 0){
-            $facility = new FacilitiesModel($this->database);
+            $facility = new FacilitiesModel($this->database_service);
             $facility->where(['store_id' => $store_id])->where_not_in('id', $found_facilities)->delete();
         }
     }

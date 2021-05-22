@@ -8,31 +8,31 @@ use Models\Product\ProductModel;
 
 use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
 
-use Monolog\Logger;
-use Services\Config;
-use Services\Database;
-use Services\Remember;
-
 use Collection\Supermarkets\Canadian_Superstore\Services\ProductDetailService;
 use Collection\Supermarkets\Canadian_Superstore\Services\ProductService;
+use Monolog\Logger;
+use Services\ConfigService;
+use Services\DatabaseService;
+use Services\LoggerService;
+use Services\RememberService;
 
 class Products extends CanadianSuperstore implements ProductInterface {
     private $product_v2, $product_v3;
 
     public $product_service, $product_detail_service;
 
-    function __construct(Config $config, Logger $logger, Database $database, Remember $remember=null)
+    function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, RememberService $remember_service=null)
     {
-        parent::__construct($config,$logger,$database,$remember);
+        parent::__construct($config_service, $logger, $database_service, $remember_service);
 
-        $this->shared_product_service = new SharedProductService($database);
-        $this->product_service = new ProductService($config,$logger,$database);
+        $this->shared_product_service = new SharedProductService($database_service);
+        $this->product_service = new ProductService($config_service, $logger, $database_service);
     }
 
     private function setupProductSources(){
         if(is_null($this->product_v2) || is_null($this->product_v3)){
-            $this->product_v2 = new ProductV2($this->config, $this->logger, $this->database, $this->remember);
-            $this->product_v3 = new ProductV3($this->config, $this->logger, $this->database, $this->remember);
+            $this->product_v2 = new ProductV2($this->config_service, $this->logger, $this->database_service, $this->remember_service);
+            $this->product_v3 = new ProductV3($this->config_service, $this->logger, $this->database_service, $this->remember_service);
         }
     }
 

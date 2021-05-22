@@ -5,27 +5,26 @@ namespace Models;
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Exception;
-use Services\Database;
-use Services\Loggers;
-use Services\Sanitize;
-use Services\Validator;
+use Services\DatabaseService;
+use Services\SanitizeService;
+use Services\ValidatorService;
 
 class Model {
 
     private $select, $create, $delete, $where, $group_by, $update, $limit, $like, $join, $not_in, $order, $table, $table_fields;
 
-    public $database, $logger,$product, $insert_ignore;
+    public $database_service, $logger,$product, $insert_ignore;
 
     public $sanitize, $validator;
 
-    function __construct(Database $database=null){
-        if($database){
-            $this->database = $database;
-            $this->logger = $database->logger;
+    function __construct(DatabaseService $database_service=null){
+        if($database_service){
+            $this->database_service = $database_service;
+            $this->logger = $database_service->logger;
         }
         
-        $this->sanitize = new Sanitize();
-        $this->validator = new Validator();
+        $this->sanitize_service = new SanitizeService();
+        $this->validator_service = new ValidatorService();
     }
     
     public function create($data){
@@ -34,7 +33,7 @@ class Model {
         $table_fields_list = [];
         $insert_fields_list = [];
         
-        $sanitized_data = $this->sanitize->sanitize_fields($data);
+        $sanitized_data = $this->sanitize_service->sanitize_fields($data);
 
         foreach($sanitized_data as $key => $value){
             $validation = $this->table_fields[$key];
@@ -60,7 +59,7 @@ class Model {
         }
 
         try {
-            $this->validator->validate_fields($this->table_fields,$sanitized_data);
+            $this->validator_service->validate_fields($this->table_fields,$sanitized_data);
         } catch(Exception $e) {
             $this->logger->error("Table $this->table Validation Error: ".$e->getMessage());
             throw new Exception($e);
@@ -146,7 +145,7 @@ class Model {
         
         $wheres = [];
 
-        $data = $this->sanitize->sanitize_fields($data);
+        $data = $this->sanitize_service->sanitize_fields($data);
 
         foreach($data as $key => $value){
             if(is_null($value) ){
@@ -279,17 +278,17 @@ class Model {
         $queries = [];
 
         $select_fields = $this->select;
-        $table_name    = $this->table;
-        $where_fields  = $this->where;
-        $limit         = $this->limit;
-        $update        = $this->update;
-        $delete        = $this->delete;
-        $like          = $this->like;
-        $create        = $this->create;
-        $group_by      = $this->group_by;
-        $join          = $this->join;
-        $order         = $this->order;
-        $not_in        = $this->not_in;
+        $table_name   = $this->table;
+        $where_fields = $this->where;
+        $limit        = $this->limit;
+        $update       = $this->update;
+        $delete       = $this->delete;
+        $like         = $this->like;
+        $create       = $this->create;
+        $group_by     = $this->group_by;
+        $join         = $this->join;
+        $order        = $this->order;
+        $not_in       = $this->not_in;
 
         if(!is_null($create)){
 
@@ -359,10 +358,10 @@ class Model {
 
         $query = join(" ", $queries);
 
-        $results = $this->database->query($query);
+        $results = $this->database_service->query($query);
         
         if(!is_null($create)){
-            return $this->database->insert_id();
+            return $this->database_service->insert_id();
         } else {
             return $results;
         }
@@ -373,9 +372,7 @@ class Model {
 
         $wheres = [];
 
-        $sanitize = new Sanitize();
-
-        $sanitized_data = $sanitize->sanitize_fields($data);
+        $sanitized_data = $this->sanitize_service->sanitize_fields($data);
 
         foreach($sanitized_data as $key => $value){
             if(is_null($value) || trim($value) == ''){
@@ -414,7 +411,7 @@ class Model {
         
         $this->create($data);
 
-        return $this->database->insert_id();
+        return $this->database_service->insert_id();
 
     }
 

@@ -6,9 +6,9 @@ class ParentCategories extends Categories {
 
     public function create_category($grand_parent_category, $parent_categories){
 
-        $child_categories = new ChildCategories($this->config, $this->logger, $this->database, $this->remember);
+        $child_categories = new ChildCategories($this->config_service, $this->logger, $this->database_service, $this->remember_service);
 
-        $last_category_index = $this->remember->get('parent_category_index') ?? 0;
+        $last_category_index = $this->remember_service->get('parent_category_index') ?? 0;
 
         $categories_list = array_slice($parent_categories, $last_category_index);
 
@@ -21,7 +21,7 @@ class ParentCategories extends Categories {
                 $category_index = $index + $last_category_index;
 
                 $this->logger->notice("- Parent Category: $parent_category_data->name");
-                $this->remember->set('parent_category_index', $category_index);
+                $this->remember_service->set('parent_category_index', $category_index);
 
                 $parent_category_data->parent_category_id = $grand_parent_category->id;
                 $parent_category = $this->select_category($parent_category_data ,'parent', $category_index);
@@ -40,7 +40,7 @@ class ParentCategories extends Categories {
 
             }
             
-            $this->remember->set('parent_category_index',0);
+            $this->remember_service->set('parent_category_index',0);
 
         }
 

@@ -12,8 +12,8 @@ class RecommendedService extends Asda {
 
     private function setupClasses(){
         if(is_null($this->recommended_model) || is_null($this->product_model)){
-            $this->recommended_model = new RecommendedModel($this->database);
-            $this->product_model = new ProductModel($this->database);
+            $this->recommended_model = new RecommendedModel($this->database_service);
+            $this->product_model = new ProductModel($this->database_service);
         }
     }
 
@@ -23,10 +23,10 @@ class RecommendedService extends Asda {
         if($this->env == 'dev'){
             $recommended_response = file_get_contents(__DIR__."/../../data/Asda/Recommendations.json");
         } else {
-            $recommended_response = $this->request->request($recommendation_endpoint);
+            $recommended_response = $this->request_service->request($recommendation_endpoint);
         }
 
-        return $this->request->parse_json($recommended_response);
+        return $this->request_service->parse_json($recommended_response);
     }
 
     public function create($product_id, $recommended_product_id){

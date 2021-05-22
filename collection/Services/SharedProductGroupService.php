@@ -4,14 +4,14 @@ namespace Collection\Services;
 
 use Models\Category\ProductGroupModel;
 use Models\Product\ProductModel;
-use Services\Database;
+use Services\DatabaseService;
 
 class SharedProductGroupService {
 
     private $product_group_model;
 
-    public function __construct(Database $database){
-        $this->product_group_model = new ProductGroupModel($database);
+    public function __construct(DatabaseService $database_service){
+        $this->product_group_model = new ProductGroupModel($database_service);
     }
 
     public function create(ProductModel $product_details, int $child_category_id, int $store_type_id): int {

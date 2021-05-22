@@ -3,14 +3,14 @@
 namespace Models\Shared;
 
 use Models\Model;
-
+use Services\DatabaseService;
 class MonitoredProductModel extends Model {
 
     public $product_id, $user_id;
     
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
         $this->table('monitored_products');
 

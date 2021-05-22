@@ -4,21 +4,21 @@ namespace Collection\Services;
 
 use Interfaces\ProductRequestInterface;
 use Models\Product\ProductModel;
-use Services\Database;
+use Services\DatabaseService;
 
 class SharedProductService {
-    private $database;
+    private $database_service;
 
     private $product_model, $request_service;
     private $category_service, $product_group_service;
 
-    public function __construct(Database $database){
-        $this->database = $database;
+    public function __construct(DatabaseService $database_service){
+        $this->database_service = $database_service;
 
-        $this->product_model = new ProductModel($database);
+        $this->product_model = new ProductModel($database_service);
 
-        $this->category_service = new SharedCategoryService($database);
-        $this->product_group_service = new SharedProductGroupService($database);
+        $this->category_service = new SharedCategoryService($database_service);
+        $this->product_group_service = new SharedProductGroupService($database_service);
     }
 
     public function product_exists($site_product_id, $store_type_id){
@@ -35,7 +35,7 @@ class SharedProductService {
     public function create(string $site_product_id, ProductModel $parsed_product, $category_details, int $store_type_id){
 
         // Start Transaction
-        $this->database->start_transaction();
+        $this->database_service->start_transaction();
 
         $product_id = $this->product_exists($site_product_id, $store_type_id);
 
@@ -60,7 +60,7 @@ class SharedProductService {
         }
 
         // Commit Transaction
-        $this->database->commit_transaction();
+        $this->database_service->commit_transaction();
 
         return $product_id;
     }

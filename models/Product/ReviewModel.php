@@ -3,14 +3,15 @@
 namespace Models\Product;
 
 use Models\Model;
+use Services\DatabaseService;
 
 class ReviewModel extends Model {
     
     public $name,$text,$rating,$title,$user_id,$created_at,$product_id, $site_review_id;
 
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
         $this->table('reviews');
 

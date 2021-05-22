@@ -3,14 +3,15 @@
 namespace Models\Product;
 
 use Models\Model;
+use Services\DatabaseService;
 
 class BarcodeModel extends Model {
 
     public $type, $value, $product_id, $store_type_id;
     
-    function __construct($database=null){
+    function __construct(DatabaseService $database_service=null){
 
-        parent::__construct($database);
+        parent::__construct($database_service);
 
         $this->table('barcodes');
 

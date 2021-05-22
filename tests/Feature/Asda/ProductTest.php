@@ -6,10 +6,10 @@ require_once __DIR__.'/../../vendor/autoload.php';
 // 2. Check Details Are Correct.
 // 3. Insert, And Check If Inserted Correctly.
 
-use Services\Config;
-use Services\Database;
+use Services\ConfigService;
+use Services\DatabaseService;
 use Services\Loggers;
-use Supermarkets\Asda\AsdaProducts;
+use Collection\Supermarkets\Asda\AsdaProducts;
 
 use PHPUnit\Framework\TestCase;
 
@@ -21,7 +21,7 @@ final class ProductTest extends TestCase {
         
         $config = new Config();
 
-        $config->set('env', 'dev');
+        $config_service->set('env', 'dev');
         
         // 'price',
         // 'weight',
@@ -34,12 +34,12 @@ final class ProductTest extends TestCase {
 
         // Promotion
 
-        $database = $this->createStub(Database::class);
+        $database_service = $this->createStub(Database::class);
         $logger = $this->createStub(Monolog\Logger::class);
 
-        $asda_product = new AsdaProducts($config, $logger, $database, null);
+        $asda_product = new AsdaProducts($config, $logger, $database_service, null);
 
-        $product_response = json_decode(file_get_contents(__DIR__ . '/../../' . $config->get('test_files.product')));
+        $product_response = json_decode(file_get_contents(__DIR__ . '/../../' . $config_service->get('test_files.product')));
 
         $this->parsed_product_item = $asda_product->product_details(1, true);
         $this->product_item = $product_response->data->uber_item->items[0];

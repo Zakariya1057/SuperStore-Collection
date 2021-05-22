@@ -17,11 +17,11 @@ class ProductV3 extends Products {
 
     private function setupClasses(){
         if(is_null($this->promotion_service)){
-            $this->promotion_service = new PromotionService($this->config, $this->logger, $this->database);
+            $this->promotion_service = new PromotionService($this->config_service, $this->logger, $this->database_service);
         }
 
         if(is_null($this->product_model)){
-            $this->product_model = new ProductModel($this->database);
+            $this->product_model = new ProductModel($this->database_service);
         }
     }
 
@@ -40,7 +40,7 @@ class ProductV3 extends Products {
         $product->store_type_id = $this->store_type_id;
         
         $product->weight = $product_details->packageSize;
-        $product->currency = $this->currency;
+        $product->currency = $this->currency_service;
         
         if($product_details->breadcrumbs == []){
             $this->logger->error('No Product Category Found.');
@@ -86,7 +86,7 @@ class ProductV3 extends Products {
             $ingredients = preg_split('/,|\./', trim($ingredients_text));
 
             foreach($ingredients as $ingredient_name){
-                $ingredient = new IngredientModel($this->database);
+                $ingredient = new IngredientModel($this->database_service);
                 $name = trim(ucwords(strtolower($ingredient_name)));
 
                 if($name != ''){
@@ -119,7 +119,7 @@ class ProductV3 extends Products {
             } else {
 
                 if(!is_null($image_url)){
-                    $image = new ProductImageModel($this->database);
+                    $image = new ProductImageModel($this->database_service);
 
                     $saved_image_url = $this->product_service->create_image($product->site_product_id . '_' . $index, $image_url, 'large');
     
