@@ -4,7 +4,7 @@ namespace Models\Store;
 
 use Models\Model;
 use Services\DatabaseService;
-class FacilitiesModel extends Model {
+class FacilityModel extends Model {
 
     public $store_id, $name;
     

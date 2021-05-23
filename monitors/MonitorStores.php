@@ -2,11 +2,15 @@
 
 namespace Monitors;
 
+use Collection\Services\SharedStoreService;
+use Collection\Supermarkets\Canadian_Superstore\Services\FlyerService;
 use Exception;
 use Interfaces\StoreInterface;
-use Models\Store\FacilitiesModel;
+use Models\Store\FacilityModel;
+use Models\Store\FlyerModel;
 use Models\Store\LocationModel;
 use Models\Store\StoreModel;
+use Models\Store\OpeningHourModel;
 use Monolog\Logger;
 use Services\ConfigService;
 use Services\DatabaseService;
@@ -14,20 +18,28 @@ use Services\NotificationService;
 
 class MonitorStores {
 
-    public $notification, $config_service, $logger, $database_service, $store_model;
+    public $notification, $config_service, $logger, $database_service;
     
-    public $store_collection;
+    public $store_service, $flyer_service, $shared_store_service;
 
-    function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, StoreInterface $store_collection){
+    private $store_model, $opening_hour, $location_model, $facility_model, $flyer_model;
+
+    function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, StoreInterface $store_service){
         $this->config_service = $config_service;
         $this->logger = $logger;
         $this->database_service = $database_service;
 
-        $this->store_model = new StoreModel($database_service);
-
-        $this->store_collection = $store_collection;
+        $this->store_service = $store_service;
+        $this->flyer_service = new FlyerService($config_service, $logger, $database_service);
+        $this->shared_store_service = new SharedStoreService($database_service);
 
         $this->notification_service = new NotificationService($config_service, $logger);
+
+        $this->store_model = new StoreModel($database_service);
+        $this->opening_hour = new OpeningHourModel($database_service);
+        $this->location_model = new LocationModel($database_service);
+        $this->facility_model = new FacilityModel($database_service);
+        $this->flyer_model = new FlyerModel($database_service);
     }
 
     public function monitor_stores($store_type){
@@ -63,16 +75,17 @@ class MonitorStores {
         
         $store_id = $store->id;
         
-        $new_store = $this->store_collection->store_details($store->site_store_id, $store->url);
+        $new_store = $this->store_service->store_details($store->site_store_id, $store->url);
         
         if(is_null($new_store)){
             throw new Exception('New Store Not Found: ' . $store_id);
         }
 
-
         $this->database_service->start_transaction();
 
-
+        // Update flyers
+        $this->update_flyers($store_id, $new_store);
+        
         // Update hours
         $this->update_hours($store_id, $new_store);
 
@@ -85,9 +98,7 @@ class MonitorStores {
         // Update details
         $this->update_details($store_id, $new_store);
 
-
         $this->database_service->commit_transaction();
-
     }
 
     private function update_details($store_id, $new_store){
@@ -99,11 +110,9 @@ class MonitorStores {
     }
 
     private function update_locations($store_id, $new_store){
-
         $new_location = $new_store->location;
 
-        $location = new LocationModel($this->database_service);
-        $location->where(['store_id' => $store_id])->update([
+        $this->location_model->where(['store_id' => $store_id])->update([
             'city' => $new_location->city,
             'postcode' => $new_location->postcode,
 
@@ -128,28 +137,36 @@ class MonitorStores {
             $facility->store_id = $store_id;
             $facility->save();
 
-            $store_facility = $facility->where(['store_id' => $store_id, 'name' => $facility->name])->get()[0] ?? null;
+            $store_facility = $this->facility_model->where(['store_id' => $store_id, 'name' => $facility->name])->get()[0] ?? null;
             if(!is_null($store_facility)){
                 $found_facilities[] = $store_facility->id;
             }
         }
 
         if(count($found_facilities) > 0){
-            $facility = new FacilitiesModel($this->database_service);
-            $facility->where(['store_id' => $store_id])->where_not_in('id', $found_facilities)->delete();
+            $this->facility_model->where(['store_id' => $store_id])->where_not_in('id', $found_facilities)->delete();
         }
     }
 
     private function update_hours($store_id, $new_store){
-
         foreach($new_store->opening_hours as $hour){
-            $hour
+            $this->opening_hour
             ->where(['store_id' => $store_id, 'day_of_week' => $hour->day_of_week])
             ->update(['opens_at' => $hour->opens_at, 'closes_at' => $hour->closes_at, 'closed_today' => $hour->closed_today]);
         }
-
     }
 
+    private function update_flyers($store_id, $new_store){
+        // Delete All Expired Flyers.
+        // Save All New Flyers
+
+        if($new_store->store_type_id != 1){
+            $this->flyer_service->delete_flyers($store_id);
+            $flyers = $this->flyer_service->get_flyers($new_store->site_store_id, $store_id);
+            $this->shared_store_service->create_flyers($flyers, $store_id);
+        }
+       
+    }
 }
 
 ?>

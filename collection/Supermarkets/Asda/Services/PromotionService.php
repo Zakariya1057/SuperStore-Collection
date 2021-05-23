@@ -133,7 +133,7 @@ class PromotionService extends Asda {
             $promotion_response = file_get_contents(__DIR__."/../../data/Asda/New_Promotion.json");
             $promotion_info = $this->request_service->parse_json($promotion_response);
         } else {
-            $promotion_info = $this->asda_service->request_details('promotion', $promotion_site_id);
+            $promotion_info = $this->category_service->request_details('promotion', $promotion_site_id);
         }
 
         foreach($promotion_info->zones as $promotion_item){

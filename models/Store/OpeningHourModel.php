@@ -5,7 +5,7 @@ namespace Models\Store;
 use Models\Model;
 use Services\DatabaseService;
 
-class OpeningHoursModel extends Model {
+class OpeningHourModel extends Model {
 
     public $store_id, $day_of_week, $opens_at,$closes_at,$closed_today;
 

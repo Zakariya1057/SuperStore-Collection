@@ -23,6 +23,16 @@ class SharedStoreService {
         }
     }
 
+    public function url_store_exists(string $url){
+        $store_results = $this->store_model->where(['url' => $url])->get()[0] ?? null;
+
+        if(!is_null($store_results)){
+            return $store_results->id;
+        } else {
+            return null;
+        }
+    }
+
     public function create_store(StoreModel $store){
         $store_id = $store->save();
 

@@ -22,7 +22,7 @@ class StorageService {
         $this->aws_credentials = new Credentials($credentials->key, $credentials->secret);
     }
 
-    public function upload_s3($path, $data, $content_type = 'images'){
+    public function upload_s3($path, $data, $bucket = 'images'){
         $s3Client = new S3Client([
             'version' => $this->s3_config->version,
             'region'  => $this->s3_config->region,
@@ -36,7 +36,7 @@ class StorageService {
 
             try {
                 $s3Client->putObject([
-                    'Bucket' => 'superstore.' . $content_type,
+                    'Bucket' => 'superstore.' . $bucket,
                     'Key' => $path,
                     'Body' => $data,
                 ]);

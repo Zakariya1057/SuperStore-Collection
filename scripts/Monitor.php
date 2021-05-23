@@ -7,16 +7,15 @@ require_once __DIR__.'/../vendor/autoload.php';
 use Monitors\MonitorProducts;
 use Monitors\MonitorStores;
 use Services\CLIService;
-use Services\Notification;
 use Services\ConfigService;
-use Services\Loggers;
 use Services\DatabaseService;
 
 use Collection\Supermarkets\Asda\Groceries\Products\Products as AsdaProducts;
 use Collection\Supermarkets\Canadian_Superstore\Groceries\Products\Products as CanadianSuperStoreProducts;
 
-use Collection\Supermarkets\Asda\Stores\Stores as AsdaStores;
-use Collection\Supermarkets\Canadian_Superstore\Stores\Stores as CanadianSuperStoreStores;
+use Collection\Supermarkets\Asda\Services\StoreService as AsdaStoreService;
+use Collection\Supermarkets\Canadian_Superstore\Services\StoreService as CanadianSuperstoreStoreService;
+
 use Services\LoggerService;
 use Services\NotificationService;
 
@@ -82,16 +81,16 @@ try {
             // Runs every sunday morning. 4am. [ 0 4 * * SUN ]
 
             if($store_type_id == 1){
-                $store_collection = new AsdaStores($config_service, $logger, $database_service);
+                $store_service = new AsdaStoreService($config_service, $logger, $database_service);
             } else if($store_type_id == 2){
-                $store_collection = new CanadianSuperStoreStores($config_service, $logger, $database_service);
+                $store_service = new CanadianSuperstoreStoreService($config_service, $logger, $database_service);
             }
             
-            if(is_null($store_collection)){
+            if(is_null($store_service)){
                 return exit($logger->error('No Store Collection Type Found For Store: ' . $store_type_id));
             }
 
-            $monitor = new MonitorStores($config_service, $logger, $database_service, $store_collection );
+            $monitor = new MonitorStores($config_service, $logger, $database_service, $store_service );
 
             $monitor->monitor_stores($store_conf);
 

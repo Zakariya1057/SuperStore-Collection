@@ -28,6 +28,11 @@ class FlyerService extends CanadianSuperstore {
         }
     }
     
+    public function delete_flyers($store_id){
+        $this->setupClasses();
+        $this->flyer_model->where(['store_id' => $store_id])->delete();
+    }
+
     public function get_flyers($site_store_id, $store_id): array {
         $this->setupClasses();
 
@@ -70,7 +75,7 @@ class FlyerService extends CanadianSuperstore {
         
         $this->logger->debug($flyer_data->valid_from . ' -> ' . $flyer->valid_from);
         $this->logger->debug($flyer_data->valid_to . ' -> ' . $flyer->valid_to);
-        
+
         return $flyer;
     }
 

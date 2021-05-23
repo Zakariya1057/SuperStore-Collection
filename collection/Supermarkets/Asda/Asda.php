@@ -14,7 +14,7 @@ use Services\SanitizeService;
 use Collection\Supermarkets\Asda\Groceries\Groceries;
 use Collection\Supermarkets\Asda\Groceries\Recommended\Recommended;
 use Collection\Supermarkets\Asda\Groceries\Reviews\Reviews;
-use Collection\Supermarkets\Asda\Services\AsdaService;
+use Collection\Supermarkets\Asda\Services\CategoryService;
 use Collection\Supermarkets\Asda\Stores\Stores;
 use Monolog\Logger;
 
@@ -34,13 +34,13 @@ class Asda {
 
         $sanitize_service,
         $request_service,
-        $config_services,
+        $config_service,
         $database_service,
         $currency_service,
         $remember_service,
         $image_service;
 
-    public $asda_service;
+    public $category_service;
     
     function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, RememberService $remember_service=null){
         $this->request_service = new RequestService($config_service, $logger);
@@ -68,7 +68,7 @@ class Asda {
         $this->currency_service = $asda_conf->currency;
         $this->store_country = $asda_conf->country;
 
-        $this->asda_service = new AsdaService($this->config_service,$this->logger);
+        $this->category_service = new CategoryService($this->config_service,$this->logger);
     }
 
     public function store_type(){

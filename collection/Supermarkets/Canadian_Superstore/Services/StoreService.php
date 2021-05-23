@@ -2,16 +2,16 @@
 
 namespace Collection\Supermarkets\Canadian_Superstore\Services;
 
-use Exception;
 use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
-use Models\Store\FacilitiesModel;
+use Interfaces\StoreInterface;
+use Models\Store\FacilityModel;
 use Models\Store\LocationModel;
-use Models\Store\OpeningHoursModel;
+use Models\Store\OpeningHourModel;
 use Models\Store\StoreModel;
 
-class StoreService extends CanadianSuperstore {
+class StoreService extends CanadianSuperstore implements StoreInterface {
     
-    public function store_details(string $site_store_id, $url = null): ?StoreModel {
+    public function store_details(?string $site_store_id, $url = null): ?StoreModel {
         
         $this->logger->notice('-- Start Store Details: '. $site_store_id);
 
@@ -84,7 +84,7 @@ class StoreService extends CanadianSuperstore {
 
         foreach($store_hours as $index => $store_hour){
 
-            $hour = new OpeningHoursModel($this->database_service);
+            $hour = new OpeningHourModel($this->database_service);
 
             $hour->day_of_week = $index;
 
@@ -110,7 +110,7 @@ class StoreService extends CanadianSuperstore {
         $store->facilities = [];
 
         foreach($store_facilities as $facility_item){
-            $facility = new FacilitiesModel($this->database_service);
+            $facility = new FacilityModel($this->database_service);
             $facility->name = $facility_item->name;
             $store->facilities[] = $facility;
         }

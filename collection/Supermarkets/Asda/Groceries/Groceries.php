@@ -24,7 +24,7 @@ class Groceries extends Asda {
             $groceries_response = file_get_contents(__DIR__."/../../../data/Asda/New_Groceries.json");
             $groceries_data = $this->request_service->parse_json($groceries_response)->data->tempo_taxonomy;;
         } else {
-            $groceries_data = $this->asda_service->request_details('categories');
+            $groceries_data = $this->category_service->request_details('categories');
         }
 
         $categories = $this->create_categories($groceries_data->categories);

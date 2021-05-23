@@ -7,7 +7,19 @@ use Services\DatabaseService;
 
 class StoreModel extends Model {
 
-    public $name, $description, $manager, $telephone, $store_image, $uber_url, $google_url, $url, $site_store_id, $store_type_id;
+    public 
+        $name, 
+        $description, 
+        $manager, 
+        $telephone, 
+        $store_image, 
+        $uber_url, 
+        $google_url, 
+        $url, 
+        $site_store_id, 
+        $store_type_id,
+        
+        $last_checked;
 
     function __construct(DatabaseService $database_service=null){
 
@@ -72,6 +84,12 @@ class StoreModel extends Model {
 
             'store_type_id' => [
                 'type' => 'int',
+            ],
+
+
+            'last_checked' => [
+                'ignore' => true,
+                'nullable' => true
             ]
 
         ];
