@@ -65,12 +65,19 @@ class FlyerService extends CanadianSuperstore {
 
         $flyer->url = $this->download_flyer($flyer_data->pdf_url, $flyer->name, $store_id);
 
-        $flyer->valid_from = date('Y-m-d H:i:s', strtotime( $flyer_data->valid_from ));
-        $flyer->valid_to = date('Y-m-d H:i:s', strtotime( $flyer_data->valid_to));
+        $flyer->valid_from = date('Y-m-d H:i:s', strtotime( $this->clean_valid_date($flyer_data->valid_from) ));
+        $flyer->valid_to = date('Y-m-d H:i:s', strtotime( $this->clean_valid_date($flyer_data->valid_to) ));
+        
+        $this->logger->debug($flyer_data->valid_from . ' -> ' . $flyer->valid_from);
+        $this->logger->debug($flyer_data->valid_to . ' -> ' . $flyer->valid_to);
         
         return $flyer;
     }
 
+    private function clean_valid_date($date){
+        return preg_replace('/-\d{2}:\d{2}$/', '', $date);
+    }
+    
     private function download_flyer($url, $name, $store_id){
         $data = file_get_contents($url);
         $path = str_replace(' ', '_', "flyers/{$name}_{$store_id}.pdf");
