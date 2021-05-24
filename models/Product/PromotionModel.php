@@ -18,6 +18,7 @@ class PromotionModel extends Model {
         $minimum,
         $maximum,
 
+        $region_id,
         $site_category_id,
 
         $store_type_id,
@@ -28,7 +29,6 @@ class PromotionModel extends Model {
         $starts_at,
         $ends_at;
 
-    // Promotion Id, Name, URL, expires, starts_at,ends_at
     function __construct(DatabaseService $database_service=null){
 
         parent::__construct($database_service);
@@ -65,6 +65,8 @@ class PromotionModel extends Model {
             'site_promotion_id' => [
                 'nullable' => true
             ],
+
+            'region_id' => [],
 
             'site_category_id' => [
                 'nullable' => true

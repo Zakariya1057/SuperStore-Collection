@@ -16,7 +16,7 @@ class PromotionService extends CanadianSuperstore {
         }
     }
 
-    public function parse_promotion($promotion_details, $site_category_id, $site_category_name){
+    public function parse_promotion($promotion_details, $region_id, $site_category_id, $site_category_name){
 
         $this->setupPromotionModel();
         
@@ -49,9 +49,9 @@ class PromotionService extends CanadianSuperstore {
         
         $promotion_results = null;
 
-        // Check if exists, otherwise create it
         $where = [
             'store_type_id' => $store_type_id,
+            'region_id' => $region_id,
             'name' => $promotion_name,
             'site_category_id' => $site_category_id,
             'expires' => is_null($promotion_expires) ? NULL : 1
@@ -69,7 +69,8 @@ class PromotionService extends CanadianSuperstore {
             $promotion->store_type_id = $store_type_id;
 
             $promotion->title = $site_category_name;
-            
+            $promotion->region_id = $region_id;
+
             $promotion->name = $promotion_name;
             $promotion->price = $price;
             $promotion->minimum = $minimum;

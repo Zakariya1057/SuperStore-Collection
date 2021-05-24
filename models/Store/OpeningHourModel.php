@@ -13,7 +13,7 @@ class OpeningHourModel extends Model {
 
         parent::__construct($database_service);
 
-        $this->table("opening_hours");
+        $this->table('opening_hours');
 
         $fields = [
             'store_id' => [

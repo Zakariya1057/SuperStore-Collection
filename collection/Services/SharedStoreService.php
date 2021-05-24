@@ -8,9 +8,11 @@ use Services\DatabaseService;
 class SharedStoreService {
 
     private $store_model;
+    private $region_service;
 
     public function __construct(DatabaseService $database_service){
         $this->store_model = new StoreModel($database_service);
+        $this->region_service = new SharedRegionService($database_service);
     }
 
     public function store_exists(string $site_store_id, int $store_type_id){
@@ -36,10 +38,13 @@ class SharedStoreService {
     public function create_store(StoreModel $store){
         $store_id = $store->save();
 
-        $this->create_location($store->location, $store_id);
+        $region_id = $this->region_service->create_region($store->region);
+        
+        $this->create_location($store->location, $store_id, $region_id);
         $this->create_hours($store->opening_hours, $store_id);
         $this->create_facilitites($store->facilities, $store_id);
 
+       
         return $store_id;
     }
 
@@ -50,8 +55,9 @@ class SharedStoreService {
         }
     }
 
-    private function create_location($location, $store_id){
+    private function create_location($location, $store_id, $region_id){
         $location->store_id = $store_id;
+        $location->region_id = $region_id;
         $location->save();
     }
 

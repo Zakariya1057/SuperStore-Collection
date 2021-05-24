@@ -4,22 +4,24 @@ namespace Models\Store;
 
 use Models\Model;
 use Services\DatabaseService;
-class FacilityModel extends Model {
 
-    public $store_id, $name;
-    
+class RegionModel extends Model {
+
+    public 
+        $name, 
+        $country,
+        $store_type_id;
+
     function __construct(DatabaseService $database_service=null){
 
         parent::__construct($database_service);
 
-        $this->table('facilities');
+        $this->table('regions');
 
         $fields = [
-            'store_id' => [
-                'type' => 'int'
-            ],
             'name' => [],
-
+            'country' => [],
+            'store_type_id' => []
         ];
 
         $this->fields($fields);

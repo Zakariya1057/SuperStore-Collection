@@ -2,70 +2,36 @@
 
 namespace Collection\Supermarkets\Canadian_Superstore\Groceries\Categories;
 
-use Exception;
-
-use Models\Category\CategoryModel;
-use Models\Category\ChildCategoryModel;
-use Models\Category\GrandParentCategoryModel;
-use Models\Category\ParentCategoryModel;
-
+use Collection\Services\SharedRegionService;
 use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
+use Collection\Supermarkets\Canadian_Superstore\Groceries\Products\Products;
+use Collection\Supermarkets\Canadian_Superstore\Services\CategoryService;
+use Monolog\Logger;
+use Services\ConfigService;
+use Services\DatabaseService;
+use Services\RememberService;
 
 class Categories extends CanadianSuperstore {
 
-    public function categories($categories){
-        $grand_parent_categories = new GrandParentCategories($this->config_service, $this->logger, $this->database_service, $this->remember_service);
-        $grand_parent_categories->create_categories($categories);
+    public $grand_parent_categories, $parent_categories, $child_categories;
+    public $products;
+
+    function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, RememberService $remember_service=null)
+    {
+        parent::__construct($config_service, $logger, $database_service, $remember_service);
+
+        $region_service = new SharedRegionService($database_service);
+        $category_service = new CategoryService($config_service, $logger, $database_service);
+
+        $products = new Products($config_service, $logger, $database_service, $region_service);
+        $child_categories = new ChildCategories($remember_service, $logger, $database_service, $category_service, $products);
+        $parent_categories = new ParentCategories($remember_service, $logger, $database_service, $category_service, $child_categories);
+
+        $this->grand_parent_categories = new GrandParentCategories($remember_service, $logger, $database_service, $category_service, $parent_categories);
     }
 
-    public function select_category($category, $type, $index){
-
-        $category = (object)$category;
-
-        $category_name = $category->name;
-        $parent_category_id = $category->parent_category_id ?? null;
-        $category_number = $category->number ?? null;
-
-        $insert_fields = [
-            'name' => $category_name,
-            'site_category_id' => $category_number,
-            'parent_category_id' => $parent_category_id,
-            'store_type_id' => $this->store_type_id,
-            'index' => $index
-        ];
-
-        if($type == 'grand_parent'){
-            $category = new GrandParentCategoryModel($this->database_service);
-            unset($insert_fields['parent_category_id']);
-        } elseif($type == 'parent'){
-            $category = new ParentCategoryModel($this->database_service);
-        } elseif($type == 'child'){
-            $category = new ChildCategoryModel($this->database_service);
-        } else {
-            throw new Exception("Unknown Category Type Found: $type");
-        }
-
-        $category_item = $category->where(['store_type_id' => $this->store_type_id, 'site_category_id' => $category_number])->get()[0] ?? null;
-
-        if(!is_null($category_item)){
-            // Update Index
-            $category->where(['store_type_id' => $this->store_type_id, 'site_category_id' => $category_number])->update(['index' => $index]);
-            $this->logger->debug($category_name . ' Category: Found In Database');
-            return $category_item;
-        } else {
-            $this->logger->debug($category_name . ' Category: Not Found In Database');
-            $category_insert_id = $category->create($insert_fields);
-
-            $category_item = new CategoryModel();
-            $category_item->id = $category_insert_id;
-            $category_item->name = $category_name;
-            $category_item->site_category_id = $category_number;
-            $category_item->parent_category_id = $parent_category_id;
-
-            return $category_item;
-
-        }
-
+    public function categories($categories){
+        $this->grand_parent_categories->create_categories($categories);
     }
 
 }

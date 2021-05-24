@@ -7,24 +7,28 @@ use Models\Category\CategoryProductModel;
 use Models\Category\ChildCategoryModel;
 use Collection\Supermarkets\Canadian_Superstore\Groceries\Products\Products;
 use Collection\Supermarkets\Canadian_Superstore\Services\CategoryService;
+use Monolog\Logger;
+use Services\DatabaseService;
+use Services\RememberService;
 
-class ChildCategories extends Categories {
+class ChildCategories {
 
-    private $product, $category_service;
+    private $logger, $database_service;
 
-    private function setupClasses(){
-        if(is_null($this->product)){
-            $this->product = new Products($this->config_service,$this->logger,$this->database_service,$this->remember_service);
-        }
+    private $remember_service, $category_service;
+    private $products;
 
-        if(is_null($this->category_service)){
-            $this->category_service = new CategoryService($this->config_service,$this->logger,$this->database_service,$this->remember_service);
-        }
+    public function __construct(RememberService $remember_service, Logger $logger, DatabaseService $database_service, CategoryService $category_service, Products $products){
+        $this->remember_service = $remember_service;
+        $this->category_service = $category_service;
+
+        $this->products = $products;
+
+        $this->logger = $logger;
+        $this->database_service = $database_service;
     }
 
     public function create_category($parent_category_model, $parent_category){
-        
-        $this->setupClasses();
 
         $categories = $parent_category->child_categories;
 
@@ -46,7 +50,7 @@ class ChildCategories extends Categories {
 
                 $child_category = (object)$child_category;
                 $child_category->parent_category_id = $parent_category_model->id;
-                $child_category_details = $this->select_category($child_category, 'child', $category_index);
+                $child_category_details = $this->category_service->select_category($child_category, 'child', $category_index);
 
                 $child_category_details->number = $child_category->number;
                 $child_category_details->grand_parent_category_id = $grand_parent_category_id;
@@ -81,7 +85,7 @@ class ChildCategories extends Categories {
             foreach($products as $index => $site_product_id){
                 $this->remember_service->set('product_index', $index + $last_product_index);
     
-                $this->product->create_product($site_product_id, $category_details);
+                $this->products->create_product($site_product_id, $category_details);
     
                 // Between Each Products. Wait 1 Second
                 sleep(1);

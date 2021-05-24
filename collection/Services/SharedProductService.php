@@ -2,7 +2,6 @@
 
 namespace Collection\Services;
 
-use Interfaces\ProductRequestInterface;
 use Models\Product\ProductModel;
 use Services\DatabaseService;
 
@@ -50,6 +49,8 @@ class SharedProductService {
             $this->create_ingredients($product_id, $parsed_product);
             $this->create_barcodes($product_id, $parsed_product);
 
+            $this->create_prices($product_id, $parsed_product);
+
             $this->category_service->create($category_details, $product_id, $product_group_id);
         } else {
             if($this->category_service->category_exists($category_details, $product_id)){
@@ -89,11 +90,13 @@ class SharedProductService {
     }
 
     public function create_promotion(ProductModel &$product){
-        if(property_exists($product, 'promotion') && !is_null($product->promotion)){
-            if(property_exists($product->promotion, 'id')){
-                $product->promotion_id = $product->promotion->id;
+        $product->region_promotions = [];
+
+        foreach($product->promotions as $promotion){
+            if(property_exists($promotion, 'id')){
+                $product->region_promotions[$promotion->region_id] = $promotion->id;
             } else {
-                $product->promotion_id = $product->promotion->save();
+                $product->region_promotions[$promotion->region_id] = $promotion->save();
             }
         }
     }
@@ -103,6 +106,17 @@ class SharedProductService {
             $image->product_id = $product_id;
             $image->insert_ignore = true;
             $image->save();
+        }
+    }
+
+    private function create_prices(int $product_id, $product){
+        foreach($product->prices as $price){
+            if(key_exists($price->region_id, $product->region_promotions)){
+                $price->promotion_id = $product->region_promotions[$price->region_id];
+            }
+            
+            $price->product_id = $product_id;
+            $price->save();
         }
     }
 }

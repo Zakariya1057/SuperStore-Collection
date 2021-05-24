@@ -10,12 +10,17 @@ class StoreModel extends Model {
     public 
         $name, 
         $description, 
+
         $manager, 
         $telephone, 
+
         $store_image, 
+
         $uber_url, 
         $google_url, 
+
         $url, 
+
         $site_store_id, 
         $store_type_id,
         
@@ -25,7 +30,7 @@ class StoreModel extends Model {
 
         parent::__construct($database_service);
 
-        $this->table("stores");
+        $this->table('stores');
 
         $fields = [
             'name' => [],
@@ -37,6 +42,7 @@ class StoreModel extends Model {
                     'max' => 1000
                 ]
             ],
+
             'store_image'   => [
                 'nullable' => true,
                 'limit' => [

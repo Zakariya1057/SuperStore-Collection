@@ -2,16 +2,33 @@
 
 namespace Collection\Supermarkets\Canadian_Superstore\Groceries\Categories;
 
+use Collection\Supermarkets\Canadian_Superstore\Services\CategoryService;
 use Models\Category\ChildCategoryModel;
 use Models\Category\ParentCategoryModel;
+use Monolog\Logger;
+use Services\DatabaseService;
+use Services\RememberService;
 
-class ParentCategories extends Categories {
+class ParentCategories {
+
+    private $logger, $database_service;
+
+    private $remember_service, $category_service;
+    private $child_categories;
+
+    public function __construct(RememberService $remember_service, Logger $logger, DatabaseService $database_service, CategoryService $category_service, ChildCategories $child_categories){
+        $this->remember_service = $remember_service;
+        $this->category_service = $category_service;
+
+        $this->child_categories = $child_categories;
+
+        $this->logger = $logger;
+        $this->database_service = $database_service;
+    }
 
     public function create_category($grand_parent_category_model, $grand_parent_category){
-
+        
         $categories = $grand_parent_category['parent_categories'];
-
-        $child_categories = new ChildCategories($this->config_service, $this->logger, $this->database_service, $this->remember_service);
 
         $this->logger->notice("- Parent Category: $grand_parent_category_model->name");
 
@@ -36,10 +53,9 @@ class ParentCategories extends Categories {
 
                 $parent_category->parent_category_id = $grand_parent_category_model->id;
 
-                $parent_category_item = $this->select_category($parent_category, 'parent', $category_index);
+                $parent_category_item = $this->category_service->select_category($parent_category, 'parent', $category_index);
 
-                $child_categories->create_category($parent_category_item, $parent_category);
-
+                $this->child_categories->create_category($parent_category_item, $parent_category);
                 
                 // If all child categories deleted, delete parent category as well
                 $child_categories_count = count($child_category_model->where(['parent_category_id' => $parent_category_item->id])->get());

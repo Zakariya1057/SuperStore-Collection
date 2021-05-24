@@ -9,6 +9,7 @@ use Models\Product\ProductImageModel;
 use Models\Product\ProductModel;
 
 use Exception;
+use Models\Product\ProductPriceModel;
 
 class ProductV3 extends Products {
 
@@ -49,7 +50,12 @@ class ProductV3 extends Products {
 
         $this->set_product_group($product, $product_details);
 
-        $this->set_prices($product, $product_details);
+        $product->prices = [];
+        $product->promotions = [];
+        
+        $product->site_category_id = $product->product_group->id;
+
+        // $this->set_prices($product, $product_details);
 
         $this->product_service->set_description($product, $product_details->description);
 
@@ -70,6 +76,16 @@ class ProductV3 extends Products {
 
         return $product;
     }
+
+    public function parse_prices($product_details, $product, $region_id){
+        $product_price = new ProductPriceModel($this->database_service);
+        $product_price->region_id = $region_id;
+
+        $this->set_prices($product_price, $product, $product_details, $region_id);
+
+        return $product_price;
+    }
+
 
     private function set_categories(&$product, $breadcrumbs){
         $product->categories = [];
@@ -142,35 +158,32 @@ class ProductV3 extends Products {
         $product->product_group = (object)['id' => $site_product_group_id, 'name' => $product_group_name];
     }
 
-    private function set_prices($product, $product_details){
+    private function set_prices($product_price, $product, $product_details, $region_id){
 
         $price_details = $product_details->prices;
 
         $site_category_id = $product->product_group->id;
         $site_category_name = $product->product_group->name;
 
-        // $breadcrumbs = $product_details->breadcrumbs;
-        // $site_category_id = is_null($breadcrumbs) ? null : ($breadcrumbs[3]->categoryCode ?? end($breadcrumbs)->categoryCode);
-
         if(is_null($site_category_id)){
             throw new Exception('Site Category ID Not Found');
         }
 
-        $product->site_category_id = $site_category_id;
-
-        $product->price = $price_details->price->value;
+        $product_price->price = $price_details->price->value;
 
         $deal = $product_details->badges->dealBadge;
 
+        $product_price->promotion = null;
+        
         if(!is_null($price_details->wasPrice)){
             $ends_at = $deal->expiryDate;
 
-            $product->is_on_sale = true;
-            $product->sale_ends_at = date('Y-m-d H:i:s', strtotime($ends_at));
-            $product->old_price = $price_details->wasPrice->value;
+            $product_price->is_on_sale = true;
+            $product_price->sale_ends_at = date('Y-m-d H:i:s', strtotime($ends_at));
+            $product_price->old_price = $price_details->wasPrice->value;
 
         } else if(!is_null($product_details->badges->dealBadge)){
-            $product->promotion = $this->promotion_service->parse_promotion($deal, $site_category_id, $site_category_name);
+            $product_price->promotion = $this->promotion_service->parse_promotion($deal, $region_id, $site_category_id, $site_category_name);
         }
 
     }

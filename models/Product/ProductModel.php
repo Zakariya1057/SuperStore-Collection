@@ -102,21 +102,21 @@ class ProductModel extends Model {
                 'nullable' => true
             ],
 
-            'price' => [
-                'type' => 'price'
-            ],
-            'old_price' => [
-                'type' => 'price',
-                'nullable' => true
-            ],
+            // 'price' => [
+            //     'type' => 'price'
+            // ],
+            // 'old_price' => [
+            //     'type' => 'price',
+            //     'nullable' => true
+            // ],
 
-            'sale_ends_at' => [
-                'nullable' => true
-            ],
+            // 'sale_ends_at' => [
+            //     'nullable' => true
+            // ],
 
-            'is_on_sale' => [
-                'nullable' => true
-            ],
+            // 'is_on_sale' => [
+            //     'nullable' => true
+            // ],
 
             'weight' => [
                 'nullable' => true
@@ -139,9 +139,9 @@ class ProductModel extends Model {
                 'nullable'=> true
             ],
 
-            'promotion_id' => [
-                'nullable' => true
-            ],
+            // 'promotion_id' => [
+            //     'nullable' => true
+            // ],
 
             'reviews_searched' => [
                 'nullable' => true

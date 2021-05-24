@@ -2,11 +2,29 @@
 
 namespace Collection\Supermarkets\Canadian_Superstore\Groceries\Categories;
 
-class GrandParentCategories extends Categories {
+use Collection\Supermarkets\Canadian_Superstore\Services\CategoryService;
+use Monolog\Logger;
+use Services\DatabaseService;
+use Services\RememberService;
+
+class GrandParentCategories {
+
+    private $logger, $database_service;
+
+    private $remember_service, $category_service;
+    private $parent_categories;
+
+    public function __construct(RememberService $remember_service, Logger $logger, DatabaseService $database_service, CategoryService $category_service, ParentCategories $parent_categories){
+        $this->remember_service = $remember_service;
+        $this->category_service = $category_service;
+
+        $this->parent_categories = $parent_categories;
+       
+        $this->logger = $logger;
+        $this->database_service = $database_service;
+    }
 
     public function create_categories($categories){
-
-        $parent_categories = new ParentCategories($this->config_service, $this->logger, $this->database_service, $this->remember_service);
         
         $last_category_index = $this->remember_service->get('grand_parent_category_index') ?? 0;
         
@@ -23,9 +41,9 @@ class GrandParentCategories extends Categories {
 
                 $this->remember_service->set('grand_parent_category_index', $category_index);
                 
-                $grand_parent_category_model = $this->select_category($grand_parent_category, 'grand_parent', $category_index);
+                $grand_parent_category_model = $this->category_service->select_category($grand_parent_category, 'grand_parent', $category_index);
 
-                $parent_categories->create_category($grand_parent_category_model, $grand_parent_category);
+                $this->parent_categories->create_category($grand_parent_category_model, $grand_parent_category);
             }
 
             $this->remember_service->set('grand_parent_category_index', 0);

@@ -16,8 +16,8 @@ class LocationModel extends Model {
         $address_line2,
         $address_line3,
 
-        $country, 
-        $region, 
+        $country,
+        $region_id,
 
         $latitude,
         $longitude;
@@ -34,10 +34,7 @@ class LocationModel extends Model {
             ],
 
             'country' => [],
-
-            'region' => [
-                'nullable' => true
-            ],
+            'region_id' => [],
 
             'city' => [],
 

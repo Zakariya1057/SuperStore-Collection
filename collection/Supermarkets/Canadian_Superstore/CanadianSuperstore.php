@@ -2,6 +2,7 @@
 
 namespace Collection\Supermarkets\Canadian_Superstore;
 
+use Collection\Services\SharedRegionService;
 use Exception;
 use Models\Store\StoreTypeModel;
 
@@ -39,30 +40,30 @@ class CanadianSuperstore {
         $city,
 
         $image;
-    
+
     function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, RememberService $remember_service=null){
         $this->request_service = new RequestService($config_service, $logger);
         $this->logger = $logger;
         $this->config_service = $config_service;
         $this->database_service = $database_service;
 
-        $canadian_superstore = $this->config_service->get('stores.real_canadian_superstore');
+        $canadian_superstore_config = $this->config_service->get('stores.real_canadian_superstore');
 
         $this->endpoints = $this->config_service->get('endpoints.real_canadian_superstore');
         $this->env = $this->config_service->get('env');
 
         $this->sanitize_service = new SanitizeService();
 
-        $this->store_name = $canadian_superstore->name;
-        $this->store_type_id = $canadian_superstore->store_type_id;
-        $this->user_id = $canadian_superstore->user_id;
+        $this->store_name = $canadian_superstore_config->name;
+        $this->store_type_id = $canadian_superstore_config->store_type_id;
+        $this->user_id = $canadian_superstore_config->user_id;
 
         $this->city = $config_service->get('city');
         $this->remember_service = $remember_service;
 
         $this->image_service = new ImageService($config_service, $logger, $this->request_service);
 
-        $this->currency_service = $canadian_superstore->currency;
+        $this->currency_service = $canadian_superstore_config->currency;
 
     }
 

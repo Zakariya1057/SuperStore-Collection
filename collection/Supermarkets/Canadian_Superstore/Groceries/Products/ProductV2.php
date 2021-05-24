@@ -5,6 +5,7 @@ namespace Collection\Supermarkets\Canadian_Superstore\Groceries\Products;
 use Models\Product\ProductImageModel;
 use Models\Product\ProductModel;
 use Models\Product\BarcodeModel;
+use Models\Product\ProductPriceModel;
 
 class ProductV2 extends Products {
 
@@ -25,7 +26,8 @@ class ProductV2 extends Products {
 
         $price_details = $variant->offers[0];
 
-        $this->set_prices($product, $price_details);
+        $product->prices = [];
+        $product->promotions = [];
 
         $this->set_product_group($product, $product_details);
 
@@ -45,14 +47,26 @@ class ProductV2 extends Products {
         return $product;
     }
 
-    private function set_prices(&$product, $price_details){
-        
-        $product->price = $price_details->price;
+    public function parse_prices($product_details, $region_id){
+        $product_price = new ProductPriceModel($this->database_service);
+        $product_price->region_id = $region_id;
 
+        $price_data = $product_details->variants[0]->offers[0];
+        $this->set_prices($product_price, $price_data);
+
+        return $product_price;
+    }
+
+    private function set_prices(&$product_price, $price_details){
+        
+        $product_price->price = $price_details->price;
+
+        $product_price->promotion = null;
+        
         if(!is_null($price_details->salePrice)){
-            $product->is_on_sale = true;
-            $product->price = $price_details->salePrice;
-            $product->old_price = $price_details->wasPrice;
+            $product_price->is_on_sale = true;
+            $product_price->price = $price_details->salePrice;
+            $product_price->old_price = $price_details->wasPrice;
         }
     }
 

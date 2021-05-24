@@ -7,6 +7,7 @@ use Interfaces\StoreInterface;
 use Models\Store\FacilityModel;
 use Models\Store\LocationModel;
 use Models\Store\OpeningHourModel;
+use Models\Store\RegionModel;
 use Models\Store\StoreModel;
 
 class StoreService extends CanadianSuperstore implements StoreInterface {
@@ -64,8 +65,9 @@ class StoreService extends CanadianSuperstore implements StoreInterface {
         $location->address_line2 = $location_data->line2 == '' ? null : $location_data->line2;
 
         $location->city = $location_data->town;
-        $location->region = $location_data->region;
         $location->country = $location_data->country;
+
+        $this->set_region($store, $location_data->region, $location_data->country);
         
         $longitude = $geo_data->longitude;
         $latitude = $geo_data->latitude;
@@ -114,6 +116,26 @@ class StoreService extends CanadianSuperstore implements StoreInterface {
             $facility->name = $facility_item->name;
             $store->facilities[] = $facility;
         }
+    }
+
+    private function set_region($store, $region_name, $country){
+        $region = new RegionModel($this->database_service);
+
+        $region->country = $country;
+        $region->store_type_id = $this->store_type_id;
+
+        $region_mappings = [
+            'ON' => 'Ontario'
+        ];
+
+        $upper_region_name = strtoupper($region_name);
+        if(key_exists($upper_region_name, $region_mappings)){
+            $region_name = $region_mappings[$upper_region_name];
+        }
+        
+        $region->name = $region_name;
+       
+        $store->region = $region;
     }
 }
 
