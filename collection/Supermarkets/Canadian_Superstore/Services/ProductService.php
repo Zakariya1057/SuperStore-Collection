@@ -2,7 +2,6 @@
 
 namespace Collection\Supermarkets\Canadian_Superstore\Services;
 
-use Collection\Services\SharedRegionService;
 use Exception;
 use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
 use Interfaces\ProductRequestInterface;
@@ -10,18 +9,18 @@ use Models\Product\ProductModel;
 
 class ProductService extends CanadianSuperstore implements ProductRequestInterface {
 
-    public function request_product($site_product_id, $store_id, $request_type = null){
+    public function request_product($site_product_id, $store_id){
 
         $product_response = null;
         $product_details = null;
 
-        $this->logger->debug('Request Type: ' . $request_type);
-
         $product_endpoints = $this->endpoints->products;
 
-        $retry_times = !is_null($request_type) ? 3 : 1;
+        $retry_times = 1;
 
-        if(is_null($request_type) || $request_type == 'v3'){
+        $request_type = null;
+
+        if(str_contains(strtoupper($site_product_id), 'EA')){
             $endpoint_v3 = $product_endpoints->v3 . "$site_product_id?lang=en&storeId={$store_id}&banner=superstore";
             
             try {
@@ -32,11 +31,9 @@ class ProductService extends CanadianSuperstore implements ProductRequestInterfa
     
             } catch (Exception $e){
                 $this->logger->debug('Product V3 Endpoint Error: ' . $site_product_id . ' -> ' . $e->getMessage());
+                return null;
             }
-        }
-        
-        if(is_null($product_response)){
-            
+        } else {
             $endpoint_v2 = $product_endpoints->v2 . $site_product_id;
 
             try {
@@ -49,7 +46,6 @@ class ProductService extends CanadianSuperstore implements ProductRequestInterfa
                 // throw new Exception('Product Not Found On Either Endpoints');
                 return null;
             }
-
         }
 
         return ['response' => $product_details, 'type' => $request_type];

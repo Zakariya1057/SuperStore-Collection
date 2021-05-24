@@ -31,8 +31,8 @@ class Products extends Asda implements ProductInterface {
         $this->product_service = new ProductService($config_service, $logger, $database_service);
     }
 
-    public function create_product($site_product_id, $category_details, $request_type = null){
-        $parsed_product = $this->product_details($site_product_id, false, $request_type);
+    public function create_product($site_product_id, $category_details){
+        $parsed_product = $this->product_details($site_product_id, false);
 
         if(!is_null($parsed_product)){
             $product_id = $this->shared_product_service->create($site_product_id, $parsed_product, $category_details, $this->store_type_id);
