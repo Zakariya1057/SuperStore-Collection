@@ -137,7 +137,7 @@ class MonitorStores {
             $facility->store_id = $store_id;
             $facility->save();
 
-            $store_facility = $this->facility_model->where(['store_id' => $store_id, 'name' => $facility->name])->get()[0] ?? null;
+            $store_facility = $this->facility_model->where(['store_id' => $store_id, 'name' => $facility->name])->first();
             if(!is_null($store_facility)){
                 $found_facilities[] = $store_facility->id;
             }

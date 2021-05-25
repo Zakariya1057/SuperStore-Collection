@@ -2,37 +2,43 @@
 
 namespace Monitors;
 
-use Collection\Services\SharedProductService;
+use Collection\Services\SharedProductPriceService;
 use Exception;
+
+use Collection\Services\SharedProductService;
+
 use Interfaces\ProductInterface;
+
 use Models\Product\IngredientModel;
 use Models\Product\ProductModel;
+use Models\Product\ProductPriceModel;
 use Models\Shared\MonitoredProductModel;
-use Monolog\Logger;
+
 use Services\ConfigService;
 use Services\CurrencyService;
 use Services\DatabaseService;
-use Services\LoggerService;
 use Services\NotificationService;
 use Services\SanitizeService;
 
+use Monolog\Logger;
 class MonitorProducts {
     
     private $notification_service, $logger, $database_service;
     
-    private $product_model, $monitor_model, $ingredients_model;
+    private $product_price_model, $product_model, $monitor_model, $ingredients_model;
 
     private $currency_service, $sanitize_service;
     
     private $product_collection;
 
-    private $product_service;
+    private $product_service, $product_price_service;
 
     function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, ProductInterface $product_collection){
         $this->logger = $logger;
         $this->database_service = $database_service;
 
         $this->product_model = new ProductModel($database_service);
+        $this->product_price_model = new ProductPriceModel($database_service);
         $this->monitor_model = new MonitoredProductModel($database_service);
         $this->ingredients_model = new IngredientModel($database_service);
 
@@ -44,62 +50,104 @@ class MonitorProducts {
         $this->currency_service = new CurrencyService();
 
         $this->product_service = new SharedProductService($database_service);
+        $this->product_price_service = new SharedProductPriceService($database_service);
+    }
+
+    private function get_products($store_type_id){
+        $product_results = $this->product_model
+        ->select_raw([
+            'products.*', 
+            // 'count(*) as num_monitoring', 
+            'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) as time_difference',
+            
+            'product_prices.region_id as product_region_id', 'price as product_price', 
+            'old_price as product_old_price', 'is_on_sale as product_is_on_sale', 
+            'sale_ends_at product_sale_ends_at', 'promotion_id as product_promotion_id'
+        ])
+        ->join('grocery_list_items', 'grocery_list_items.product_id', 'products.id')
+        ->join('monitored_products', 'monitored_products.product_id', 'products.id')
+        ->join('favourite_products', 'favourite_products.product_id', 'products.id')
+        ->join('product_prices', 'product_prices.product_id', 'products.id')
+        // ->where_raw(["products.id = 18854"])
+        // ->where_raw(["store_type_id = $store_type_id", 'products.large_image is null'])
+        ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
+        // ->where_raw(["store_type_id = $store_type_id"])
+        // ->group_by('products.id')
+        // ->where(['products.id' => 30])
+        // ->order_by('num_monitoring')
+        // ->limit(100)
+        ->get();
+
+        $products = [];
+
+        $product_price_fields = ['region_id', 'price', 'old_price', 'is_on_sale', 'sale_ends_at', 'promotion_id'];
+
+        foreach($product_results as $product){
+            $product_id = $product->id;
+
+            $product_price = new ProductPriceModel($this->database_service);
+            $product_price->product_id = $product_id;
+
+            foreach($product_price_fields as $field){
+                $query_field = 'product_' . $field;
+                $product_price->{$field} = $product->{$query_field};
+            }
+
+            if(key_exists($product->id, $products)){
+                $cached_product = $products[$product->id];
+                $cached_product->prices[] = $product_price;
+            } else {
+                $product->prices = [$product_price];
+                $products[$product_id] = $product;
+            }
+        }
+
+        return array_values($products);
     }
 
     // Shared Monitor, check if data has changed, if so update in database.
     public function monitor_products($store_type){
         $store_type_id = $store_type->store_type_id;
 
-        $products = $this->product_model
-        ->select_raw(['products.*', 'count(*) as num_monitoring', 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) as time_difference'])
-        ->join('grocery_list_items', 'grocery_list_items.product_id', 'products.id')
-        ->join('monitored_products', 'monitored_products.product_id', 'products.id')
-        ->join('favourite_products', 'favourite_products.product_id', 'products.id')
-        // ->where_raw(["products.id = 18854"])
-        // ->where_raw(["store_type_id = $store_type_id", 'products.large_image is null'])
-        // ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
-        ->where_raw(["store_type_id = $store_type_id", 'products.promotion_id is not null'])
-        ->group_by('products.id')
-        ->order_by('num_monitoring')
-        // ->limit(100)
-        ->get();
+        $products = $this->get_products($store_type_id);
 
         $this->logger->notice('Total Products Count: '. count($products));
 
         foreach($products as $product){
-
-            if(is_null($product) || $product->num_monitoring == 0){
+            if(is_null($product)){
                 return;
-            }
-
-            $id = $product->id;
-            $name = $product->name;
-            $last_checked = $product->time_difference;
-
-            $site_product_id = $product->site_product_id;
-
-            $this->logger->notice("------- Checking $name Product Start -----------");
-            $this->logger->debug("Last Checked: $last_checked Hours Ago");
-            $this->logger->debug("Updating Product: [$id] $name");
-
-            // Only fetch images if no product image found
-            $ignore_image = !is_null($product->large_image);
-
-            $new_product = $this->product_collection->product_details($site_product_id, $ignore_image);
-
-            if(is_null($new_product)){
-                $this->logger->error('Failed To Find Product: ' . $site_product_id);
             } else {
-                $this->check_product_change($new_product, $product);
+                $this->check_product($product);
             }
-
-            
-            $this->logger->notice("------- Checking $name Product Complete --------");
         }
-
     }
 
-    public function check_product_change(ProductModel $new_product, $old_product){
+    private function check_product($old_product){
+        $id = $old_product->id;
+        $name = $old_product->name;
+        $last_checked = $old_product->time_difference;
+
+        $site_product_id = $old_product->site_product_id;
+
+        $this->logger->notice("------- Checking $name Product Start -----------");
+        $this->logger->debug("Last Checked: $last_checked Hours Ago");
+        $this->logger->debug("Updating Product: [$id] $name");
+
+        // Only fetch images if no product image found
+        $ignore_image = !is_null($old_product->large_image);
+
+        $new_product = $this->product_collection->product_details($site_product_id, $ignore_image);
+
+        if(is_null($new_product)){
+            $this->logger->error('Failed To Find Product: ' . $site_product_id);
+        } else {
+            $this->check_product_change($new_product, $old_product);
+        }
+        
+        $this->logger->notice("------- Checking $name Product Complete --------");
+    }
+
+    private function check_product_change(ProductModel $new_product, $old_product){
         $this->database_service->start_transaction();
 
         $product_id = $old_product->id;
@@ -107,39 +155,44 @@ class MonitorProducts {
         // If product price changes, notify relevant users.
         $update_fields = ['last_checked' => date('Y-m-d H:i:s')];
 
-        $price_changed = $this->price_check($new_product, $old_product, $update_fields);
-        $this->promotion_check($new_product, $old_product, $update_fields);
+        $price_changes = $this->price_check($new_product, $old_product, $update_fields);
 
         $this->details_check($new_product, $old_product, $update_fields);
         $this->image_check($new_product, $old_product, $update_fields);
 
         $this->available_check($new_product, $old_product, $update_fields);
         
-        $this->sale_check($new_product, $old_product, $update_fields);
-        
         $this->product_model->where(['id' => $product_id])->update($update_fields);
 
-        $this->database_service->commit_transaction();
+        foreach($price_changes as $price_change){
+            $region_id = $price_change->region_id;
 
-        if($price_changed){
-            $this->notify_product_changed($new_product, $old_product);
+            $this->product_price_model->where(['product_id' => $product_id, 'region_id' => $region_id])->update($price_change);
+
+            if(property_exists($price_change, 'price')){
+                $this->notify_product_changed($old_product, $price_change);
+            }
         }
+
+        $this->database_service->commit_transaction();
         
     }
 
-    private function notify_product_changed($product, $old_product){
+    private function notify_product_changed($product, $price_change){
 
         $this->logger->debug('Product Price Changed. Sending Notification');
 
+        $product_id = $product->id;
+
         $monitored_users = $this->monitor_model
-        ->where(['product_id' => $old_product->id, 'send_notifications' => 1])
+        ->where(['users.region_id' => $price_change->region_id, 'product_id' => $product_id, 'send_notifications' => 1])
         ->join('users', 'monitored_products.user_id', 'users.id')
         ->group_by('user_id')->get();
 
-        $data = ['product_id' => (int)$old_product->id];
+        $data = ['product_id' => (int)$product_id];
 
         foreach($monitored_users as $user){
-            $notification_message = $this->create_notification_message($product, $old_product);
+            $notification_message = $this->create_notification_message($product, $price_change->new_price, $price_change->old_price);
             try {
                 $this->notification_service->send_notification($user, $data, $notification_message);
             } catch(Exception $e){
@@ -148,17 +201,17 @@ class MonitorProducts {
         }
     }
 
-    private function create_notification_message($product, $old_product){
+    private function create_notification_message($product, $new_price, $old_price){
         $product_name = $product->name;
 
         $currency = $this->currency_service->get_currency_symbol($product->currency);
 
-        $new_price = number_format($product->price, 2);
-        $old_price = number_format($old_product->price, 2);
+        $new_price = number_format($new_price, 2);
+        $old_price = number_format($old_price, 2);
 
         $changed_type = $new_price > $old_price ? 'Increased' : 'Decreased';
 
-        $title = "Product Price Change";
+        $title = 'Product Price Change';
         $content = "$product_name - $changed_type from {$currency}{$old_price} to {$currency}{$new_price}";
 
         return ['title' => $title, 'body' => $content];
@@ -204,51 +257,87 @@ class MonitorProducts {
     }
 
     private function price_check(ProductModel $new_product, $old_product, &$update_fields){
-        $price_changed = false;
+        $price_changes = [];
+        
+        $prices = $this->product_price_service->group_prices($new_product->prices, $old_product->prices);
 
-        $old_value = $old_product->price;
-        $new_value = $new_product->price;
+        // Number of prices have changed, either an increase or decreate.
+        if(count($new_product->prices) != count($old_product->prices)){
+            
+            $this->logger->notice('Number Of Product Prices Changed: ' . count($new_product->prices) . ' != ' . count($old_product->prices));
 
-        if($old_value != $new_value){
-            $this->logger->debug("Price Changed: $old_value -> $new_value");
-            $price_changed = true;
-            $update_fields['price'] = $new_value;
-            $update_fields['old_price'] = null;
+            foreach($prices as $region_id => $product_prices){
+                $new_price = $product_prices->new_price;
+                $new_price->product_id = $old_product->id;
+
+                $this->product_price_service->create($new_price);
+            }
+
+            $this->logger->notice('Created All The Product Prices');
+        } else {
+
+            foreach($prices as $region_id => $product_prices){
+                $new_price = $product_prices->new_price;
+                $old_price = $product_prices->old_price;
+
+                $this->logger->debug('Checking Price Changes For Region: ' . $region_id);
+                
+                $region_price_changes = [
+                    'region_id' => $new_price->region_id
+                ];
+
+                $old_value = $old_price->price;
+                $new_value = $new_price->price;
+
+                $this->sale_check($new_price, $region_price_changes);
+                $this->promotion_check($new_price, $old_price, $region_price_changes);
+
+                if($old_value != $new_value){
+                    $this->logger->debug("Price Changed: $old_value -> $new_value");
+                    $region_price_changes['price'] = $new_value;
+                }
+
+                $price_changes[] = (object)$region_price_changes;
+
+            }
         }
 
-        return $price_changed;
+        return $price_changes;
     }
 
-    private function sale_check(ProductModel $new_product, $old_product, &$update_fields){
-        if($old_product->is_on_sale && is_null($new_product->is_on_sale)){
-             // Sale Expired
+    private function sale_check(ProductPriceModel $new_prices, &$update_fields){
+        if(!is_null($new_prices->is_on_sale)){
+            // New Sale Added
+            $update_fields['is_on_sale'] = 1;
+            $update_fields['old_price'] = $new_prices->old_price;
+            $update_fields['sale_ends_at'] = $new_prices->sale_ends_at;
+        } else {
+            // Sale Expired or No Sale
             $update_fields['is_on_sale'] = null;
             $update_fields['old_price'] = null;
             $update_fields['sale_ends_at'] = null;
-        } else if(is_null($old_product->is_on_sale) && $new_product->is_on_sale){
-            // New Sale Added
-            $update_fields['is_on_sale'] = 1;
-            $update_fields['old_price'] = $new_product->old_price;
-            $update_fields['sale_ends_at'] = $new_product->sale_ends_at;
         }
     }
 
-    private function promotion_check(ProductModel $new_product, $old_product, &$update_fields){
-        if(!property_exists($new_product, 'promotion') || is_null($new_product->promotion)){
+    private function promotion_check(ProductPriceModel $new_prices, ProductPriceModel $old_prices, &$update_fields){
+        if( !property_exists($new_prices, 'promotion') || is_null($new_prices->promotion) ){
             $update_fields['promotion_id'] = null;
 
-            if(is_null($old_product->promotion_id)){
+            if(is_null($old_prices->promotion_id)){
                 $this->logger->debug('No Product Promotion Before Or After');
             } else {
                 $this->logger->debug('Promotion Expired Or Product Removed From Promotions');
             }
         } else {
             $this->logger->debug('Promotion Found For Product');
-            $this->product_service->create_promotion($new_product);
 
-            if(is_null($old_product->promotion_id) || $old_product->promotion_id != $new_product->promotion_id){
+            $new_promotion_id = $this->product_service->create_promotion($new_prices->promotion);
+
+            if(is_null($old_prices->promotion_id) || $old_prices->promotion_id != $new_promotion_id){
                 $this->logger->debug('Updating Changed Product Promotion');
-                $update_fields['promotion_id'] = $new_product->promotion_id;
+                $update_fields['promotion_id'] = $new_promotion_id;
+            } else {
+                $this->logger->debug('Product Promotion Has Stayed The Same');
             }
         }
     }
@@ -285,6 +374,7 @@ class MonitorProducts {
             throw new Exception("Number Of Ingredients Changed: $old_ingredients_count vs $new_ingredients_count");
         }
     }
+
 }
 
 ?>

@@ -4,6 +4,7 @@ ini_set('memory_limit', '-1');
 
 require_once __DIR__.'/../vendor/autoload.php';
 
+use Collection\Services\SharedRegionService;
 use Monitors\MonitorProducts;
 use Monitors\MonitorStores;
 use Services\CLIService;
@@ -66,7 +67,8 @@ try {
             if($store_type_id == 1){
                 $product_collection = new AsdaProducts($config_service, $logger, $database_service);
             } else if($store_type_id == 2){
-                $product_collection = new CanadianSuperStoreProducts($config_service, $logger, $database_service);
+                $region_service = new SharedRegionService($database_service);
+                $product_collection = new CanadianSuperStoreProducts($config_service, $logger, $database_service, $region_service);
             }
             
             if(is_null($product_collection)){
