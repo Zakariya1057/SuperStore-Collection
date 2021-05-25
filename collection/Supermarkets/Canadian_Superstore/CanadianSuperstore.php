@@ -71,7 +71,7 @@ class CanadianSuperstore {
     public function store_type(){
         $store_type = new StoreTypeModel($this->database_service);
 
-        $store = $store_type->where(['id' => $this->store_type_id ])->get()[0] ?? null;
+        $store = $store_type->where(['id' => $this->store_type_id ])->first();
 
         if(is_null($store)){
             $store_type->id = $this->store_type_id;

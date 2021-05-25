@@ -46,7 +46,7 @@ class RememberService {
 
         if($this->config_service->get('continue')){
 
-            $details = $this->history->where(['store_type_id' => $this->store_type_id])->get()[0] ?? null;
+            $details = $this->history->where(['store_type_id' => $this->store_type_id])->first();
 
             if(is_null($details)){
                 $this->logger->debug('No Script History Found For Site. Creating One');

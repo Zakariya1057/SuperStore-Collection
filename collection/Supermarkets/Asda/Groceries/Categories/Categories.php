@@ -83,7 +83,7 @@ class Categories extends Asda {
             throw new Exception('Unknown Category Number Type Found: ' . $site_category_id);
         }
 
-        $category_item = $category->like(['store_type_id' => $this->store_type_id, 'site_category_id'=> "%$search_site_category_id"])->get()[0] ?? null;
+        $category_item = $category->like(['store_type_id' => $this->store_type_id, 'site_category_id'=> "%$search_site_category_id"])->first();
 
 
         if(!is_null($category_item)){

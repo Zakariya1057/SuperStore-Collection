@@ -27,7 +27,7 @@ class SharedProductGroupService {
         ->where([
             'child_category_id' => $child_category_id, 
             'name' => $product_group_name
-        ])->get()[0] ?? null;
+        ])->first();
 
         if(is_null($product_group_results)){
             // Create Product Group And Return

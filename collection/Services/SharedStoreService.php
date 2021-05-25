@@ -16,7 +16,7 @@ class SharedStoreService {
     }
 
     public function store_exists(string $site_store_id, int $store_type_id){
-        $store_results = $this->store_model->where(['store_type_id' => $store_type_id, 'site_store_id' => $site_store_id])->get()[0] ?? null;
+        $store_results = $this->store_model->where(['store_type_id' => $store_type_id, 'site_store_id' => $site_store_id])->first();
 
         if(!is_null($store_results)){
             return $store_results->id;
@@ -26,7 +26,7 @@ class SharedStoreService {
     }
 
     public function url_store_exists(string $url){
-        $store_results = $this->store_model->where(['url' => $url])->get()[0] ?? null;
+        $store_results = $this->store_model->where(['url' => $url])->first();
 
         if(!is_null($store_results)){
             return $store_results->id;

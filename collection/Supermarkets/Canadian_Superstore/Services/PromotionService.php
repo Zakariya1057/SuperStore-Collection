@@ -61,7 +61,7 @@ class PromotionService extends CanadianSuperstore {
             $where['ends_at'] = date("Y-m-d H:i:s", strtotime($promotion_expires));
         }
 
-        $promotion_results = $promotion->where($where)->get()[0] ?? null;
+        $promotion_results = $promotion->where($where)->cast(PromotionModel::class)->first();
 
         if(is_null($promotion_results)){
             $this->logger->debug('Creating New Promotion Not Found In Database');

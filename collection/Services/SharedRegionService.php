@@ -17,7 +17,7 @@ class SharedRegionService {
     }
 
     public function region_exists(string $name, int $store_type_id){
-        $region_results = $this->region_model->where(['name' => $name, 'store_type_id' => $store_type_id])->get()[0] ?? null;
+        $region_results = $this->region_model->where(['name' => $name, 'store_type_id' => $store_type_id])->first();
 
         if(!is_null($region_results)){
             return $region_results->id;
@@ -34,7 +34,7 @@ class SharedRegionService {
                 $store = $this->store_location_model
                 ->select(['site_store_id'])
                 ->join('stores', 'stores.id', 'store_locations.store_id')
-                ->where(['region_id' => $region->id])->get()[0] ?? null;
+                ->where(['region_id' => $region->id])->first();
     
                 if(!is_null($store)){
                     $region->store_id = $store->site_store_id;

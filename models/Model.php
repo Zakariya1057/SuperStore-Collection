@@ -15,7 +15,9 @@ class Model {
 
     public $database_service, $logger,$product, $insert_ignore;
 
-    public $sanitize, $validator;
+    private $sanitize, $validator;
+
+    private $cast;
 
     function __construct(DatabaseService $database_service=null){
         if($database_service){
@@ -268,8 +270,31 @@ class Model {
         
     }
 
+    public function first(){
+        return $this->get()[0] ?? null;
+    }
+
     public function get(){
         $results = $this->run_query();
+
+        if(!is_null($this->cast)){
+            foreach($results as $index => $item){
+                
+                $model = new $this->cast($this->database_service);
+
+                $fields = array_keys($this->table_fields);
+                $fields[] = 'id';
+
+                foreach($fields as $field){
+                    $model->{$field} = $item->{$field};
+                }
+                
+                $results[$index] = $model;
+            }
+
+            $this->cast = null;
+        }
+
         return $results;
     }
 
@@ -354,18 +379,24 @@ class Model {
 
         }
 
-        $this->reset_data();
-
         $query = join(" ", $queries);
 
         $results = $this->database_service->query($query);
-        
+
+        $this->reset_data();
+
         if(!is_null($create)){
             return $this->database_service->insert_id();
         } else {
             return $results;
         }
         
+    }
+
+    public function cast($model){
+        // Return As The Model
+        $this->cast = $model;
+        return $this;
     }
 
     public function update($data){

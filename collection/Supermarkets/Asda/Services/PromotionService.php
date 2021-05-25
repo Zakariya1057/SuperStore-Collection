@@ -87,7 +87,7 @@ class PromotionService extends Asda {
         if(!is_null($promotion_details)){
             $this->logger->debug('Product Promotion Starting');
 
-            $promotion_results = $promotion->where(['site_promotion_id' => $promotion_site_id])->get()[0] ?? null;
+            $promotion_results = $promotion->where(['site_promotion_id' => $promotion_site_id])->first();
             $promotion_name = $promotion_details->promo_detail;
             $promotion_site_id = $promotion_details->promo_id;
 

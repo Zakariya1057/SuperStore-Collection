@@ -48,7 +48,7 @@ class CategoryService extends CanadianSuperstore {
             throw new Exception("Unknown Category Type Found: $type");
         }
 
-        $category_item = $category->where(['store_type_id' => $this->store_type_id, 'site_category_id' => $category_number])->get()[0] ?? null;
+        $category_item = $category->where(['store_type_id' => $this->store_type_id, 'site_category_id' => $category_number])->first();
 
         if(!is_null($category_item)){
             // Update Index
@@ -91,7 +91,7 @@ class CategoryService extends CanadianSuperstore {
         // V2 - Ship To Home 
         // V3 - In Store
 
-        $category_sources = ['v3', 'v2'];
+        $category_sources = ['v3'];
 
         foreach($category_sources as $type){
             

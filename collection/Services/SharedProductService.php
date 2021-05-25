@@ -3,6 +3,7 @@
 namespace Collection\Services;
 
 use Models\Product\ProductModel;
+use Models\Product\PromotionModel;
 use Services\DatabaseService;
 
 class SharedProductService {
@@ -11,6 +12,8 @@ class SharedProductService {
     private $product_model, $request_service;
     private $category_service, $product_group_service;
 
+    private $product_price_service;
+
     public function __construct(DatabaseService $database_service){
         $this->database_service = $database_service;
 
@@ -18,10 +21,12 @@ class SharedProductService {
 
         $this->category_service = new SharedCategoryService($database_service);
         $this->product_group_service = new SharedProductGroupService($database_service);
+
+        $this->product_price_service = new SharedProductPriceService($database_service);
     }
 
     public function product_exists($site_product_id, $store_type_id){
-        $product_results = $this->product_model->where(['store_type_id' => $store_type_id, 'site_product_id' => $site_product_id])->get()[0] ?? null;
+        $product_results = $this->product_model->where(['store_type_id' => $store_type_id, 'site_product_id' => $site_product_id])->first();
 
         if(!is_null($product_results)){
             return $product_results->id;
@@ -43,13 +48,13 @@ class SharedProductService {
         if(is_null($product_id)){
             $product_id = $this->create_product($parsed_product);
 
-            $this->create_promotion($parsed_product);
+            $this->create_product_promotions($parsed_product);
 
             $this->create_images($product_id, $parsed_product);
             $this->create_ingredients($product_id, $parsed_product);
             $this->create_barcodes($product_id, $parsed_product);
 
-            $this->create_prices($product_id, $parsed_product);
+            $this->product_price_service->create_prices($product_id, $parsed_product);
 
             $this->category_service->create($category_details, $product_id, $product_group_id);
         } else {
@@ -89,15 +94,19 @@ class SharedProductService {
         }
     }
 
-    public function create_promotion(ProductModel &$product){
+    public function create_product_promotions(ProductModel &$product){
         $product->region_promotions = [];
 
         foreach($product->promotions as $promotion){
-            if(property_exists($promotion, 'id')){
-                $product->region_promotions[$promotion->region_id] = $promotion->id;
-            } else {
-                $product->region_promotions[$promotion->region_id] = $promotion->save();
-            }
+            $product->region_promotions[$promotion->region_id] = $this->create_promotion($promotion);
+        }
+    }
+
+    public function create_promotion(PromotionModel &$promotion){
+        if(property_exists($promotion, 'id')){
+            return $promotion->id;
+        } else {
+           return $promotion->save();
         }
     }
 
@@ -109,16 +118,6 @@ class SharedProductService {
         }
     }
 
-    private function create_prices(int $product_id, $product){
-        foreach($product->prices as $price){
-            if(key_exists($price->region_id, $product->region_promotions)){
-                $price->promotion_id = $product->region_promotions[$price->region_id];
-            }
-            
-            $price->product_id = $product_id;
-            $price->save();
-        }
-    }
 }
 
 ?>

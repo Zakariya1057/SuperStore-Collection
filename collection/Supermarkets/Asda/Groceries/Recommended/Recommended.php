@@ -107,7 +107,7 @@ class Recommended extends Asda {
                     ->like(['child_categories.site_category_id' => "%$site_category_id"])
                     ->where(['child_categories.store_type_id' => $this->store_type_id])
                     ->join('parent_categories', 'parent_categories.id', 'child_categories.parent_category_id')
-                    ->get()[0] ?? null;
+                    ->first();
 
                     if(!is_null($category_results)){
 
