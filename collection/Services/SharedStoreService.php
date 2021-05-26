@@ -35,15 +35,12 @@ class SharedStoreService {
         }
     }
 
-    public function create_store(StoreModel $store){
+    public function create_store(StoreModel $store, int $region_id){
         $store_id = $store->save();
-
-        $region_id = $this->region_service->create_region($store->region);
         
         $this->create_location($store->location, $store_id, $region_id);
         $this->create_hours($store->opening_hours, $store_id);
         $this->create_facilitites($store->facilities, $store_id);
-
        
         return $store_id;
     }

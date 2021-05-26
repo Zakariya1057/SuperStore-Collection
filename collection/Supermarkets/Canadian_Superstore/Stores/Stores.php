@@ -2,6 +2,8 @@
 
 namespace Collection\Supermarkets\Canadian_Superstore\Stores;
 
+use Collection\Services\SharedFlyerService;
+use Collection\Services\SharedRegionService;
 use Collection\Services\SharedStoreService;
 use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
 use Collection\Supermarkets\Canadian_Superstore\Services\FlyerService;
@@ -12,12 +14,15 @@ class Stores extends CanadianSuperstore {
     private $shared_store_service;
     private $store_service;
     private $flyer_service;
+    private $region_service;
 
     private function setupStoreServices(){
         if(is_null($this->store_service) || is_null($this->shared_store_service)){
             $this->store_service = new StoreService($this->config_service, $this->logger, $this->database_service);
             $this->shared_store_service = new SharedStoreService($this->database_service);
             $this->flyer_service = new FlyerService($this->config_service, $this->logger, $this->database_service);
+
+            $this->region_service = new SharedRegionService($this->database_service);
         }
     }
 
@@ -43,6 +48,10 @@ class Stores extends CanadianSuperstore {
                 continue;
             }
 
+            if($store_data->address->region != 'Yukon'){
+                continue;
+            }
+
             $site_store_id = $store_data->id;
             $name = $store_data->name;
 
@@ -57,7 +66,10 @@ class Stores extends CanadianSuperstore {
                 if(is_null($store)){
                     $this->logger->error('No Product Details Found. Not Saving Anything');
                 } else {
-                    $store_id = $this->shared_store_service->create_store($store);
+
+                    $region_id = $this->region_service->create_region($store->region);
+
+                    $store_id = $this->shared_store_service->create_store($store, $region_id);
 
                     $flyers = $this->flyer_service->get_flyers($site_store_id, $store_id);
                     $this->shared_store_service->create_flyers($flyers, $store_id);
