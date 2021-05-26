@@ -9,7 +9,7 @@ use Models\Product\ProductModel;
 
 class ProductService extends CanadianSuperstore implements ProductRequestInterface {
 
-    public function request_product($site_product_id, $store_id){
+    public function request_product($site_product_id, $site_store_id){
 
         $product_response = null;
         $product_details = null;
@@ -20,8 +20,8 @@ class ProductService extends CanadianSuperstore implements ProductRequestInterfa
 
         $request_type = null;
 
-        if(str_contains(strtoupper($site_product_id), 'EA')){
-            $endpoint_v3 = $product_endpoints->v3 . "$site_product_id?lang=en&storeId={$store_id}&banner=superstore";
+        if(str_contains(strtoupper($site_product_id), 'EA')){ 
+            $endpoint_v3 = $product_endpoints->v3 . "$site_product_id?lang=en&pickupType=STORE&banner=superstore&storeId=$site_store_id";
             
             try {
                 $product_response = $this->request_service->request($endpoint_v3, 'GET', [], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, $retry_times);

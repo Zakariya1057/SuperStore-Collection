@@ -299,7 +299,7 @@
 
 			"products": {
 				"v2": "https://api.pcexpress.ca/marketplace/v2/banners/superstore/products/",
-				"v3": "https://api.pcexpress.ca/v3/products/"
+				"v3": "https://api.pcexpress.ca/product-facade/v3/products/"
 			},
 
 			"recommended": "https://www.realcanadiansuperstore.ca/api/product/",
