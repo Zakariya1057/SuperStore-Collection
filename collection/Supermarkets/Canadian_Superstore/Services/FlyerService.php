@@ -2,35 +2,21 @@
 
 namespace Collection\Supermarkets\Canadian_Superstore\Services;
 
+use Collection\Services\SharedFlyerService;
 use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
 use Models\Store\FlyerModel;
 use Services\StorageService;
 use Symfony\Component\DomCrawler\Crawler;
 
 class FlyerService extends CanadianSuperstore {
-    private $flyer_model;
     private $storage_service;
+    private $shared_flyer_service;
 
     private function setupClasses(){
-        if(is_null($this->flyer_model) || is_null($this->storage_service)){
-            $this->flyer_model = new FlyerModel($this->database_service);
+        if(is_null($this->storage_service)){
             $this->storage_service = new StorageService($this->config_service, $this->logger);
+            $this->shared_flyer_service = new SharedFlyerService($this->config_service, $this->logger, $this->database_service);
         }
-    }
-
-    public function store_exists(string $site_store_id, int $store_type_id){
-        $store_results = $this->store_model->where(['store_type_id' => $store_type_id, 'site_store_id' => $site_store_id])->first();
-
-        if(!is_null($store_results)){
-            return $store_results->id;
-        } else {
-            return null;
-        }
-    }
-    
-    public function delete_flyers($store_id){
-        $this->setupClasses();
-        $this->flyer_model->where(['store_id' => $store_id])->delete();
     }
 
     public function get_flyers($site_store_id, $store_id): array {
@@ -59,7 +45,7 @@ class FlyerService extends CanadianSuperstore {
     }
 
     private function parse_flyer($flyer_data, $store_id){
-        $flyer = clone $this->flyer_model;
+        $flyer = new FlyerModel($this->database_service);
 
         $flyer->name = $flyer_data->flyer_run_external_name;
 
@@ -68,7 +54,7 @@ class FlyerService extends CanadianSuperstore {
 
         $flyer->store_id = $store_id;
 
-        $flyer->url = $this->download_flyer($flyer_data->pdf_url, $flyer->name, $store_id);
+        $flyer->url = $this->shared_flyer_service->download_flyer($flyer_data->pdf_url, $flyer->name, $store_id);
 
         $flyer->valid_from = date('Y-m-d H:i:s', strtotime( $this->clean_valid_date($flyer_data->valid_from) ));
         $flyer->valid_to = date('Y-m-d H:i:s', strtotime( $this->clean_valid_date($flyer_data->valid_to) ));
@@ -81,12 +67,6 @@ class FlyerService extends CanadianSuperstore {
 
     private function clean_valid_date($date){
         return preg_replace('/-\d{2}:\d{2}$/', '', $date);
-    }
-    
-    private function download_flyer($url, $name, $store_id){
-        $data = file_get_contents($url);
-        $path = str_replace(' ', '_', "flyers/{$name}_{$store_id}.pdf");
-        return $this->storage_service->upload_s3($path, $data, 'pdf');
     }
 }
 

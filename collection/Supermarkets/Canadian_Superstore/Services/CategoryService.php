@@ -91,7 +91,7 @@ class CategoryService extends CanadianSuperstore {
         // V2 - Ship To Home 
         // V3 - In Store
 
-        $category_sources = ['v3'];
+        $category_sources = ['v3', 'v2'];
 
         foreach($category_sources as $type){
             

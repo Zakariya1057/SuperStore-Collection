@@ -2,16 +2,21 @@
 
 namespace Monitors;
 
-use Collection\Services\SharedStoreService;
-use Collection\Supermarkets\Canadian_Superstore\Services\FlyerService;
 use Exception;
+
+use Collection\Supermarkets\Canadian_Superstore\Services\FlyerService;
+
+use Monolog\Logger;
+
 use Interfaces\StoreInterface;
 use Models\Store\FacilityModel;
 use Models\Store\FlyerModel;
 use Models\Store\LocationModel;
 use Models\Store\StoreModel;
 use Models\Store\OpeningHourModel;
-use Monolog\Logger;
+
+use Collection\Services\SharedFlyerService;
+use Collection\Services\SharedStoreService;
 use Services\ConfigService;
 use Services\DatabaseService;
 use Services\NotificationService;
@@ -22,7 +27,7 @@ class MonitorStores {
     
     public $store_service, $flyer_service, $shared_store_service;
 
-    private $store_model, $opening_hour, $location_model, $facility_model, $flyer_model;
+    private $store_model, $opening_hour, $location_model, $facility_model;
 
     function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, StoreInterface $store_service){
         $this->config_service = $config_service;
@@ -30,7 +35,10 @@ class MonitorStores {
         $this->database_service = $database_service;
 
         $this->store_service = $store_service;
+        
         $this->flyer_service = new FlyerService($config_service, $logger, $database_service);
+        $this->shared_flyer_service = new SharedFlyerService($config_service, $logger, $database_service);
+
         $this->shared_store_service = new SharedStoreService($database_service);
 
         $this->notification_service = new NotificationService($config_service, $logger);
@@ -84,7 +92,7 @@ class MonitorStores {
         $this->database_service->start_transaction();
 
         // Update flyers
-        $this->update_flyers($store_id, $new_store);
+        // $this->update_flyers($store_id, $new_store);
         
         // Update hours
         $this->update_hours($store_id, $new_store);
@@ -121,7 +129,6 @@ class MonitorStores {
             'address_line3' => $new_location->address_line3,
 
             'country' => $new_location->country,
-            'region' => $new_location->region,
 
             'latitude' => $new_location->latitude,
             'longitude' => $new_location->longitude,
@@ -161,7 +168,7 @@ class MonitorStores {
         // Save All New Flyers
 
         if($new_store->store_type_id != 1){
-            $this->flyer_service->delete_flyers($store_id);
+            $this->shared_flyer_service->delete_flyers($store_id);
             $flyers = $this->flyer_service->get_flyers($new_store->site_store_id, $store_id);
             $this->shared_store_service->create_flyers($flyers, $store_id);
         }

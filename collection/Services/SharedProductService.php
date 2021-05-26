@@ -9,7 +9,7 @@ use Services\DatabaseService;
 class SharedProductService {
     private $database_service;
 
-    private $product_model, $request_service;
+    private $product_model;
     private $category_service, $product_group_service;
 
     private $product_price_service;
