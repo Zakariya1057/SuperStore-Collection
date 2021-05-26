@@ -24,8 +24,6 @@ class ProductModel extends Model {
         $large_image,
         $small_image, 
 
-        $available,
-
         $price,
         $old_price,
         $is_on_sale,
@@ -59,8 +57,6 @@ class ProductModel extends Model {
 
         $fields = [
             'name' => [],
-
-            'available' => [],
             
             'description' => [
                 'nullable'=> true,

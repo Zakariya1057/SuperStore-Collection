@@ -160,7 +160,7 @@ class MonitorProducts {
         $this->details_check($new_product, $old_product, $update_fields);
         $this->image_check($new_product, $old_product, $update_fields);
 
-        $this->available_check($new_product, $old_product, $update_fields);
+        // $this->available_check($new_product, $old_product, $update_fields);
         
         $this->product_model->where(['id' => $product_id])->update($update_fields);
 

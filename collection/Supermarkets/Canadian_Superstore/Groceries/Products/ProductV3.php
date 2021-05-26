@@ -36,7 +36,6 @@ class ProductV3 extends Products {
         
         $product->availability_type = 'in-store';
 
-        $product->available = 1;
         $product->site_product_id = $product_details->code;
         $product->store_type_id = $this->store_type_id;
         

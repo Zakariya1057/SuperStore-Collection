@@ -69,13 +69,11 @@ class ProductService extends Asda implements ProductRequestInterface {
         $product->availability_type = 'in-store';
 
         $product->name = $this->clean_product_name($name);
-        $product->available = 1;
 
         $product->images = [];
 
         if(is_null($product_details->price)){
             $this->logger->notice('Product Not Available. No Price Details Found.');
-            $product->available = 0;
             return null;
         }
 

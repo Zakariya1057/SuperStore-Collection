@@ -16,8 +16,6 @@ class ProductV2 extends Products {
 
         $product->name = $this->product_service->create_name( $product_details->title, $product_details->brand);
 
-        $product->available = 1;
-
         $this->product_service->set_description($product, $product_details->longDescription);
         $product->brand = $product_details->brand;
 
