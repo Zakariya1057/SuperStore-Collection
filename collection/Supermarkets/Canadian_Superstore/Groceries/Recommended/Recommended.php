@@ -2,6 +2,7 @@
 
 namespace Collection\Supermarkets\Canadian_Superstore\Groceries\Recommended;
 
+use Collection\Services\SharedRegionService;
 use Exception;
 use Models\Category\ChildCategoryModel;
 use Models\Product\ProductModel;
@@ -28,7 +29,9 @@ class Recommended extends CanadianSuperstore {
         $this->product_model = new ProductModel($this->database_service);
         $this->category_model = new ChildCategoryModel($this->database_service);
 
-        $this->product = new Products($this->config_service,$this->logger,$this->database_service,$this->remember_service);
+        $shared_region_service = new SharedRegionService($database_service);
+
+        $this->product = new Products($this->config_service, $this->logger, $this->database_service, $shared_region_service);
 
         $this->product_service = new ProductService($this->config_service, $this->logger, $this->database_service);
     }
