@@ -2,6 +2,7 @@
 
 namespace Collection\Services;
 
+use Exception;
 use Models\Store\LocationModel;
 use Models\Store\RegionModel;
 use Services\DatabaseService;
@@ -38,6 +39,8 @@ class SharedRegionService {
     
                 if(!is_null($store)){
                     $region->store_id = $store->site_store_id;
+                } else {
+                    throw new Exception('Region Without Store ID Found: '. $region->id);
                 }
             }
 
