@@ -3,6 +3,7 @@
 namespace Search;
 
 use Elasticsearch\Client;
+use Exception;
 use Models\Category\CategoryProductModel;
 use Models\Category\ChildCategoryModel;
 use Models\Category\GrandParentCategoryModel;
@@ -49,15 +50,21 @@ class Indices extends Search {
         $results = $this->product_model->select_raw('COUNT(*) as total_count')->where(['enabled' => 1])->get();
         $product_count = $results[0]->total_count;
 
-        // Loop through groups of 5000 products.
+        $this->logger->debug('Total Products: ' . $product_count);
+
+        $last_product_id = 0;
+
+        // Loop through groups of 1000 products.
         for($index = 0; $index < $product_count; $index += 1000){
-            $products = $this->get_products($index);
+            $products = $this->get_products($last_product_id);
 
             if(count($products) == 0){
                 break;
             }
 
-            $this->logger->debug("Indexing Product Groups: $index,1000");
+            $last_product_id = last($products)->id;
+
+            $this->logger->debug("Indexing Product Groups: LIMIT $last_product_id OFFSET 1000");
             $this->index_product_group($products);
         }
     }
@@ -207,12 +214,13 @@ class Indices extends Search {
     }
 
 
-    private function get_products($index){
+    private function get_products($last_product_id){
         $product_results = $this->product_model
         ->select(['products.*', 'child_category_id', 'parent_category_id', 'product_group_id'])
         ->join('category_products', 'category_products.product_id', 'products.id')
+        ->where_raw(["products.id > $last_product_id"])
         ->where_not_in('product_group_id', [0])
-        ->limit("$index,1000")
+        ->limit(2000)
         ->get();
 
         $products = [];
@@ -220,7 +228,13 @@ class Indices extends Search {
         foreach($product_results as $product){
             $product_id = $product->id;
 
-            $child_category_name = $this->child_categories[$product->child_category_id];
+            $child_category_name = $this->child_categories[$product->child_category_id] ?? null;
+
+            if(is_null($child_category_name)){
+                $this->logger->debug('No Child Category For Product. Category ID: ' . $product->child_category_id);
+                continue;
+            }
+
             $product_group_name = $this->product_groups[$product->product_group_id] ?? null;
             $parent_category_name = $this->parent_categories[$product->parent_category_id];
 
