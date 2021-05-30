@@ -25,13 +25,16 @@ class PromotionService extends CanadianSuperstore {
 
         $store_type_id = $this->store_type_id;
         
+        // $5.98 LIMIT 4
+        preg_match('/(\d+\.*\d*) LIMIT (\d+)/i', $promotion_name, $promotion_max_matches);
+
         // $2.68 MIN 3
         preg_match('/(\d+\.*\d*) MIN (\d+)/i', $promotion_name, $promotion_min_matches);
 
         // 2 FOR $12.00
         preg_match('/(\d+) FOR \$(\d+\.*\d*)/i', $promotion_name, $promotion_for_matches);
 
-        $price = $minimum = $quantity = null;
+        $price = $minimum = $maximum = $quantity = null;
 
         if($promotion_min_matches){
             $price = $promotion_min_matches[1];
@@ -39,6 +42,9 @@ class PromotionService extends CanadianSuperstore {
         } else if($promotion_for_matches){
             $price = $promotion_for_matches[2];
             $quantity = $promotion_for_matches[1];
+        } else if($promotion_max_matches){
+            $price = $promotion_max_matches[1];
+            $maximum = $promotion_max_matches[2];
         }
 
         if(is_null($promotion_for_matches) && is_null($promotion_min_matches)){
@@ -58,7 +64,7 @@ class PromotionService extends CanadianSuperstore {
         ];
 
         if(!is_null($promotion_expires)){
-            $where['ends_at'] = date("Y-m-d H:i:s", strtotime($promotion_expires));
+            $where['ends_at'] = date('Y-m-d H:i:s', strtotime($promotion_expires));
         }
 
         $promotion_results = $promotion->where($where)->cast(PromotionModel::class)->first();
@@ -74,12 +80,13 @@ class PromotionService extends CanadianSuperstore {
             $promotion->name = $promotion_name;
             $promotion->price = $price;
             $promotion->minimum = $minimum;
+            $promotion->maximum = $maximum;
             $promotion->quantity = $quantity;
             $promotion->site_category_id = $site_category_id;
     
             if(!is_null($promotion_expires)){
                 $promotion->expires = 1;
-                $promotion_expires = date("Y-m-d H:i:s", strtotime($promotion_expires));
+                $promotion_expires = date('Y-m-d H:i:s', strtotime($promotion_expires));
             }
     
             $promotion->ends_at = $promotion_expires;

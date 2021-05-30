@@ -77,17 +77,23 @@ class Products extends CanadianSuperstore implements ProductInterface {
                     }
                 }
 
-                if($product_response['type'] == 'v2'){
-                    $product_price = $this->product_v2->parse_prices($product_response['response'], $region_id);
+                if(is_null($parsed_product)){
+                    $this->logger->notice('Product Details Not Found: '. $site_product_id);
                 } else {
-                    $product_price = $this->product_v3->parse_prices($product_response['response'], $parsed_product, $region_id);
-                }
 
-                if(!is_null($product_price->promotion)){
-                    $parsed_product->promotions[] = $product_price->promotion;
-                }
+                    if($product_response['type'] == 'v2'){
+                        $product_price = $this->product_v2->parse_prices($product_response['response'], $region_id);
+                    } else {
+                        $product_price = $this->product_v3->parse_prices($product_response['response'], $parsed_product, $region_id);
+                    }
+    
+                    if(!is_null($product_price->promotion)){
+                        $parsed_product->promotions[] = $product_price->promotion;
+                    }
+    
+                    $parsed_product->prices[] = $product_price;
 
-                $parsed_product->prices[] = $product_price;
+                }
             } else {
                 $this->logger->notice('Product Details Not Found: '. $site_product_id);
             }
