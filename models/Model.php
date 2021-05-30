@@ -11,11 +11,11 @@ use Services\ValidatorService;
 
 class Model {
 
-    private $select, $create, $delete, $where, $group_by, $update, $limit, $like, $join, $not_in, $order, $table, $table_fields;
+    private $select, $create, $delete, $where, $group_by, $update, $offset, $limit, $like, $join, $not_in, $order, $table, $table_fields;
 
     public $database_service, $logger,$product, $insert_ignore;
 
-    private $sanitize, $validator;
+    private $sanitize_service, $validator_service;
 
     private $cast;
 
@@ -165,8 +165,13 @@ class Model {
         return $this;
     }
     
-    public function limit($limit=null){
+    public function limit(int $limit){
         $this->limit = $limit;
+        return $this;
+    }
+
+    public function offset(int $offset){
+        $this->offset = $offset;
         return $this;
     }
 
@@ -194,7 +199,7 @@ class Model {
             throw new Exception('Unknown Database Join: ' . $join_type);
         }
 
-        $this->join .= "$join_type JOIN $table ON $relationship_1 = $relationship_2 ";
+        $this->join .= "$join_type JOIN $table ON $relationship_1 = $relationship_2";
 
         return $this;
     }
@@ -305,7 +310,6 @@ class Model {
         $select_fields = $this->select;
         $table_name   = $this->table;
         $where_fields = $this->where;
-        $limit        = $this->limit;
         $update       = $this->update;
         $delete       = $this->delete;
         $like         = $this->like;
@@ -314,6 +318,8 @@ class Model {
         $join         = $this->join;
         $order        = $this->order;
         $not_in       = $this->not_in;
+        $limit        = $this->limit;
+        $offset       = $this->offset;
 
         if(!is_null($create)){
 
@@ -375,6 +381,10 @@ class Model {
 
             if(!is_null($limit)){
                 $queries[] =  "LIMIT $limit";
+            }
+
+            if(!is_null($offset)){
+                $queries[] =  "OFFSET $offset";
             }
 
         }
@@ -472,6 +482,8 @@ class Model {
         $this->create = 
         $this->delete = 
         $this->select =
+        $this->limit =
+        $this->offset =
         null;
     }
 }
