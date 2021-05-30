@@ -199,7 +199,7 @@ class Model {
             throw new Exception('Unknown Database Join: ' . $join_type);
         }
 
-        $this->join .= "$join_type JOIN $table ON $relationship_1 = $relationship_2";
+        $this->join[] = "$join_type JOIN $table ON $relationship_1 = $relationship_2";
 
         return $this;
     }
@@ -352,7 +352,7 @@ class Model {
             }
     
             if(!is_null($join)){
-                $queries[] =  " $join ";
+                $queries[] = join(' ', $join);
             }
 
             if(!is_null($where_fields)){
