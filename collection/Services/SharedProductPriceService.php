@@ -17,12 +17,13 @@ class SharedProductPriceService {
         $product_price->save();
     }
 
-    public function create_prices(int $product_id, $product){
+    public function create_prices(int $product_id, $product, $insert_ignore = null){
         foreach($product->prices as $price){
             if(key_exists($price->region_id, $product->region_promotions)){
                 $price->promotion_id = $product->region_promotions[$price->region_id];
             }
             
+            $price->insert_ignore = $insert_ignore;
             $price->product_id = $product_id;
             $price->save();
         }
