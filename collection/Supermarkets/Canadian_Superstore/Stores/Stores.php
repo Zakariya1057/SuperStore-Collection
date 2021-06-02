@@ -48,10 +48,6 @@ class Stores extends CanadianSuperstore {
                 continue;
             }
 
-            if($store_data->address->region != 'Yukon'){
-                continue;
-            }
-
             $site_store_id = $store_data->id;
             $name = $store_data->name;
 
