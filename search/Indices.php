@@ -183,7 +183,6 @@ class Indices extends Search {
                 'name' => $product->name,
                 'store_type_id' => (int)$product->store_type_id,
                 'description' => $product->description,
-                'price' => (float)$product->price,
                 'weight' => $product->weight,
                 'brand' => $product->brand,
                 'dietary_info' => $product->dietary_info,
