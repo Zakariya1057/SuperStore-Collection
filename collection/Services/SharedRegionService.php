@@ -17,6 +17,15 @@ class SharedRegionService {
         $this->store_location_model = new LocationModel($database_service);
     }
 
+    private $region_stores = [
+        8 => 1077,
+        9 => 1502,
+        10 => 1511,
+        11 => 1556,
+        12 => 1533,
+        13 => 1530
+    ];
+
     public function region_exists(string $name, int $store_type_id){
         $region_results = $this->region_model->where(['name' => $name, 'store_type_id' => $store_type_id])->first();
 
@@ -32,16 +41,19 @@ class SharedRegionService {
             $regions_results = $this->region_model->select(['id', 'name'])->where(['store_type_id' => $store_type_id])->get();
 
             foreach($regions_results as $region){
-                $store = $this->store_location_model
-                ->select(['site_store_id'])
-                ->join('stores', 'stores.id', 'store_locations.store_id')
-                ->where(['region_id' => $region->id])->first();
+                
+                // $store = $this->store_location_model
+                // ->select(['site_store_id'])
+                // ->join('stores', 'stores.id', 'store_locations.store_id')
+                // ->where(['region_id' => $region->id])->order_by('site_store_id', 'DESC')->first();
     
-                if(!is_null($store)){
-                    $region->store_id = $store->site_store_id;
-                } else {
-                    throw new Exception('Region Without Store ID Found: '. $region->id);
-                }
+                // if(!is_null($store)){
+                //     $region->store_id = $store->site_store_id;
+                // } else {
+                //     throw new Exception('Region Without Store ID Found: '. $region->id);
+                // }
+
+                $region->store_id = $this->region_stores[$region->id];
             }
 
             $this->regions = $regions_results;
