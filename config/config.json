@@ -1,17 +1,17 @@
 {
 
 	"database": {
-		"env": "testing",
+		"env": "dev",
 
 		"dev": {
-			"host": "192.168.1.213",
+			"host": "192.168.1.187",
 			"username": "zakariya",
 			"password": "umU5-,PGN43P[eVnr5[+r!R.Mnd!6T",
 			"database": "superstore_database"
 		},
 
 		"testing": {
-			"host": "192.168.1.213",
+			"host": "192.168.1.187",
 			"username": "zakariya",
 			"password": "umU5-,PGN43P[eVnr5[+r!R.Mnd!6T",
 			"database": "superstore_testing"
@@ -190,7 +190,7 @@
 
 		},
 
-		"create_index": 1,
+		"create_index": 0,
 		"index_documents": 1
 	},
 
@@ -267,9 +267,9 @@
 
 			"monitor": 1,
 
-			"stores": 1,
+			"stores": 0,
 
-			"groceries": 1,
+			"groceries": 0,
 			"recommended": 1,
 
 			"store_type_id": 2,
@@ -337,9 +337,11 @@
 	},
 
 	"notification": {
-		"url": "gateway.sandbox.push.apple.com:2195",
-		"pass_phrase": "GFDAxqVADmNa22Q6jJRVy9gtXSJYpfSPHcU9r8dL64yCkP5kkW",
-		"file_path": "storage/apple_push_notification_production.pem"
+		"url": "https://api.push.apple.com/3/device/",
+		"file_path": "storage/AuthKey.p8",
+
+		"bundle_id": "com.zakariya.SuperStore",
+		"key_id": "Q9JS5DX954"
 	}
 
 }
