@@ -15,9 +15,11 @@ class NotificationService {
         $this->logger = $logger;
 
         $notification_config = $config_service->get('notification');
+        
+        $env = $notification_config->env;
 
         $this->key = file_get_contents( __DIR__ .'/../'. $notification_config->file_path);
-        $this->url = $notification_config->url;
+        $this->url = $notification_config->{$env . '_url'};
 
         $this->bundle_id = $notification_config->bundle_id;
         $this->key_id = $notification_config->key_id;
@@ -27,8 +29,9 @@ class NotificationService {
 
     // Send notification to user phone.
     function send_notification($user, $data, $message){
-        // $notification_token = $user->notification_token;
-        $device_token = 'bfebc29a163990bd3ab029e7d94ae37e85bc5264e05fbfaa43681f2ee8cfd03e';
+
+        // $device_token = $user->notification_token;
+        $device_token = '50634795c2d3a99cf10ef97d05dc4981f9b7bebe128842516cbc978c3a4ab211';
 
         $this->logger->info("Sending Notification To: [{$user->id}] {$user->name}");
         $this->logger->info("Device Token: $device_token");
