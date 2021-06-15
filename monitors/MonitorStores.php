@@ -92,7 +92,7 @@ class MonitorStores {
         $this->database_service->start_transaction();
 
         // Update flyers
-        // $this->update_flyers($store_id, $new_store);
+        $this->update_flyers($store_id, $new_store);
         
         // Update hours
         $this->update_hours($store_id, $new_store);
