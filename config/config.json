@@ -337,7 +337,11 @@
 	},
 
 	"notification": {
-		"url": "https://api.push.apple.com/3/device/",
+		"env": "dev",
+
+		"dev_url": "https://api.sandbox.push.apple.com/3/device/",
+		"prod_url": "https://api.push.apple.com/3/device/",
+
 		"file_path": "storage/AuthKey.p8",
 
 		"bundle_id": "com.zakariya.SuperStore",
