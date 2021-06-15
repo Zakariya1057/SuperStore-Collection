@@ -53,6 +53,9 @@ while(true){
         case 'create':
             createMessage($message_service, $user_model, $user_id, $option);
             break;
+        case 'reply':
+            replyMessage($message_service, $message_model, $user_model, $user_id, $option);
+            break;
         case 'new':
             newMessages($message_model, $user_id);
             break;
@@ -61,6 +64,9 @@ while(true){
             break;
         case 'sent':
             sentMessages($message_model, $user_id);
+            break;
+        case 'recent':
+            recentMessages($message_model, $user_id, $option ?? 5);
             break;
         case 'exit':
             exit("Goodbye ...\n\n");
@@ -171,6 +177,24 @@ function createMessage(MessageService $message_service, $user_model, int $from_u
 
 }
 
+function replyMessage(MessageService $message_service, MessageModel $message_model, UserModel $user_model, int $from_user_id, int $message_id){
+    $reply_message = $message_model->where(['id' => $message_id])->first();
+
+    if(is_null($reply_message)){
+        throw new Exception('No message found with id: ' . $message_id);
+    } else {
+        $user = $user_model->where(['id' => $reply_message->from_user_id])->first();
+
+        $message = get_input('Write message: ');
+
+        $input = strtolower( get_input("[Message] : $message \n\nConfirm correct message? Y/N: ") );
+
+        if($input == 'y'){
+            $message_service->send_message($reply_message->type, $message, $from_user_id, $user);
+        }
+    }
+}
+
 function newMessages($message_model, $to_user_id){
     // List of messages, I haven't seen
     $messages = $message_model->join('users', 'users.id', 'messages.from_user_id')
@@ -242,6 +266,28 @@ function viewMessages($message_model, int $from_user_id, int $to_user_id){
 
     foreach($messages as $message){
         print_details($message);
+    }
+}
+
+function recentMessages($message_model, $to_user_id, $limit){
+    // List of messages, I haven't seen
+    $messages = $message_model->join('users', 'users.id', 'messages.from_user_id')
+    ->select(['messages.id', 'users.id as user_id', 'users.name', 'users.email', 'type', 'text', 'messages.created_at'])
+    ->where(['to_user_id' => $to_user_id])
+    ->limit($limit)
+    ->order_by('messages.created_at', 'DESC')
+    ->get();
+
+    $count = count($messages);
+
+    echo "\n\033[34mRecent Messages:\033[0m $count\n";
+
+    echo "\n\n--------------------------------------------------------\n";
+
+    foreach($messages as $message){
+        print_details($message);
+
+        echo "\n\n--------------------------------------------------------\n";
     }
 }
 
