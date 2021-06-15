@@ -11,6 +11,8 @@ class NotificationService {
     
     private $bundle_id, $key, $key_id, $url;
 
+    private $token;
+
     function __construct(ConfigService $config_service, Logger $logger){
         $this->logger = $logger;
 
@@ -29,9 +31,7 @@ class NotificationService {
 
     // Send notification to user phone.
     function send_notification($user, $data, $message){
-
-        // $device_token = $user->notification_token;
-        $device_token = '50634795c2d3a99cf10ef97d05dc4981f9b7bebe128842516cbc978c3a4ab211';
+        $device_token = $user->notification_token;
 
         $this->logger->info("Sending Notification To: [{$user->id}] {$user->name}");
         $this->logger->info("Device Token: $device_token");
@@ -49,14 +49,18 @@ class NotificationService {
     }
 
     private function generate_token(){
-        $payload = array(
-            "kid" => "Q9JS5DX954",
-            "iss" => "5FCM3X5N8A",
-            "alg" => "ES256",
-            "iat" => time()
-        );
+        if(is_null($this->token)){
+            $payload = array(
+                "kid" => "Q9JS5DX954",
+                "iss" => "5FCM3X5N8A",
+                "alg" => "ES256",
+                "iat" => time()
+            );
+    
+            $this->token = (string) JWT::encode($payload, $this->key, 'ES256', $this->key_id);
+        }
 
-        return (string) JWT::encode($payload, $this->key, 'ES256', $this->key_id);
+        return $this->token;
     }
 
     private function generate_headers(){
