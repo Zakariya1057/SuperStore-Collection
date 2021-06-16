@@ -33,6 +33,11 @@ class NotificationService {
     function send_notification($user, $data, $message){
         $device_token = $user->notification_token;
 
+        if(is_null($device_token)){
+            $this->logger->error("No Device Token Found. Returning.");
+            return;
+        }
+
         $this->logger->info("Sending Notification To: [{$user->id}] {$user->name}");
         $this->logger->info("Device Token: $device_token");
 
