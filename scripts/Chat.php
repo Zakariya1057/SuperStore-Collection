@@ -69,7 +69,7 @@ while(true){
             recentMessages($message_model, $user_id, $option ?? 5);
             break;
         case 'exit':
-            exit("Goodbye ...\n\n");
+            exit("\nGoodbye...\n\n");
             break;
         default:
             echo "Unknown Command: " . $choice;

@@ -31,7 +31,7 @@ class MessageService {
 
         $this->database_service->start_transaction();
 
-        $message = $this->message_model->create([
+        $message_id = $this->message_model->create([
             'type' => $type,
             'text' => $text,
 
@@ -43,7 +43,13 @@ class MessageService {
 
         $message = ['title' => $title, 'body' => $text];
 
-        $data = ['type' => 'message', 'message_type' => $type, 'text' => $text];
+        $inserted_message = $this->message_model->where(['id' => $message_id])->first();
+
+        $this->format_message($inserted_message);
+
+        print_r($inserted_message);
+
+        $data = ['type' => 'message', 'message' => $inserted_message];
 
         $this->notification_service->send_notification($user, $data, $message);
 
@@ -51,6 +57,15 @@ class MessageService {
 
         $this->database_service->commit_transaction();
         
+    }
+
+    private function format_message(&$message){
+        $message->id = (int)$message->id;
+
+        $message->created_at = (string) date('Y-m-d H:i:s', strtotime( $message->created_at ));
+        $message->updated_at = (string) date('Y-m-d H:i:s', strtotime( $message->updated_at ));
+
+        return $message;
     }
 
 }
