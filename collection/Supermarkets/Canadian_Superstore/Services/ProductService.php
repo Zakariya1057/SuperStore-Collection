@@ -21,7 +21,9 @@ class ProductService extends CanadianSuperstore implements ProductRequestInterfa
         $request_type = null;
 
         if(str_contains(strtoupper($site_product_id), '_')){ 
-            $endpoint_v3 = $product_endpoints->v3 . "$site_product_id?lang=en&pickupType=STORE&banner=superstore&storeId=$site_store_id";
+            $date = date('dmY');
+            
+            $endpoint_v3 = $product_endpoints->v3 . "$site_product_id?lang=en&pickupType=STORE&banner=superstore&date={$date}&storeId=$site_store_id";
             
             try {
                 $product_response = $this->request_service->request($endpoint_v3, 'GET', [], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, $retry_times);
