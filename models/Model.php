@@ -11,7 +11,7 @@ use Services\ValidatorService;
 
 class Model {
 
-    private $select, $create, $delete, $where, $group_by, $update, $offset, $limit, $like, $join, $not_in, $order, $table, $table_fields;
+    private $select, $create, $delete, $where, $regex, $group_by, $update, $offset, $limit, $like, $join, $not_in, $order, $table, $table_fields;
 
     public $database_service, $logger,$product, $insert_ignore;
 
@@ -143,7 +143,7 @@ class Model {
         return $this;
     }
 
-    public function create_query($data,$seperator='AND'){
+    public function create_query($data, $seperator='AND'){
         
         $wheres = [];
 
@@ -275,6 +275,14 @@ class Model {
         
     }
 
+    public function regex($field, $data, $join = '|'){
+        $query = join($join, $data);
+
+        $this->where = "$field REGEXP '$query'";
+
+        return $this;
+    }
+
     public function first(){
         return $this->get()[0] ?? null;
     }
@@ -308,18 +316,18 @@ class Model {
         $queries = [];
 
         $select_fields = $this->select;
-        $table_name   = $this->table;
-        $where_fields = $this->where;
-        $update       = $this->update;
-        $delete       = $this->delete;
-        $like         = $this->like;
-        $create       = $this->create;
-        $group_by     = $this->group_by;
-        $join         = $this->join;
-        $order        = $this->order;
-        $not_in       = $this->not_in;
-        $limit        = $this->limit;
-        $offset       = $this->offset;
+        $table_name    = $this->table;
+        $where_fields  = $this->where;
+        $update        = $this->update;
+        $delete        = $this->delete;
+        $like          = $this->like;
+        $create        = $this->create;
+        $group_by      = $this->group_by;
+        $join          = $this->join;
+        $order         = $this->order;
+        $not_in        = $this->not_in;
+        $limit         = $this->limit;
+        $offset        = $this->offset;
 
         if(!is_null($create)){
 
@@ -472,6 +480,7 @@ class Model {
 
     private function reset_data(){
         $this->where = 
+        $this->regex = 
         $this->not_in = 
         $this->like = 
         $this->limit = 

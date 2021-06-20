@@ -4,18 +4,20 @@ namespace Collection\Supermarkets\Canadian_Superstore\Services;
 
 use Collection\Services\SharedFlyerService;
 use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
-use Models\Store\FlyerModel;
+use Models\Flyer\FlyerModel;
 use Services\StorageService;
 use Symfony\Component\DomCrawler\Crawler;
 
 class FlyerService extends CanadianSuperstore {
     private $storage_service;
     private $shared_flyer_service;
+    private $flyer_product_service;
 
     private function setupClasses(){
         if(is_null($this->storage_service)){
             $this->storage_service = new StorageService($this->config_service, $this->logger);
             $this->shared_flyer_service = new SharedFlyerService($this->config_service, $this->logger, $this->database_service);
+            $this->flyer_product_service = new FlyerProductService($this->config_service, $this->logger, $this->database_service);
         }
     }
 
@@ -61,6 +63,8 @@ class FlyerService extends CanadianSuperstore {
         
         $this->logger->debug($flyer_data->valid_from . ' -> ' . $flyer->valid_from);
         $this->logger->debug($flyer_data->valid_to . ' -> ' . $flyer->valid_to);
+
+        $this->flyer_product_service->set_flyer_products($flyer, $flyer_data);
 
         return $flyer;
     }

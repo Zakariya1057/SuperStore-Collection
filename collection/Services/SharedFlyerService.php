@@ -2,7 +2,7 @@
 
 namespace Collection\Services;
 
-use Models\Store\FlyerModel;
+use Models\Flyer\FlyerModel;
 use Monolog\Logger;
 use Services\ConfigService;
 use Services\DatabaseService;
@@ -42,7 +42,16 @@ class SharedFlyerService {
     public function create_flyers($flyers, $store_id){
         foreach($flyers as $flyer){
             $flyer->store_id = $store_id;
-            $flyer->save();
+            $flyer_id = $flyer->save();
+
+            $this->create_flyer_proudcts($flyer->products, $flyer_id);
+        }
+    }
+
+    private function create_flyer_proudcts($products, $flyer_id){
+        foreach($products as $product){
+            $product->flyer_id = $flyer_id;
+            $product->save();
         }
     }
 

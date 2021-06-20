@@ -45,13 +45,6 @@ class SharedStoreService {
         return $store_id;
     }
 
-    public function create_flyers($flyers, $store_id){
-        foreach($flyers as $flyer){
-            $flyer->store_id = $store_id;
-            $flyer->save();
-        }
-    }
-
     private function create_location($location, $store_id, $region_id){
         $location->store_id = $store_id;
         $location->region_id = $region_id;

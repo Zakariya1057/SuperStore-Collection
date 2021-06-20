@@ -7,7 +7,7 @@ use Services\DatabaseService;
 
 class MessageModel extends Model {
 
-    public $type, $text, $message_read, $from_user_id, $to_user_d;
+    public $type, $text, $message_read, $from_user_id, $to_user_id;
     
     function __construct(DatabaseService $database_service=null){
 

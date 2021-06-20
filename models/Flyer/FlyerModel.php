@@ -1,6 +1,6 @@
 <?php
  
-namespace Models\Store;
+namespace Models\Flyer;
 
 use Models\Model;
 use Services\DatabaseService;
