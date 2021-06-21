@@ -9,6 +9,8 @@ use Models\Product\ProductImageModel;
 use Models\Product\ProductModel;
 
 use Exception;
+use Models\Product\ChildNutritionModel;
+use Models\Product\NutritionModel;
 use Models\Product\ProductPriceModel;
 
 class ProductV3 extends Products {
@@ -65,6 +67,8 @@ class ProductV3 extends Products {
 
         $this->set_ingredients($product, $product_details->ingredients);
 
+        $this->set_nutritions($product, $product_details->nutritionFacts);
+
         if(!$ignore_image){
             $this->set_images($product, $product_details->imageAssets);
         }
@@ -111,6 +115,68 @@ class ProductV3 extends Products {
 
             }
         }
+    }
+
+    private function set_nutritions(ProductModel &$product, $nutrition_facts){
+        $nutritions_list = [];
+
+        if(count($nutrition_facts) > 0){
+            $nutrition_facts = $nutrition_facts[0];
+
+            // Product Nutritions Fact. Per Serving
+            $top_nutritions = $nutrition_facts->topNutrition;
+            $product->serving_size = $top_nutritions[0]->valueInGram;
+            $product->household_serving_size =$top_nutritions[1]->valueInGram;
+            unset($nutrition_facts->topNutrition);
+
+            // Micronutritins Facts. Vitamins
+            $micro_nutritions_data = $nutrition_facts->microNutrition;
+            $micro_nutrition = new NutritionModel($this->database_service);
+            $micro_nutrition->name = 'Micronutrients';
+            $this->set_child_nutritions($micro_nutrition, $micro_nutritions_data);
+            $nutritions_list[] = $micro_nutrition;
+            unset($nutrition_facts->microNutrition);
+
+            // Other Nutritions
+            foreach($nutrition_facts as $name => $nutrition_data){
+                if(is_null($nutrition_data) || $name == 'ingredients'){
+                    continue;
+                }
+
+                $name =  $this->nutrition_name($name);
+
+                $nutrition = new NutritionModel($this->database_service);
+                $nutrition->name = $name;
+                $nutrition->grams = $nutrition_data->valueInGram;
+                $nutrition->percentage = $nutrition_data->valuePercent;
+
+                $this->set_child_nutritions($nutrition, $nutrition_data->subNutrients ?? []);
+
+                $nutritions_list[] = $nutrition;
+            }
+        }
+
+        $product->nutritions = $nutritions_list;
+    }
+
+    private function set_child_nutritions(&$nutrition, $child_nutritions_data){
+        $child_nutritions_list = [];
+
+        foreach($child_nutritions_data as $child_nutrition_data){
+            $child_nutrition = new ChildNutritionModel($this->database_service);
+            $child_nutrition->name = $this->nutrition_name($child_nutrition_data->code);
+            $child_nutrition->grams = $child_nutrition_data->valueInGram;
+            $child_nutrition->percentage = $child_nutrition_data->valuePercent;
+
+            $child_nutritions_list[] = $child_nutrition;
+        }
+
+        $nutrition->child_nutritions = $child_nutritions_list;
+    }
+
+    private function nutrition_name($name){
+        preg_match_all('/((?:^|[A-Z])[a-z]*)/', $name, $name_matches);
+        return ucwords( strtolower(join(' ', $name_matches[0]) ) );
     }
 
     private function set_images(&$product, $images){

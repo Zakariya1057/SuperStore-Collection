@@ -32,6 +32,10 @@ class ProductModel extends Model {
         $currency,
 
         $weight,
+
+        $serving_size,
+        $household_serving_size,
+
         $brand,
         $dietary_info,
         $allergen_info,
@@ -98,25 +102,18 @@ class ProductModel extends Model {
                 'nullable' => true
             ],
 
-            // 'price' => [
-            //     'type' => 'price'
-            // ],
-            // 'old_price' => [
-            //     'type' => 'price',
-            //     'nullable' => true
-            // ],
-
-            // 'sale_ends_at' => [
-            //     'nullable' => true
-            // ],
-
-            // 'is_on_sale' => [
-            //     'nullable' => true
-            // ],
-
             'weight' => [
                 'nullable' => true
             ],
+
+
+            'serving_size' => [
+                'nullable' => true
+            ],
+            'household_serving_size' => [
+                'nullable' => true
+            ],
+
 
             'brand' => [
                 'nullable' => true
@@ -134,10 +131,6 @@ class ProductModel extends Model {
             'storage' => [
                 'nullable'=> true
             ],
-
-            // 'promotion_id' => [
-            //     'nullable' => true
-            // ],
 
             'reviews_searched' => [
                 'nullable' => true

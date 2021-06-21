@@ -13,6 +13,7 @@ class SharedProductService {
     private $category_service, $product_group_service;
 
     private $product_price_service;
+    private $nutrition_service;
 
     public function __construct(DatabaseService $database_service){
         $this->database_service = $database_service;
@@ -23,6 +24,7 @@ class SharedProductService {
         $this->product_group_service = new SharedProductGroupService($database_service);
 
         $this->product_price_service = new SharedProductPriceService($database_service);
+        $this->nutrition_service = new SharedNutritionService($database_service);
     }
 
     public function product_exists($site_product_id, $store_type_id){
@@ -53,6 +55,8 @@ class SharedProductService {
             $this->create_images($product_id, $parsed_product);
             $this->create_ingredients($product_id, $parsed_product);
             $this->create_barcodes($product_id, $parsed_product);
+
+            $this->nutrition_service->create_nutritions($product_id, $parsed_product);
 
             $this->product_price_service->create_prices($product_id, $parsed_product);
 

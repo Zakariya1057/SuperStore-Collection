@@ -26,6 +26,7 @@ class ProductV2 extends Products {
 
         $product->prices = [];
         $product->promotions = [];
+        $product->nutritions = [];
 
         $this->set_product_group($product, $product_details);
 
