@@ -15,14 +15,17 @@ class SharedNutritionService {
     public function create_nutritions(int $product_id, $product){
         foreach($product->nutritions as $nutrition){
             $nutrition->product_id = $product_id;
+            $nutrition->insert_ignore = true;
             $nutrition_id = $nutrition->save();
+
             $this->create_child_nutritions($nutrition_id, $nutrition->child_nutritions);
         }
     }
 
-    public function create_child_nutritions(int $parent_nutrition_id, $child_nutritions){
+    private function create_child_nutritions(int $parent_nutrition_id, $child_nutritions){
         foreach($child_nutritions as $nutrition){
             $nutrition->parent_nutrition_id = $parent_nutrition_id;
+            $nutrition->insert_ignore = true;
             $nutrition->save();
         }
     }

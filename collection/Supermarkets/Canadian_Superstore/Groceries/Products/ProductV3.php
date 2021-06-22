@@ -134,16 +134,20 @@ class ProductV3 extends Products {
             $micro_nutrition = new NutritionModel($this->database_service);
             $micro_nutrition->name = 'Micronutrients';
             $this->set_child_nutritions($micro_nutrition, $micro_nutritions_data);
-            $nutritions_list[] = $micro_nutrition;
+
+            if(count($micro_nutrition->child_nutritions) > 0){
+                $nutritions_list[] = $micro_nutrition;
+            }
+            
             unset($nutrition_facts->microNutrition);
 
             // Other Nutritions
             foreach($nutrition_facts as $name => $nutrition_data){
-                if(is_null($nutrition_data) || $name == 'ingredients'){
+                if(is_null($nutrition_data) || $name == 'ingredients' || $this->empty_nutrition($nutrition_data)){
                     continue;
                 }
 
-                $name =  $this->nutrition_name($name);
+                $name = $this->nutrition_name($name);
 
                 $nutrition = new NutritionModel($this->database_service);
                 $nutrition->name = $name;
@@ -156,19 +160,23 @@ class ProductV3 extends Products {
             }
         }
 
-        $product->nutritions = $nutritions_list;
+        $product->nutritions = array_reverse($nutritions_list);
     }
 
     private function set_child_nutritions(&$nutrition, $child_nutritions_data){
         $child_nutritions_list = [];
 
         foreach($child_nutritions_data as $child_nutrition_data){
-            $child_nutrition = new ChildNutritionModel($this->database_service);
-            $child_nutrition->name = $this->nutrition_name($child_nutrition_data->code);
-            $child_nutrition->grams = $child_nutrition_data->valueInGram;
-            $child_nutrition->percentage = $child_nutrition_data->valuePercent;
 
-            $child_nutritions_list[] = $child_nutrition;
+            if( !$this->empty_nutrition($child_nutrition_data) ){
+                $child_nutrition = new ChildNutritionModel($this->database_service);
+                $child_nutrition->name = $this->nutrition_name($child_nutrition_data->code);
+                $child_nutrition->grams = $child_nutrition_data->valueInGram;
+                $child_nutrition->percentage = $child_nutrition_data->valuePercent;
+    
+                $child_nutritions_list[] = $child_nutrition;
+            }
+
         }
 
         $nutrition->child_nutritions = $child_nutritions_list;
@@ -178,6 +186,20 @@ class ProductV3 extends Products {
         preg_match_all('/((?:^|[A-Z])[a-z]*)/', $name, $name_matches);
         return ucwords( strtolower(join(' ', $name_matches[0]) ) );
     }
+
+    private function empty_nutrition($nutrition){
+        // Empty = No weight or percentage
+        return $this->empty_percent($nutrition) && $this->empty_weight($nutrition);
+    }
+
+    private function empty_percent($nutrition){
+        return is_null($nutrition->valuePercent) || $nutrition->valuePercent == '0 %';
+    }
+
+    private function empty_weight($nutrition){
+        return is_null($nutrition->valueInGram)  || $nutrition->valueInGram == '0 g';
+    }
+
 
     private function set_images(&$product, $images){
 
