@@ -40,12 +40,14 @@ $notification = new NotificationService($config_service, $logger);
 $logger->notice("---------------------------- Monitor Script Start ----------------------------");
 
 try {
-
+    
     if($monitor_type != 'stores' && $monitor_type  != 'products'){
-        return exit($logger->error('Unknown Run Type: '. $monitor_type));
+        die('Unknown Run Type: '. $monitor_type);
     }
 
-    $logger->debug('Checking All Store Details Match');
+    if(scriptRunning($monitor_type)){
+        exit("Monitor Script already running. Exiting now.\n");
+    }
 
     $store_conf = $config_service->get('stores.' . str_replace(' ', '_', strtolower($store_type)));
 
@@ -62,7 +64,7 @@ try {
         $logger->notice("--- Monitoring Type: $monitor_type ");
 
         if($monitor_type == 'products'){
-            // Runs every 3 hours.  [ 0 */3 * * * ]
+            // Runs every 4 hours During Day.  [ 0 9,13,17,20 * * * ]
 
             if($store_type_id == 1){
                 $product_collection = new AsdaProducts($config_service, $logger, $database_service);
@@ -109,5 +111,13 @@ try {
 
 
 $logger->notice("---------------------------- Monitor Script END ------------------------------");
+
+
+function scriptRunning($type){
+    $output = shell_exec('ps aux | grep php');
+    $regex = "(php scripts\/Monitor\.php --store=Real Canadian Superstore --type=$type)";
+    preg_match_all("/$regex/i", $output, $matches);
+    return count($matches[0]) > 1;
+}
 
 ?>
