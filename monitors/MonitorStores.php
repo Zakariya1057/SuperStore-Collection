@@ -10,7 +10,7 @@ use Monolog\Logger;
 
 use Interfaces\StoreInterface;
 use Models\Store\FacilityModel;
-use Models\Store\FlyerModel;
+use Models\Flyer\FlyerModel;
 use Models\Store\LocationModel;
 use Models\Store\StoreModel;
 use Models\Store\OpeningHourModel;
@@ -170,7 +170,7 @@ class MonitorStores {
         if($new_store->store_type_id != 1){
             $this->shared_flyer_service->delete_flyers($store_id);
             $flyers = $this->flyer_service->get_flyers($new_store->site_store_id, $store_id);
-            $this->shared_store_service->create_flyers($flyers, $store_id);
+            $this->shared_flyer_service->create_flyers($flyers, $store_id);
         }
        
     }
