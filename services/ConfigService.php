@@ -28,7 +28,11 @@ class ConfigService {
         $details = $this->conf;
 
         foreach($field_list as $field_name){
-            $details->{$field_name} = $value;  
+            if($field_name == end($field_list)){
+                $details->{$field_name} = $value;
+            } else {
+                $details = $details->{$field_name};
+            }
         }
     }
 
