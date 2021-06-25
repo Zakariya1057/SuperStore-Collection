@@ -27,9 +27,11 @@ $config_service = new ConfigService();
 
 $logger_service = new LoggerService('Chat');
 
+$config_service->set('database.env', 'prod');
+
 $logger = $logger_service->logger_handler;
 
-$config_service->set('log_query', false);
+// $config_service->set('log_query', false);
 
 $database_service = new DatabaseService($config_service, $logger);
 
