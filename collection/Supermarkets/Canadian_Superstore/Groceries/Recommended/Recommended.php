@@ -18,7 +18,6 @@ use Services\RememberService;
 class Recommended extends CanadianSuperstore {
 
     private $product_model, $category_model;
-    private $product_service;
 
     private $product;
 
@@ -32,8 +31,6 @@ class Recommended extends CanadianSuperstore {
         $shared_region_service = new SharedRegionService($database_service);
 
         $this->product = new Products($this->config_service, $this->logger, $this->database_service, $shared_region_service);
-
-        $this->product_service = new ProductService($this->config_service, $this->logger, $this->database_service);
     }
 
     public function create_recommended(){
