@@ -160,7 +160,7 @@ class ProductV3 extends Products {
             }
         }
 
-        $product->nutritions = array_reverse($nutritions_list);
+        $product->nutritions = $nutritions_list;
     }
 
     private function set_child_nutritions(&$nutrition, $child_nutritions_data){
