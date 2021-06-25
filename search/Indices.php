@@ -202,6 +202,9 @@ class Indices extends Search {
     }
 
     public function delete_documents($index){
+        
+        $this->logger->error('Deleting Document: ' . $index);
+
         $this->client->deleteByQuery([
             'index' => $index,
             'body' => [
@@ -230,7 +233,7 @@ class Indices extends Search {
             $child_category_name = $this->child_categories[$product->child_category_id] ?? null;
 
             if(is_null($child_category_name)){
-                $this->logger->debug('No Child Category For Product. Category ID: ' . $product->child_category_id);
+                $this->logger->error('No Child Category For Product. Category ID: ' . $product->child_category_id);
                 continue;
             }
 
