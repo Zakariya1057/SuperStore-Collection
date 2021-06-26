@@ -64,16 +64,13 @@ class MonitorProducts {
             'old_price as product_old_price', 'is_on_sale as product_is_on_sale', 
             'sale_ends_at product_sale_ends_at', 'promotion_id as product_promotion_id'
         ])
-        ->join('grocery_list_items', 'grocery_list_items.product_id', 'products.id')
-        ->join('monitored_products', 'monitored_products.product_id', 'products.id')
-        ->join('favourite_products', 'favourite_products.product_id', 'products.id')
         ->join('product_prices', 'product_prices.product_id', 'products.id')
         // ->where_raw(["products.site_product_id = 21359663_EA"])
         // ->where_raw(["store_type_id = $store_type_id", 'products.large_image is null'])
         ->where_raw(["store_type_id = $store_type_id", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
         // ->where_raw(["products.site_product_id = '21359663_EA'"])
         // ->group_by('products.id')
-        // ->where(['products.id' => 30])
+        // ->where(['products.id' => 25208])
         // ->order_by('num_monitoring')
         // ->limit(100)
         ->order_by('last_checked')
@@ -193,7 +190,8 @@ class MonitorProducts {
         $data = ['product_id' => (int)$product_id];
 
         foreach($monitored_users as $user){
-            $notification_message = $this->create_notification_message($product, $price_change->new_price, $price_change->old_price);
+            $notification_message = $this->create_notification_message($product, $price_change->price, $price_change->old_price);
+            
             try {
                 $this->notification_service->send_notification($user, $data, $notification_message);
             } catch(Exception $e){
@@ -264,7 +262,7 @@ class MonitorProducts {
 
         // Number of prices have changed, either an increase or decreate.
         if(count($new_product->prices) != count($old_product->prices)){
-            
+
             $this->logger->notice('Number Of Product Prices Changed: ' . count($new_product->prices) . ' != ' . count($old_product->prices));
 
             foreach($prices as $region_id => $product_prices){
@@ -275,49 +273,41 @@ class MonitorProducts {
             }
 
             $this->logger->notice('Created All The Product Prices');
-        } else {
+        }
 
-            // foreach($new_product->prices as $price){
-            //     $this->logger->debug('New Region ID: ' . $price->region_id);
-            // }
+        foreach($prices as $region_id => $product_prices){
+            $new_price = $product_prices->new_price ?? null;
+            $old_price = $product_prices->old_price ?? null;
 
-            // foreach($old_product->prices as $price){
-            //     $this->logger->debug('Old Region ID: ' . $price->region_id);
-            // }
-
-            foreach($prices as $region_id => $product_prices){
-                $new_price = $product_prices->new_price ?? null;
-                $old_price = $product_prices->old_price ?? null;
-
-                if(is_null($old_price)){
-                    // Only new product prices are found.
-                    $this->product_price_service->create($new_price);
-                    continue;
-                } else if(is_null($new_price)){
-                    // Previosly found, not found now
-                    throw new Exception('Previosly found, not found now');
-                }
-
-                $this->logger->debug('Checking Price Changes For Region: ' . $region_id);
-                
-                $region_price_changes = [
-                    'region_id' => $new_price->region_id
-                ];
-
-                $old_value = $old_price->price;
-                $new_value = $new_price->price;
-
-                $this->sale_check($new_price, $region_price_changes);
-                $this->promotion_check($new_price, $old_price, $region_price_changes);
-
-                if($old_value != $new_value){
-                    $this->logger->debug("Price Changed: $old_value -> $new_value");
-                    $region_price_changes['price'] = $new_value;
-                }
-
-                $price_changes[] = (object)$region_price_changes;
-
+            if(is_null($old_price)){
+                // Only new product prices are found.
+                $this->product_price_service->create($new_price);
+                continue;
+            } else if(is_null($new_price)){
+                // Previosly found, not found now
+                throw new Exception('Previosly found, not found now');
             }
+
+            $this->logger->debug('Checking Price Changes For Region: ' . $region_id);
+            
+            $region_price_changes = [
+                'region_id' => $new_price->region_id
+            ];
+
+            $old_value = $old_price->price;
+            $new_value = $new_price->price;
+
+            $this->sale_check($new_price, $region_price_changes);
+            $this->promotion_check($new_price, $old_price, $region_price_changes);
+
+            if($old_value != $new_value){
+                $this->logger->debug("Price Changed: $old_value -> $new_value");
+                $region_price_changes['price'] = $new_value;
+                $region_price_changes['old_price'] = $old_value;
+            }
+
+            $price_changes[] = (object)$region_price_changes;
+
         }
 
         return $price_changes;
