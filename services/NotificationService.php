@@ -41,6 +41,8 @@ class NotificationService {
         $this->logger->info("Sending Notification To: [{$user->id}] {$user->name}");
         $this->logger->info("Device Token: $device_token");
 
+        print_r($message);
+        
         $payload = $this->generate_payload($message, $data);
         
         $headers = $this->generate_headers();
