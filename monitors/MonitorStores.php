@@ -4,7 +4,7 @@ namespace Monitors;
 
 use Exception;
 
-use Collection\Supermarkets\Canadian_Superstore\Services\FlyerService;
+use Collection\Loblaws\Services\FlyerService;
 
 use Monolog\Logger;
 
@@ -50,16 +50,15 @@ class MonitorStores {
         $this->flyer_model = new FlyerModel($database_service);
     }
 
-    public function monitor_stores($store_type){
+    public function monitor_stores(){
 
-        $store_type_id = $store_type->store_type_id;
-        $store_type_name = $store_type->name;
+        $store_type_name = 'Loblaws';
 
         $this->logger->debug('Store Monitoring');
 
-        $stores = $this->store_model->where(['store_type_id' => $store_type_id])
+        $stores = $this->store_model
         ->select_raw(['stores.*','TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) as time_difference'])
-        ->where_raw(['TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3', 'stores.store_type_id = ' . $store_type_id])
+        ->where_raw(['TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
         ->get();
 
         foreach($stores as $store){
@@ -83,7 +82,7 @@ class MonitorStores {
         
         $store_id = $store->id;
         
-        $new_store = $this->store_service->store_details($store->site_store_id, $store->url);
+        $new_store = $this->store_service->store_details($store->site_store_id, $store->supermarket_chain_id, $store->url);
         
         if(is_null($new_store)){
             throw new Exception('New Store Not Found: ' . $store_id);
@@ -166,13 +165,9 @@ class MonitorStores {
     private function update_flyers($store_id, $new_store){
         // Delete All Expired Flyers.
         // Save All New Flyers
-
-        if($new_store->store_type_id != 1){
-            $this->shared_flyer_service->delete_flyers($store_id);
-            $flyers = $this->flyer_service->get_flyers($new_store->site_store_id, $store_id);
-            $this->shared_flyer_service->create_flyers($flyers, $store_id);
-        }
-       
+        $this->shared_flyer_service->delete_flyers($store_id);
+        $flyers = $this->flyer_service->get_flyers($new_store->site_store_id, $store_id);
+        $this->shared_flyer_service->create_flyers($flyers, $store_id);
     }
 }
 

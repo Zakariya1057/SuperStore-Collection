@@ -344,17 +344,17 @@ class Model {
             } else {
     
                 if(!is_null($update)){
-                    $queries[] =  "UPDATE $table_name";
+                    $queries[] = "UPDATE $table_name";
                 } else {
                     if(!is_null($select_fields)){
-                        $queries[] =  "SELECT $select_fields FROM $table_name";
+                        $queries[] = "SELECT $select_fields FROM $table_name";
                     } else {
-                        $queries[] =  "SELECT * FROM $table_name";
+                        $queries[] = "SELECT * FROM $table_name";
                     }
                 }
         
                 if(!is_null($update)){
-                    $queries[] =  "SET $update";
+                    $queries[] = "SET $update";
                 }
     
             }
@@ -368,31 +368,31 @@ class Model {
                     $where_fields .= " AND $like";
                 }
     
-                $queries[] =  "WHERE $where_fields";
+                $queries[] = "WHERE $where_fields";
             } else {
                 if(!is_null($like)){
-                    $queries[] =  "WHERE $like";
+                    $queries[] = "WHERE $like";
                 }
             }
 
             if(!is_null($not_in)){
-                $queries[] =  "$not_in";
+                $queries[] = "$not_in";
             }
 
             if(!is_null($group_by)){
-                $queries[] =  "GROUP BY $group_by";
+                $queries[] = "GROUP BY $group_by";
             }
 
             if(!is_null($order)){
-                $queries[] =  "$order";
+                $queries[] = "$order";
             }
 
             if(!is_null($limit)){
-                $queries[] =  "LIMIT $limit";
+                $queries[] = "LIMIT $limit";
             }
 
             if(!is_null($offset)){
-                $queries[] =  "OFFSET $offset";
+                $queries[] = "OFFSET $offset";
             }
 
         }

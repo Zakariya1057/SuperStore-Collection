@@ -14,7 +14,7 @@ class SharedProductGroupService {
         $this->product_group_model = new ProductGroupModel($database_service);
     }
 
-    public function create(ProductModel $product_details, int $child_category_id, int $store_type_id): int {
+    public function create(ProductModel $product_details, int $child_category_id, int $company_id): int {
         // Create/Select Product Group
         $product_group_model = clone $this->product_group_model;
         
@@ -34,7 +34,7 @@ class SharedProductGroupService {
             $product_group_model->name = $product_group_name;
             $product_group_model->site_product_group_id = $site_product_group_id;
             $product_group_model->child_category_id = $child_category_id;
-            $product_group_model->store_type_id = $store_type_id;
+            $product_group_model->company_id = $company_id;
 
             $product_group_model->id = $product_group_model->save();
 

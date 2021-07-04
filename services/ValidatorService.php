@@ -22,7 +22,7 @@ class ValidatorService extends SanitizeService {
             $value = $data[$field_name] ?? null;
 
             $nullable = $validate['nullable'] ?? false;
-            $boolean =  $validate['boolean'] ?? null;
+            $boolean = $validate['boolean'] ?? null;
             $type = $validate['type'] ?? null;
 
             $options = $validate['options'] ?? null;

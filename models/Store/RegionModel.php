@@ -10,7 +10,7 @@ class RegionModel extends Model {
     public 
         $name, 
         $country,
-        $store_type_id;
+        $company_id;
 
     function __construct(DatabaseService $database_service=null){
 
@@ -21,7 +21,7 @@ class RegionModel extends Model {
         $fields = [
             'name' => [],
             'country' => [],
-            'store_type_id' => []
+            'company_id' => []
         ];
 
         $this->fields($fields);

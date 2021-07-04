@@ -1,7 +1,7 @@
 {
 
 	"database": {
-		"env": "dev",
+		"env": "testing",
 
 		"dev": {
 			"host": "192.168.1.187",
@@ -17,8 +17,15 @@
 			"database": "superstore_testing"
 		},
 
+		"docker": {
+			"host": "localhost",
+			"username": "root",
+			"password": "password",
+			"database": "superstore_database"
+		},
+
 		"prod": {
-			"host": "superstore-database.cuyqkwdewraf.eu-west-2.rds.amazonaws.com",
+			"host": "superstore-backup.cuyqkwdewraf.eu-west-2.rds.amazonaws.com",
 			"username": "superstore_user",
 			"password": "7zDPwYkz2AlviJ1tMjMCz8A49IE37dzeEshcO5Ps",
 			"database": "superstore_database"
@@ -196,8 +203,6 @@
 
 	"log_query": 1,
 
-	"city": "Birmingham",
-
 	"env": "prod",
 
 	"continue": 1,
@@ -234,62 +239,110 @@
 		}
 	},
 
-	"stores": {
+	"companies": {
 
-		"asda": {
+		"loblaws": {
 
-			"name": "Asda",
-			"country": "United Kingdom",
+			"name": "Loblaws",
 
-			"currency": "Pounds",
+			"id": 1,
 
-			"run": 1,
-
-			"monitor": 1,
-
-			"stores": 1,
-
-			"groceries": 0,
-			"recommended": 1,
-			"reviews": 1,
-
-			"store_type_id": 1,
-			"user_id": 1
-		},
-
-		"real_canadian_superstore": {
-
-			"name": "Real Canadian Superstore",
+			"api": {
+				"key": "1im1hL52q9xvta16GlSdYDsTsG0dmyhF"
+			},
 
 			"currency": "Canadian Dollars",
 
-			"run": 1,
+			"user_id": 2,
 
-			"monitor": 1,
+			"settings": {
+				"run": 1,
+		
+				"monitor": 1,
+	
+				"stores": 1,
+	
+				"groceries": 1,
+				"recommended": 1
+			},
 
-			"stores": 0,
+			"supermarket_chains": {
+				"real_canadian_superstore": {
+					"id": 1,
+					"name": "Real Canadian Superstore",
+					"banner": "superstore",
+					"url": "https://www.realcanadiansuperstore.ca",
 
-			"groceries": 0,
-			"recommended": 1,
+					"regions": {
+						"Ontario": {
+							"id": 8,
+							"site_store_id": "1077"
+						},
+						"Alberta": {
+							"id": 9,
+							"site_store_id": "1502"
+						},
+						"Manitoba": {
+							"id": 10,
+							"site_store_id": "1511"
+						},
+						"British": {
+							"id": 11,
+							"site_store_id": "1556"
+						},
+						"Saskatchewan": {
+							"id": 12,
+							"site_store_id": "1533"
+						},
+						"Yukon": {
+							"id": 13,
+							"site_store_id": "1530"
+						}
+					}
+				},
 
-			"store_type_id": 2,
-			"user_id": 2
+				"no_frills": {
+					"id": 2,
+					"name": "No Frills",
+					"banner": "nofrills",
+					"url": "https://www.nofrills.ca",
+
+					"regions": {
+						"Ontario": {
+							"id": 8,
+							"site_store_id": "1077"
+						},
+						"Alberta": {
+							"id": 9,
+							"site_store_id": "1502"
+						},
+						"Manitoba": {
+							"id": 10,
+							"site_store_id": "1511"
+						},
+						"British": {
+							"id": 11,
+							"site_store_id": "1556"
+						},
+						"Saskatchewan": {
+							"id": 12,
+							"site_store_id": "1533"
+						},
+						"Yukon": {
+							"id": 13,
+							"site_store_id": "1530"
+						}
+					}
+				}
+			}
 		}
+
 	},
 
 	"endpoints": {
 
-		"asda": {
-			"groceries": "https://groceries.asda.com/api/bff/graphql",
-			"shelves": "https://groceries.asda.com/api/bff/graphql",
-			"products": "https://groceries.asda.com/api/items/catalog",
-			"reviews": "https://groceries.asda.com/review/reviews.json?requestorigin=gi&apiversion=5.4&passkey=92ffdz3h647mtzgbmu5vedbq&Filter=ProductId%3A",
-			"promotions": "https://groceries.asda.com/cmscontent/json/pages/overlays/linksave?requestorigin=gi&Nrpp=10000000&storeId=4565&promoid=",
-			"recommended": "https://groceries.asda.com/p13nservice/recommendations?storeId=4565&placement=item_page.pdp1&skuId=",
-			"stores": "https://storelocator.asda.com/directory"
-		},
+		"loblaws": {
 
-		"real_canadian_superstore": {
 			"groceries": "https://cdn.contentful.com/spaces/0dlg9rxz8nvy/environments/master/entries?content_type=navigationList&locale=en-CA&include=3",
 
 			"categories": {
@@ -310,6 +363,7 @@
 				"page": "https://flyers.realcanadiansuperstore.ca/flyers/realcanadiansuperstore?type=1&store_code=",
 				"flyers": "https://flyers.realcanadiansuperstore.ca/flyer_data/"
 			}
+
 		}
 
 	},
@@ -337,7 +391,7 @@
 	},
 
 	"notification": {
-		"env": "dev",
+		"env": "prod",
 
 		"dev_url": "https://api.sandbox.push.apple.com/3/device/",
 		"prod_url": "https://api.push.apple.com/3/device/",

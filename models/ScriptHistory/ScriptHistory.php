@@ -7,7 +7,7 @@ use Services\DatabaseService;
 
 class ScriptHistory extends Model {
     
-    public $store_type_id, $grand_parent_category_index, $parent_category_index, $child_category_index, $product_index, $error_file, $error_message,$error_line_number;
+    public $company_id, $grand_parent_category_index, $parent_category_index, $child_category_index, $product_index;
 
     function __construct(DatabaseService $database_service=null){
 
@@ -17,7 +17,7 @@ class ScriptHistory extends Model {
 
         $fields = [
 
-            'store_type_id' => [ 
+            'company_id' => [ 
                 'type' => 'int'
             ],
             
@@ -35,17 +35,6 @@ class ScriptHistory extends Model {
             ],
 
             'product_index' => [
-                'nullable'=> true,
-                'type' => 'int'
-            ],
-
-            'error_file' => [
-                'nullable'=> true,
-            ],
-            'error_message' => [
-                'nullable'=> true,
-            ],
-            'error_line_number' => [
                 'nullable'=> true,
                 'type' => 'int'
             ],

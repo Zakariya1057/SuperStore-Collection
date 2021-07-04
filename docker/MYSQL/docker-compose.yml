@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+
+  superstore_database:
+    image: mysql
+    environment:
+      MYSQL_DATABASE: superstore_database
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: superstore_database
+    

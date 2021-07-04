@@ -30,9 +30,15 @@ class SharedProductPriceService {
     }
 
     public function group_prices($new_prices, $old_prices){
-        $all_prices = [];
+        $supermarket_prices = [];
 
         foreach($new_prices as $new_price){
+            $supermarket_chain_id = $new_price->supermarket_chain_id;
+
+            if(!key_exists($supermarket_chain_id, $supermarket_prices)){
+                $supermarket_prices[$supermarket_chain_id] = [];
+            }
+
             $region_id = $new_price->region_id;
 
             $prices = ['new_price' => $new_price];
@@ -44,10 +50,10 @@ class SharedProductPriceService {
                 }
             }
 
-            $all_prices[$region_id] = (object)$prices;
+            $supermarket_prices[$supermarket_chain_id][$region_id] = (object)$prices;
         }
 
-        return $all_prices;
+        return $supermarket_prices;
     }
 
     public function order_prices_by_region($prices){

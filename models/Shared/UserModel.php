@@ -15,7 +15,7 @@ class UserModel extends Model {
         $send_notifications,
         $notification_token,
         $remember_token,
-        $store_type_id,
+        $company_id,
         $token_sent_at,
         $logged_in_at,
         $logged_out_at;
@@ -27,7 +27,7 @@ class UserModel extends Model {
         $this->table('users');
 
         $fields = [
-            'store_type_id' => [],
+            'company_id' => [],
             'name' => [],
             'email' => [],
             'password' => [],

@@ -27,8 +27,8 @@ class SharedProductService {
         $this->nutrition_service = new SharedNutritionService($database_service);
     }
 
-    public function product_exists($site_product_id, $store_type_id){
-        $product_results = $this->product_model->where(['store_type_id' => $store_type_id, 'site_product_id' => $site_product_id])->first();
+    public function product_exists($site_product_id, $company_id){
+        $product_results = $this->product_model->where(['company_id' => $company_id, 'site_product_id' => $site_product_id])->first();
 
         if(!is_null($product_results)){
             return $product_results->id;
@@ -38,14 +38,14 @@ class SharedProductService {
     }
 
     // Create Product
-    public function create(string $site_product_id, ProductModel $parsed_product, $category_details, int $store_type_id){
+    public function create(string $site_product_id, ProductModel $parsed_product, $category_details, int $company_id){
 
         // Start Transaction
         $this->database_service->start_transaction();
 
-        $product_id = $this->product_exists($site_product_id, $store_type_id);
+        $product_id = $this->product_exists($site_product_id, $company_id);
 
-        $product_group_id = $this->product_group_service->create($parsed_product, $category_details->id, $store_type_id);
+        $product_group_id = $this->product_group_service->create($parsed_product, $category_details->id, $company_id);
 
         if(is_null($product_id)){
             $product_id = $this->create_product($parsed_product);

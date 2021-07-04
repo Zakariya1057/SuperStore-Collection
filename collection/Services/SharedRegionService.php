@@ -26,8 +26,8 @@ class SharedRegionService {
         13 => 1530
     ];
 
-    public function region_exists(string $name, int $store_type_id){
-        $region_results = $this->region_model->where(['name' => $name, 'store_type_id' => $store_type_id])->first();
+    public function region_exists(string $name, int $company_id){
+        $region_results = $this->region_model->where(['name' => $name, 'company_id' => $company_id])->first();
 
         if(!is_null($region_results)){
             return $region_results->id;
@@ -36,9 +36,10 @@ class SharedRegionService {
         }
     }
 
-    public function get_regions($store_type_id){
+    public function get_regions(int $company_id){
+        
         if(is_null($this->regions)){
-            $regions_results = $this->region_model->select(['id', 'name'])->where(['store_type_id' => $store_type_id])->get();
+            $regions_results = $this->region_model->select(['id', 'name'])->where(['company_id' => $company_id])->get();
 
             foreach($regions_results as $region){
                 
@@ -65,7 +66,7 @@ class SharedRegionService {
     }
 
     public function create_region(RegionModel $region){
-        if($region_id = $this->region_exists($region->name, $region->store_type_id)){
+        if($region_id = $this->region_exists($region->name, $region->company_id)){
             return $region_id;
         } else {
             return $region->save();

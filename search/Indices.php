@@ -91,7 +91,7 @@ class Indices extends Search {
 
             $params['body'][] = [
                 'id' => (int)$store->id,
-                'store_type_id' => (int)$store->id,
+                'company_id' => (int)$store->id,
                 'name' => $store->name,
             ];
         }
@@ -121,7 +121,7 @@ class Indices extends Search {
 
             $params['body'][] = [
                 'id' => (int)$promotion->id,
-                'store_type_id' => (int)$promotion->store_type_id,
+                'company_id' => (int)$promotion->company_id,
                 'name' => $promotion->name,
             ];
         }
@@ -156,7 +156,7 @@ class Indices extends Search {
       
             $params['body'][] = [
               'id'   => (int)$category->id,
-              'store_type_id' => (int)$category->store_type_id,
+              'company_id' => (int)$category->company_id,
               'name' => $category->name,
               'type' => $category->type
             ];
@@ -181,7 +181,7 @@ class Indices extends Search {
             $params['body'][] = [
                 'id' => (int)$product->id,
                 'name' => $product->name,
-                'store_type_id' => (int)$product->store_type_id,
+                'company_id' => (int)$product->company_id,
                 'description' => $product->description,
                 'weight' => $product->weight,
                 'brand' => $product->brand,
@@ -244,7 +244,7 @@ class Indices extends Search {
                 $product_item = $products[$product_id];
 
                 $child_category_names_list = $product_item->child_category_names_list;
-                $product_group_names_list =  $product_item->product_group_names_list;
+                $product_group_names_list = $product_item->product_group_names_list;
                 $parent_category_names_list = $product_item->parent_category_names_list;
 
                 $child_category_names_list[] = $child_category_name;

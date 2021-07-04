@@ -17,24 +17,6 @@ class SharedFlyerService {
         $this->storage_service = new StorageService($config_service, $logger);
     }
 
-    private function get_flyer(int $store_id, int $store_type_id){
-        return $this->store_model->where(['store_type_id' => $store_type_id, 'region' => $store_id])->first();
-    }
-
-    public function flyer_exists(int $store_id, int $store_type_id){
-        $region = $this->get_flyer($store_id, $store_type_id);
-
-        if(!is_null($region)){
-            return $region->id;
-        } else {
-            return null;
-        }
-    }
-
-    public function flyer_expired(int $store_id, int $store_type_id){
-        $region = $this->get_flyer($store_id, $store_type_id);
-    }
-    
     public function delete_flyers($store_id){
         $this->flyer_model->where(['store_id' => $store_id])->delete();
     }

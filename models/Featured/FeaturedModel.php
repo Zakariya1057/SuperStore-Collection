@@ -7,7 +7,7 @@ use Services\DatabaseService;
 
 class FeaturedModel extends Model {
 
-    public $featured_id, $type, $store_type_id, $region_id, $week, $year;
+    public $featured_id, $type, $company_id, $region_id, $week, $year;
 
     function __construct(DatabaseService $database_service=null){
 
@@ -19,7 +19,7 @@ class FeaturedModel extends Model {
             'featured_id' => [],
             'type' => [],
 
-            'store_type_id' => [],
+            'company_id' => [],
 
             'region_id' => [],
 
