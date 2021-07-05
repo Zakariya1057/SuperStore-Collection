@@ -137,43 +137,36 @@ class CategoryService extends Loblaws {
     private function request_category_data($category_number, int $size = 50, int $page_number = 0, string $type){
         return $type == 'v2' ? 
             $this->request_category_v2_data($category_number, $size, $page_number) : 
-            $this->request_category_v3_data($category_number, $size, $page_number);
+            $this->request_category_v3_data($category_number, $page_number);
     }
 
     // V2 - Ship To Home
-    private function request_category_v2_data($category_number, int $size = 50, int $page_number = 0){
+    private function request_category_v2_data($category_number, int $page_number = 0){
 
-        $categories_endpoints = $this->endpoints->categories;
+        foreach($this->supermarket_chains as $supermarket_chain){
 
-        $category_endpoint_v2 = $categories_endpoints->v2 . $category_number . "&$page_number";
+            $supermarket_name = $supermarket_chain->name;
+            $supermarket_banner = $supermarket_chain->banner;
 
-        $this->logger->debug('V2 Category Request Page Number: '. $page_number);
+            $this->logger->debug("----- V2 $supermarket_name Category Products");
 
-        try {
-            $response = $this->request_service->request($category_endpoint_v2, 'GET', [], ['Is-Pcs-Catalog' => 'true']);
-            return [$this->request_service->parse_json($response)]; 
-        } catch(Exception $e){
-            $this->logger->debug('V2 Category Request Error: ' . $e->getMessage());
+            $categories_endpoints = $this->endpoints->categories->v2;
+
+            $url = $categories_endpoints->first_part . $supermarket_banner .  $categories_endpoints->last_part . $category_number . "&$page_number";
+    
+            $this->logger->debug('V2 Category Request Page Number: '. $page_number);
+    
+            try {
+                $response = $this->request_service->request($url, 'GET', [], ['Is-Pcs-Catalog' => 'true']);
+                return [$this->request_service->parse_json($response)]; 
+            } catch(Exception $e){
+                $this->logger->debug('V2 Category Request Error: ' . $e->getMessage());
+            }
+
         }
 
         return null;
 
-    }
-
-    private function unique_new_products(array $products){
-        $unique_products = array_values($products);
-
-        $this->logger->debug(count($unique_products) . ' Total Unique Products Found');
-        
-        if(count($products) > 0){
-            // Query database get all products found in database, then ignore those.
-            $products_found = $this->product_model->select(['site_product_id'])->where_in('site_product_id', $unique_products)->get();
-            foreach($products_found as $product){
-                unset($products[$product->site_product_id]);
-            }
-        }
-
-        return array_values($products);
     }
 
     // V3 - In Store
@@ -191,8 +184,9 @@ class CategoryService extends Loblaws {
                 $regions = $supermarket_chain->regions;
 
                 $supermarket_name = $supermarket_chain->name;
+                $supermarket_banner = $supermarket_chain->banner;
 
-                $this->logger->debug("----- $supermarket_name Category Products");
+                $this->logger->debug("----- V3 $supermarket_name Category Products");
 
                 foreach($regions as $region_name => $region_details){
 
@@ -200,15 +194,8 @@ class CategoryService extends Loblaws {
 
                     $this->logger->debug("--- $region_name Category Products");
 
-                    // Get all products for all regions, for all supermarket chains. Combine product prices. Use to insert in product_prices and availability.
-
-                    // Loop through supermarkets
-                    //   Loop through regions (stores)
-
-                    // Combine product prices for supermarket chain and region
-
                     $this->logger->debug("Getting Catgory Products For {$region_name}[{$site_store_id}]");
-                    $category_results[] = $this->request_category_v3($category_endpoint_v3, $site_store_id, $page_number, $size, $category_number);
+                    $category_results[] = $this->request_category_v3($category_endpoint_v3, $site_store_id, $supermarket_banner, $page_number, $size, $category_number);
                 }
             }
 
@@ -221,14 +208,14 @@ class CategoryService extends Loblaws {
 
     }
 
-    private function request_category_v3(string $url, string $site_store_id, int $page_number, int $size, $category_number){
+    private function request_category_v3(string $url, string $site_store_id, string $banner, int $page_number, int $size, $category_number){
         $response = $this->request_service->request($url, 'POST', [
             'pagination' => [
                 'from' => $page_number,
                 'size' => $size
             ],
 
-            'banner' => 'superstore',
+            'banner' => $banner,
             'cartId' => '564d3383-738b-4407-b170-1064b504d991',
             'lang' => 'en',
             'storeId' => $site_store_id,
@@ -236,7 +223,7 @@ class CategoryService extends Loblaws {
             'pickupType' => 'STORE',
             'categoryId' => $category_number
 
-        ], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, 1);
+        ], ['x-apikey' => $this->loblaws_config->keys->api], 300, 1);
 
         return $this->request_service->parse_json($response); 
     }
@@ -246,6 +233,22 @@ class CategoryService extends Loblaws {
             $site_product_id = $product_data->productId ?? $product_data->code;
             $products[$site_product_id] = $site_product_id;
         }
+    }
+
+    private function unique_new_products(array $products){
+        $unique_products = array_values($products);
+
+        $this->logger->debug(count($unique_products) . ' Total Unique Products Found');
+        
+        if(count($products) > 0){
+            // Query database get all products found in database, then ignore those.
+            $products_found = $this->product_model->select(['site_product_id'])->where_in('site_product_id', $unique_products)->get();
+            foreach($products_found as $product){
+                unset($products[$product->site_product_id]);
+            }
+        }
+
+        return array_values($products);
     }
 
 }
