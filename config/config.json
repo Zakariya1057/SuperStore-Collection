@@ -247,8 +247,8 @@
 
 			"id": 1,
 
-			"api": {
-				"key": "1im1hL52q9xvta16GlSdYDsTsG0dmyhF"
+			"keys": {
+				"api": "1im1hL52q9xvta16GlSdYDsTsG0dmyhF"
 			},
 
 			"currency": "Canadian Dollars",
@@ -267,6 +267,56 @@
 			},
 
 			"supermarket_chains": {
+
+				"no_frills": {
+					"id": 2,
+					"name": "No Frills",
+					"banner": "nofrills",
+					"url": "https://www.nofrills.ca",
+
+					"regions": {
+						"Ontario": {
+							"id": 8,
+							"site_store_id": "3643"
+						},
+						"Alberta": {
+							"id": 9,
+							"site_store_id": "3683"
+						},
+						"Manitoba": {
+							"id": 10,
+							"site_store_id": "3656"
+						},
+						"British Columbia": {
+							"id": 11,
+							"site_store_id": "3403"
+						},
+						"Saskatchewan": {
+							"id": 12,
+							"site_store_id": "3437"
+						},
+						"Newfoundland and Labrador": {
+							"id": 14,
+							"site_store_id": "2713"
+						},
+
+						"Nova Scotia": {
+							"id": 15,
+							"site_store_id": "2712"
+						},
+
+						"Prince Edward Island": {
+							"id": 16,
+							"site_store_id": "2708"
+						},
+
+						"New Brunswick": {
+							"id": 17,
+							"site_store_id": "2714"
+						}
+					}
+				},
+
 				"real_canadian_superstore": {
 					"id": 1,
 					"name": "Real Canadian Superstore",
@@ -286,41 +336,7 @@
 							"id": 10,
 							"site_store_id": "1511"
 						},
-						"British": {
-							"id": 11,
-							"site_store_id": "1556"
-						},
-						"Saskatchewan": {
-							"id": 12,
-							"site_store_id": "1533"
-						},
-						"Yukon": {
-							"id": 13,
-							"site_store_id": "1530"
-						}
-					}
-				},
-
-				"no_frills": {
-					"id": 2,
-					"name": "No Frills",
-					"banner": "nofrills",
-					"url": "https://www.nofrills.ca",
-
-					"regions": {
-						"Ontario": {
-							"id": 8,
-							"site_store_id": "1077"
-						},
-						"Alberta": {
-							"id": 9,
-							"site_store_id": "1502"
-						},
-						"Manitoba": {
-							"id": 10,
-							"site_store_id": "1511"
-						},
-						"British": {
+						"British Columbia": {
 							"id": 11,
 							"site_store_id": "1556"
 						},
@@ -334,6 +350,7 @@
 						}
 					}
 				}
+
 			}
 		}
 
@@ -346,12 +363,18 @@
 			"groceries": "https://cdn.contentful.com/spaces/0dlg9rxz8nvy/environments/master/entries?content_type=navigationList&locale=en-CA&include=3",
 
 			"categories": {
-				"v2": "https://api.pcexpress.ca/marketplace/v2/banners/superstore/products?pageSize=50&sorts=relevance&filter.category=",
+				"v2": {
+					"first_part": "https://api.pcexpress.ca/marketplace/v2/banners/",
+					"last_part": "/products?pageSize=50&sorts=relevance&filter.category="
+				},
 				"v3": "https://api.pcexpress.ca/v3/products/category/listing"
 			},
 
 			"products": {
-				"v2": "https://api.pcexpress.ca/marketplace/v2/banners/superstore/products/",
+				"v2": {
+					"first_part": "https://api.pcexpress.ca/marketplace/v2/banners/",
+					"last_part": "/products/"
+				},
 				"v3": "https://api.pcexpress.ca/product-facade/v3/products/"
 			},
 
