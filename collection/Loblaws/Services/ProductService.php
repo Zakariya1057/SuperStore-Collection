@@ -26,7 +26,7 @@ class ProductService extends Loblaws implements ProductRequestInterface {
             $endpoint_v3 = $product_endpoints->v3 . "$site_product_id?lang=en&pickupType=STORE&banner={$banner}e&date={$date}&storeId=$site_store_id";
             
             try {
-                $product_response = $this->request_service->request($endpoint_v3, 'GET', [], ['x-apikey' => '1im1hL52q9xvta16GlSdYDsTsG0dmyhF'], 300, $retry_times);
+                $product_response = $this->request_service->request($endpoint_v3, 'GET', [], ['x-apikey' => $this->loblaws_config->keys->api ], 300, $retry_times);
                 $product_details = $this->request_service->parse_json($product_response);
 
                 $request_type = 'v3';
@@ -36,7 +36,8 @@ class ProductService extends Loblaws implements ProductRequestInterface {
                 return null;
             }
         } else {
-            $endpoint_v2 = $product_endpoints->v2 . $site_product_id;
+            $product_endpoint = $product_endpoints->v2;
+            $endpoint_v2 = $product_endpoint->first_part . $banner . $product_endpoint->last_part . $site_product_id;
 
             try {
                 $product_response = $this->request_service->request($endpoint_v2, 'GET', [], [], 300, $retry_times);
