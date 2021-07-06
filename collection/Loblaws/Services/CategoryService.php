@@ -93,40 +93,44 @@ class CategoryService extends Loblaws {
         // V2 - Ship To Home 
         // V3 - In Store
 
-        $category_sources = ['v3', 'v2'];
+        $category_sources = [
+            'v3', 
+            'v2'
+        ];
 
         foreach($category_sources as $type){
             
             $size = 50;
             $page_number = 0;
 
-            $this->logger->notice('--- Fetching Category Products: ' . $type);
+            $this->logger->notice('------- Starting Fetching Category Products: ' . $type);
 
             $category_results = $this->request_category_data($category_number, $size, $page_number, $type);
 
-            foreach($category_results as $category_result){
-                $pagination_data = $category_result->pagination;
-                $total_results = $pagination_data->totalResults;
+            $category_result = $category_results[0];
+            
+            $pagination_data = $category_result->pagination;
+            $total_results = $pagination_data->totalResults;
+
+            $this->add_category_products($products, $category_result->results);
+            
+            if($total_results > $size){
+                $total_pages = ceil($total_results / $size);
+                $this->logger->notice("Total Pages: $total_pages");
     
-                $this->add_category_products($products, $category_result->results);
-                
-                if($total_results > $size){
-                    $total_pages = ceil($total_results / $size);
-                    $this->logger->debug("Total Pages: $total_pages");
-        
-                    for($page_number = 1; $page_number < $total_pages; $page_number++){
-                        $paginated_category_results = $this->request_category_data($category_number, $size, $page_number, $type);
+                for($page_number = 1; $page_number < $total_pages; $page_number++){
+                    $paginated_category_results = $this->request_category_data($category_number, $size, $page_number, $type);
 
-                        foreach($paginated_category_results as $paginated_category_result){
-                            $this->add_category_products($products, $paginated_category_result->results);
-                        }
+                    foreach($paginated_category_results as $paginated_category_result){
+                        $this->add_category_products($products, $paginated_category_result->results);
                     }
-        
-                } else {
-                    $this->logger->debug('Total Pages: 1');
                 }
-
+    
+            } else {
+                $this->logger->debug('Total Pages: 1');
             }
+
+            $this->logger->notice('------- Complete Fetching Category Products: ' . $type);
 
         }
 
@@ -137,7 +141,7 @@ class CategoryService extends Loblaws {
     private function request_category_data($category_number, int $size = 50, int $page_number = 0, string $type){
         return $type == 'v2' ? 
             $this->request_category_v2_data($category_number, $size, $page_number) : 
-            $this->request_category_v3_data($category_number, $page_number);
+            $this->request_category_v3_data($category_number, $size, $page_number);
     }
 
     // V2 - Ship To Home
@@ -148,19 +152,19 @@ class CategoryService extends Loblaws {
             $supermarket_name = $supermarket_chain->name;
             $supermarket_banner = $supermarket_chain->banner;
 
-            $this->logger->debug("----- V2 $supermarket_name Category Products");
+            $this->logger->notice("----- V2 $supermarket_name Category Products");
 
             $categories_endpoints = $this->endpoints->categories->v2;
 
             $url = $categories_endpoints->first_part . $supermarket_banner .  $categories_endpoints->last_part . $category_number . "&$page_number";
     
-            $this->logger->debug('V2 Category Request Page Number: '. $page_number);
+            $this->logger->notice('V2 Category Request Page Number: '. $page_number);
     
             try {
                 $response = $this->request_service->request($url, 'GET', [], ['Is-Pcs-Catalog' => 'true']);
                 return [$this->request_service->parse_json($response)]; 
             } catch(Exception $e){
-                $this->logger->debug('V2 Category Request Error: ' . $e->getMessage());
+                $this->logger->error('V2 Category Request Error: ' . $e->getMessage());
             }
 
         }
@@ -192,9 +196,8 @@ class CategoryService extends Loblaws {
 
                     $site_store_id = $region_details->site_store_id;
 
-                    $this->logger->debug("--- $region_name Category Products");
+                    $this->logger->debug("--- Fetching Category Products For {$supermarket_name} - {$region_name}[{$site_store_id}]");
 
-                    $this->logger->debug("Getting Catgory Products For {$region_name}[{$site_store_id}]");
                     $category_results[] = $this->request_category_v3($category_endpoint_v3, $site_store_id, $supermarket_banner, $page_number, $size, $category_number);
                 }
             }
@@ -216,15 +219,15 @@ class CategoryService extends Loblaws {
             ],
 
             'banner' => $banner,
-            'cartId' => '564d3383-738b-4407-b170-1064b504d991',
+            'cartId' => '06563644-a26a-4c66-961a-e870a406e48c',
             'lang' => 'en',
             'storeId' => $site_store_id,
-            'date' => '13032021',
+            'date' => date('dmY'),
             'pickupType' => 'STORE',
             'categoryId' => $category_number
 
         ], ['x-apikey' => $this->loblaws_config->keys->api], 300, 1);
-
+        
         return $this->request_service->parse_json($response); 
     }
 
