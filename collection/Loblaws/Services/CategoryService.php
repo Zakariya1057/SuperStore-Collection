@@ -78,13 +78,13 @@ class CategoryService extends Loblaws {
         if($this->env == 'dev'){
             $products = [];
         } else {
-            $products = $this->request_category_products($category->number);
+            $products = $this->request_category_products($category->number, $category->id);
         }
         
         return $products;
     }
 
-    private function request_category_products($category_number){
+    private function request_category_products($category_number, $category_id){
         $products = [
             // site_product_id => site_product_id
         ];
@@ -134,7 +134,7 @@ class CategoryService extends Loblaws {
 
         }
 
-        return $this->unique_new_products($products);
+        return $this->unique_new_products($products, $category_id);
 
     }
 
@@ -238,14 +238,21 @@ class CategoryService extends Loblaws {
         }
     }
 
-    private function unique_new_products(array $products){
+    private function unique_new_products(array $products, $category_id){
         $unique_products = array_values($products);
 
         $this->logger->debug(count($unique_products) . ' Total Unique Products Found');
         
         if(count($products) > 0){
             // Query database get all products found in database, then ignore those.
-            $products_found = $this->product_model->select(['site_product_id'])->where_in('site_product_id', $unique_products)->get();
+            $products_found = $this->product_model
+            ->select(['site_product_id'])
+            ->join('category_products', 'category_products.product_id', 'products.id')
+            ->where(['category_products.child_category_id' => $category_id])
+            ->where_in('site_product_id', $unique_products)
+            ->group_by('site_product_id')
+            ->get();
+
             foreach($products_found as $product){
                 unset($products[$product->site_product_id]);
             }
