@@ -268,6 +268,48 @@
 
 			"supermarket_chains": {
 
+				"maxi": {
+					"id": 4,
+					"name": "Maxi",
+					"banner": "maxi",
+					"url": "https://www.maxi.ca",
+
+					"regions": {
+						"Quebec": {
+							"id": 18,
+							"site_store_id": "8662"
+						}
+
+					}
+
+				},
+
+				"atlantic_superstore": {
+					"id": 3,
+					"name": "Atlantic Superstore",
+					"banner": "rass",
+					"url": "https://www.atlanticsuperstore.ca",
+
+					"regions": {
+						"Nova Scotia": {
+							"id": 15,
+							"site_store_id": "0354"
+						},
+
+						"Prince Edward Island": {
+							"id": 16,
+							"site_store_id": "0376"
+						},
+
+						"New Brunswick": {
+							"id": 17,
+							"site_store_id": "0341"
+						}
+
+					}
+
+				},
+
 				"no_frills": {
 					"id": 2,
 					"name": "No Frills",
