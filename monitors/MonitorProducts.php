@@ -68,7 +68,7 @@ class MonitorProducts {
         ->join('product_prices', 'product_prices.product_id', 'products.id')
         // ->where_raw(["products.site_product_id = 21359663_EA"])
         // ->where_raw(["company_id = $company_id", 'products.large_image is null'])
-        // ->where_raw(['TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
+        ->where_raw(['TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
         // ->where_raw(["products.site_product_id = '21359663_EA'"])
         // ->group_by('products.id')
         // ->where(['products.id' => 1])

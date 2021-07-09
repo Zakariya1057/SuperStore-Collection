@@ -72,7 +72,7 @@ class Products extends Loblaws implements ProductInterface {
                 $region_id = $region_details->id;
                 $site_store_id = $region_details->site_store_id;
     
-                $this->logger->debug("--- $region_name Regioon Product Details");
+                $this->logger->debug("--- $region_name Region Product Details");
 
                 $this->logger->debug("Getting Product Details For {$region_name}[{$site_store_id}]");
     
