@@ -425,7 +425,7 @@
 			"stores": "https://www.realcanadiansuperstore.ca/api/pickup-locations",
 
 			"flyers": {
-				"page": "https://flyers.realcanadiansuperstore.ca/flyers/realcanadiansuperstore?type=1&store_code=",
+				"page": "https://flyers.realcanadiansuperstore.ca/flyers/",
 				"flyers": "https://flyers.realcanadiansuperstore.ca/flyer_data/"
 			}
 

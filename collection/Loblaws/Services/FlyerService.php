@@ -21,10 +21,10 @@ class FlyerService extends Loblaws {
         }
     }
 
-    public function get_flyers($site_store_id, $store_id): array {
+    public function get_flyers($site_store_id, $store_id, string $banner): array {
         $this->setupClasses();
 
-        $url = $this->endpoints->flyers->page . preg_replace('/^0/', '', $site_store_id);
+        $url = $this->endpoints->flyers->page . "$banner?type=1&store_code=" . preg_replace('/^0/', '', $site_store_id);
         $flyer_response = $this->request_service->request($url);
 
         $flyer_page = $this->request_service->parse_html($flyer_response);
