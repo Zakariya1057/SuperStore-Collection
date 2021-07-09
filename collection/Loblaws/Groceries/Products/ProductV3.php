@@ -78,7 +78,7 @@ class ProductV3 extends Products {
         $product_price = new ProductPriceModel($this->database_service);
         $product_price->region_id = $region_id;
 
-        $product_price->out_of_stock = $product_details->stockStatus != 'OK';
+        $product_price->out_of_stock = property_exists($product_details, 'stockStatus') && $product_details->stockStatus != 'OK';
 
         $this->set_prices($product_price, $product, $product_details, $region_id, $supermarket_chain_id);
 
