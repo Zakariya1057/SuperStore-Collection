@@ -272,6 +272,7 @@
 					"id": 4,
 					"name": "Maxi",
 					"banner": "maxi",
+					"flyer_banner": "maxi",
 					"url": "https://www.maxi.ca",
 
 					"regions": {
@@ -288,6 +289,7 @@
 					"id": 3,
 					"name": "Atlantic Superstore",
 					"banner": "rass",
+					"flyer_banner": "atlanticsuperstore",
 					"url": "https://www.atlanticsuperstore.ca",
 
 					"regions": {
@@ -314,6 +316,7 @@
 					"id": 2,
 					"name": "No Frills",
 					"banner": "nofrills",
+					"flyer_banner": "nofrills",
 					"url": "https://www.nofrills.ca",
 
 					"regions": {
@@ -363,6 +366,7 @@
 					"id": 1,
 					"name": "Real Canadian Superstore",
 					"banner": "superstore",
+					"flyer_banner": "realcanadiansuperstore",
 					"url": "https://www.realcanadiansuperstore.ca",
 
 					"regions": {

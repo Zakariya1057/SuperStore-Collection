@@ -37,16 +37,17 @@ class Stores extends Loblaws {
         foreach($this->supermarket_chains as $supermarket_chain){
             $supermarket_chain_id = $supermarket_chain->id;
             $supermarket_name = $supermarket_chain->name;
-            $supermarket_banner = $supermarket_chain->flyer_banner;
+            $supermarket_banner = $supermarket_chain->banner;
+            $supermarket_flyer_banner = $supermarket_chain->flyer_banner;
             $supermarket_url = $supermarket_chain->url;
 
             $this->logger->debug('Creating stores for '. $supermarket_name);
 
-            $this->create_supermarket_stores($supermarket_banner, $supermarket_chain_id, $supermarket_url);
+            $this->create_supermarket_stores($supermarket_banner, $supermarket_flyer_banner, $supermarket_chain_id, $supermarket_url);
         }
     }
 
-    private function create_supermarket_stores(string $banner, int $supermarket_chain_id, $supermarket_url){
+    private function create_supermarket_stores(string $banner, string $flyer_banner, int $supermarket_chain_id, string $supermarket_url){
 
         if($this->env == 'dev'){
             $stores_response = file_get_contents(__DIR__.'/../../../data/Canadian_Superstore/Stores.json');
@@ -84,7 +85,7 @@ class Stores extends Loblaws {
 
                     $store_id = $this->shared_store_service->create_store($store, $region_id);
 
-                    $flyers = $this->flyer_service->get_flyers($site_store_id, $store_id, $banner);
+                    $flyers = $this->flyer_service->get_flyers($site_store_id, $store_id, $flyer_banner);
                     $this->shared_flyer_service->create_flyers($flyers, $store_id);
                 }
 
