@@ -29,6 +29,8 @@ class MonitorStores {
 
     private $store_model, $opening_hour, $location_model, $facility_model;
 
+    private $supermarket_chain_banner_mapping;
+
     function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, StoreInterface $store_service){
         $this->config_service = $config_service;
         $this->logger = $logger;
@@ -48,6 +50,11 @@ class MonitorStores {
         $this->location_model = new LocationModel($database_service);
         $this->facility_model = new FacilityModel($database_service);
         $this->flyer_model = new FlyerModel($database_service);
+
+        $supermarket_chains = $this->config_service->get('companies.loblaws.supermarket_chains');
+        foreach($supermarket_chains as $supermarket_chain){
+            $this->supermarket_chain_banner_mapping[ $supermarket_chain->id ] = $supermarket_chain->flyer_banner;
+        }
     }
 
     public function monitor_stores(){
@@ -79,10 +86,11 @@ class MonitorStores {
     }
 
     public function check_store_change($store){
-        
+
         $store_id = $store->id;
-        
-        $new_store = $this->store_service->store_details($store->site_store_id, $store->supermarket_chain_id, $store->url);
+        $supermarket_chain_id = $store->supermarket_chain_id;
+
+        $new_store = $this->store_service->store_details($store->site_store_id, $supermarket_chain_id, $store->url);
         
         if(is_null($new_store)){
             throw new Exception('New Store Not Found: ' . $store_id);
@@ -91,7 +99,7 @@ class MonitorStores {
         $this->database_service->start_transaction();
 
         // Update flyers
-        $this->update_flyers($store_id, $new_store);
+        $this->update_flyers($store_id, $new_store, $this->get_flyer_banner($supermarket_chain_id));
         
         // Update hours
         $this->update_hours($store_id, $new_store);
@@ -162,12 +170,16 @@ class MonitorStores {
         }
     }
 
-    private function update_flyers($store_id, $new_store){
+    private function update_flyers($store_id, $new_store, $banner){
         // Delete All Expired Flyers.
         // Save All New Flyers
         $this->shared_flyer_service->delete_flyers($store_id);
-        $flyers = $this->flyer_service->get_flyers($new_store->site_store_id, $store_id);
+        $flyers = $this->flyer_service->get_flyers($new_store->site_store_id, $store_id, $banner);
         $this->shared_flyer_service->create_flyers($flyers, $store_id);
+    }
+
+    private function get_flyer_banner($supermarket_chain_id){
+        return $this->supermarket_chain_banner_mapping[$supermarket_chain_id];
     }
 }
 

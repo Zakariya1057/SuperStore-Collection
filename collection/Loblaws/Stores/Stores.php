@@ -37,7 +37,7 @@ class Stores extends Loblaws {
         foreach($this->supermarket_chains as $supermarket_chain){
             $supermarket_chain_id = $supermarket_chain->id;
             $supermarket_name = $supermarket_chain->name;
-            $supermarket_banner = $supermarket_chain->banner;
+            $supermarket_banner = $supermarket_chain->flyer_banner;
             $supermarket_url = $supermarket_chain->url;
 
             $this->logger->debug('Creating stores for '. $supermarket_name);
