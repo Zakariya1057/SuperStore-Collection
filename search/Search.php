@@ -11,9 +11,7 @@ use Services\DatabaseService;
 class Search {
         
     public $client;
-    public $database_service;
-    public $logger;
-    public $config_service;
+    public $config_service, $logger, $database_service;
 
     function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, Client $client=null){
         $this->config_service = $config_service;
@@ -21,8 +19,12 @@ class Search {
         $this->database_service = $database_service;
 
         if(!$client){
-            $host = $config_service->get('elasticsearch.host');
-            $this->client = ClientBuilder::create()->setRetries(3)->setHosts([$host])->build();
+            $elasticsearch = $config_service->get('elasticsearch.hosts');
+
+            $elasticsearch_config = $elasticsearch->{ $elasticsearch->env };
+            $host = $elasticsearch_config->host;
+
+            $this->client = ClientBuilder::create()->setRetries(3)->setHosts([ $host ])->build();
         } else {
             $this->client = $client;
         }
@@ -37,7 +39,7 @@ class Search {
     public function mappings(){
         $mapping = new Mapping($this->config_service, $this->logger, $this->database_service, $this->client);
         $mapping->map_products();
-        $mapping->map_stores();
+        $mapping->map_supermarket_chains();
         $mapping->map_promotions();
         $mapping->map_categories();
     }
@@ -50,7 +52,7 @@ class Search {
     public function indexes(){
         $index = new Indices($this->config_service, $this->logger, $this->database_service, $this->client);
         $index->index_products();
-        $index->index_stores();
+        $index->index_supermarket_chains();
         $index->index_promotions();
         $index->index_categories();
     }

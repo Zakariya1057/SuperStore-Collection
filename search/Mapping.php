@@ -19,8 +19,8 @@ class Mapping extends Search {
         $response = $this->client->indices()->create($params);
     }
 
-    public function map_stores(){
-        $params = $this->create_params('stores');
+    public function map_supermarket_chains(){
+        $params = $this->create_params('supermarket_chains');
         $response = $this->client->indices()->create($params);
     }
 

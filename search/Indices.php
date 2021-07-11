@@ -11,7 +11,7 @@ use Models\Category\ParentCategoryModel;
 use Models\Category\ProductGroupModel;
 use Models\Product\ProductModel;
 use Models\Product\PromotionModel;
-use Models\Store\StoreTypeModel;
+use Models\Store\SupermarketChainModel;
 use Monolog\Logger;
 use Services\ConfigService;
 use Services\DatabaseService;
@@ -19,7 +19,7 @@ use Services\DatabaseService;
 // Index Documents
 class Indices extends Search {
 
-    private $product_model, $promotion_model, $store_model;
+    private $product_model, $promotion_model, $supermarket_chain_model;
     private $product_group_model, $child_category_model, $parent_category_model, $grand_parent_category_model;
 
     private $parent_categories, $child_categories, $product_groups;
@@ -28,7 +28,7 @@ class Indices extends Search {
         parent::__construct($config_service, $logger, $database_service, $client);
 
         $this->product_model = new ProductModel($database_service);
-        $this->store_model = new StoreTypeModel($database_service);
+        $this->supermarket_chain_model = new SupermarketChainModel($database_service);
         $this->promotion_model = new PromotionModel($database_service);
 
         $this->category_product_model = new CategoryProductModel($database_service);
@@ -69,13 +69,13 @@ class Indices extends Search {
         }
     }
 
-    public function index_stores(){
+    public function index_supermarket_chains(){
 
         $this->logger->debug('Indexing Store Types');
 
-        $this->delete_documents('stores');
+        $this->delete_documents('supermarket_chains');
 
-        $stores = $this->store_model->where(['enabled' => 1])->get();
+        $stores = $this->supermarket_chain_model->where(['enabled' => 1])->get();
 
         $params = [
             'body' => []
@@ -84,7 +84,7 @@ class Indices extends Search {
         foreach($stores as $store){
             $params['body'][] = [
                 'index' => [
-                    '_index' => 'stores',
+                    '_index' => 'supermarket_chains',
                     '_id'    => $store->id
                 ]
             ];
@@ -121,7 +121,7 @@ class Indices extends Search {
 
             $params['body'][] = [
                 'id' => (int)$promotion->id,
-                'company_id' => (int)$promotion->company_id,
+                'supermarket_chain_id' => (int)$promotion->supermarket_chain_id,
                 'name' => $promotion->name,
             ];
         }

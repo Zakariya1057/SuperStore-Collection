@@ -66,6 +66,7 @@ class MonitorStores {
         $stores = $this->store_model
         ->select_raw(['stores.*','TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) as time_difference'])
         ->where_raw(['TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
+        // ->where_raw(['supermarket_chain_id = 1'])
         ->get();
 
         foreach($stores as $store){

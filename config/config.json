@@ -34,7 +34,23 @@
 
 	"elasticsearch": {
 
-		"host": "https://search-superstore-elasticsearch-dc35zexhfs6al7xogt75gk6wdi.eu-west-2.es.amazonaws.com:443",
+		"hosts": {
+			"env": "dev",
+
+			"prod": {
+				"host": "https://search-superstore-elasticsearch-dc35zexhfs6al7xogt75gk6wdi.eu-west-2.es.amazonaws.com:443",
+
+				"create_index": 0,
+				"index_documents": 0
+			},
+
+			"dev": {
+				"host": "http://localhost:9200",
+
+				"create_index": 0,
+				"index_documents": 1
+			}
+		},
 
 		"settings": {
 			"number_of_shards": 3,
@@ -105,7 +121,7 @@
 				"id": {
 					"type": "integer"
 				},
-				"store_type_id": {
+				"company_id": {
 					"type": "integer"
 				},
 				"name": {
@@ -153,11 +169,11 @@
 				}
 			},
 
-			"stores": {
+			"supermarket_chains": {
 				"id": {
 					"type": "integer"
 				},
-				"store_type_id": {
+				"company_id": {
 					"type": "integer"
 				},
 				"name": {
@@ -170,7 +186,7 @@
 				"id": {
 					"type": "integer"
 				},
-				"store_type_id": {
+				"company_id": {
 					"type": "integer"
 				},
 				"name": {
@@ -186,19 +202,17 @@
 				"id": {
 					"type": "integer"
 				},
-				"store_type_id": {
-					"type": "integer"
-				},
 				"name": {
 					"type": "text",
 					"analyzer": "text_analyzer"
+				},
+				"supermarket_chain_id": {
+					"type": "integer"
 				}
 			}
 
-		},
+		}
 
-		"create_index": 0,
-		"index_documents": 1
 	},
 
 	"log_query": 1,
@@ -245,7 +259,7 @@
 
 			"name": "Loblaws",
 
-			"id": 1,
+			"id": 2,
 
 			"keys": {
 				"api": "1im1hL52q9xvta16GlSdYDsTsG0dmyhF"
