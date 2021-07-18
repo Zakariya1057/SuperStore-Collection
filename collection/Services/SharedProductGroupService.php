@@ -43,6 +43,15 @@ class SharedProductGroupService {
             return $product_group_results->id;
         }
     }
+
+    public function get(string $name, int $child_category_id, int $company_id){
+        return $this->product_group_model
+        ->where([
+            'name' => $name, 
+            'child_category_id' => $child_category_id, 
+            'company_id' => $company_id, 
+        ])->first();
+    }
 }
 
 ?>

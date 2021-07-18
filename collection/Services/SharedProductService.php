@@ -38,36 +38,22 @@ class SharedProductService {
     }
 
     // Create Product
-    public function create(string $site_product_id, ProductModel $parsed_product, $category_details, int $company_id){
+    public function create(ProductModel $parsed_product){
 
         // Start Transaction
         $this->database_service->start_transaction();
 
-        $product_id = $this->product_exists($site_product_id, $company_id);
+        $product_id = $this->create_product($parsed_product);
 
-        $product_group_id = $this->product_group_service->create($parsed_product, $category_details->id, $company_id);
+        $this->create_product_promotions($parsed_product);
 
-        if(is_null($product_id)){
-            $product_id = $this->create_product($parsed_product);
+        $this->create_images($product_id, $parsed_product);
+        $this->create_ingredients($product_id, $parsed_product);
+        $this->create_barcodes($product_id, $parsed_product);
 
-            $this->create_product_promotions($parsed_product);
+        $this->nutrition_service->create_nutritions($product_id, $parsed_product);
 
-            $this->create_images($product_id, $parsed_product);
-            $this->create_ingredients($product_id, $parsed_product);
-            $this->create_barcodes($product_id, $parsed_product);
-
-            $this->nutrition_service->create_nutritions($product_id, $parsed_product);
-
-            $this->product_price_service->create_prices($product_id, $parsed_product);
-
-            $this->category_service->create($category_details, $product_id, $product_group_id);
-        } else {
-            if($this->category_service->category_exists($category_details, $product_id)){
-                $this->category_service->update($category_details, $product_id, $product_group_id);
-            } else {
-                $this->category_service->create($category_details, $product_id, $product_group_id);
-            }
-        }
+        $this->product_price_service->create_prices($product_id, $parsed_product);
 
         // Commit Transaction
         $this->database_service->commit_transaction();

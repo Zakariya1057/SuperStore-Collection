@@ -65,7 +65,7 @@ class ProductV3 extends Products {
 
         $this->set_ingredients($product, $product_details->ingredients ?? null);
 
-        $this->set_nutritions($product, $product_details->nutritionFacts);
+        $this->set_nutritions($product, $product_details->nutritionFacts ?? []);
 
         if(!$ignore_image){
             $this->set_images($product, $product_details->imageAssets);

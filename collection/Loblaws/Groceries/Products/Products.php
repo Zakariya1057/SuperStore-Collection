@@ -10,6 +10,8 @@ use Models\Product\ProductModel;
 use Collection\Loblaws\Loblaws;
 
 use Collection\Loblaws\Services\ProductService;
+use Collection\Services\SharedCategoryService;
+use Collection\Services\SharedProductGroupService;
 use Monolog\Logger;
 use Services\ConfigService;
 use Services\DatabaseService;
@@ -17,19 +19,18 @@ use Services\DatabaseService;
 class Products extends Loblaws implements ProductInterface {
     private $product_v2, $product_v3;
 
-    public $product_service, $product_detail_service;
-
-    public $store_regions;
+    public $product_service, $product_group_service, $product_detail_service, $category_service;
 
     function __construct(ConfigService $config_service, Logger $logger, DatabaseService $database_service, SharedRegionService $region_service)
     {
         parent::__construct($config_service, $logger, $database_service);
 
+        $this->product_group_service = new SharedProductGroupService($database_service);
         $this->shared_product_service = new SharedProductService($database_service);
         $this->product_service = new ProductService($config_service, $logger, $database_service);
+        $this->category_service = new SharedCategoryService($database_service);
 
         $this->region_service = $region_service;
-        // $this->store_regions = $region_service->get_regions($this->company_id);
     }
 
     private function setupProductSources(){
@@ -40,13 +41,48 @@ class Products extends Loblaws implements ProductInterface {
     }
 
     public function create_product($site_product_id, $category_details){
-        $parsed_product = $this->product_details($site_product_id, false);
+        // Check if product exists, if it does then just add to category.
+    
+        $product_id = $this->shared_product_service->product_exists($site_product_id, $this->company_id);
 
-        if(!is_null($parsed_product)){
-            $product_id = $this->shared_product_service->create($site_product_id, $parsed_product, $category_details, $this->company_id);
+        if(is_null($product_id)){
+            // New Product Insert It
+            $parsed_product = $this->product_details($site_product_id, false);
+
+            if(is_null($parsed_product)){
+                $this->logger->error('Product details not found. Skipping');
+                return null;
+            } else if( strlen($parsed_product->name) > 255 ){
+                $this->logger->error('Product name too long. Length: '. $parsed_product->name);
+                return null;
+            }
+            
+            $product_group_id = $this->product_group_service->create($parsed_product, $category_details->id, $this->company_id);
+
+            $product_id = $this->shared_product_service->create($parsed_product);
+
+            $this->category_service->create($category_details, $product_id, $product_group_id);
+
         } else {
-            $this->logger->error('Product details not found. Skipping');
-            return null;
+            // Insert Ignore Category Product
+            $product_group_id = $this->product_group_service->get($product_id, $category_details->id, $this->company_id);
+
+            if(is_null( $product_group_id )){
+                $parsed_product = $this->product_details($site_product_id, false);
+
+                if(is_null($parsed_product)){
+                    $this->logger->error('Product details not found. Skipping');
+                    return null;
+                }
+
+                $product_group_id = $this->product_group_service->create($parsed_product, $category_details->id, $this->company_id);
+            }
+
+            if($this->category_service->category_exists($category_details, $product_id)){
+                $this->category_service->update($category_details, $product_id, $product_group_id);
+            } else {
+                $this->category_service->create($category_details, $product_id, $product_group_id);
+            }
         }
 
         return $product_id;
