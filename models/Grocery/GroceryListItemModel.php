@@ -1,9 +1,10 @@
 <?php
 
-namespace Models\Shared;
+namespace Models\Grocery;
 
 use Models\Model;
 use Services\DatabaseService;
+
 class GroceryListItemModel extends Model {
 
     public $product_id, $user_id;
