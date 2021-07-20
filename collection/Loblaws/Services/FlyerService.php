@@ -27,15 +27,20 @@ class FlyerService extends Loblaws {
         $url = $this->endpoints->flyers->page . "$banner?type=1&store_code=" . preg_replace('/^0/', '', $site_store_id);
         $flyer_response = $this->request_service->request($url);
 
-        $flyer_page = $this->request_service->parse_html($flyer_response);
+        $flyers = [];
 
-        return $flyer_page->filter('li[data-flyer-id]')->each(function(Crawler $node) use($store_id){
-            $flyer_id = $node->attr('data-flyer-id');
-            
-            $flyer = $this->request_flyer_data($flyer_id, $store_id);
+        preg_match("/window\['hostedStack'\] = (.+);/", $flyer_response, $matches);
 
-            return $flyer;
-        });
+        if(count($matches) > 1){
+            $flyers_data = $this->request_service->parse_json( $matches[1] );
+
+            foreach($flyers_data as $flyer_data){
+                $flyer_id = $flyer_data->current_flyer_id;
+                $flyers[] = $this->request_flyer_data($flyer_id, $store_id);
+            }
+        }
+
+        return $flyers;
     }
 
     private function request_flyer_data($flyer_id, $store_id){

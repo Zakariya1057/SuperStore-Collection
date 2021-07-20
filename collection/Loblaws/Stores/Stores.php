@@ -85,8 +85,11 @@ class Stores extends Loblaws {
 
                     $store_id = $this->shared_store_service->create_store($store, $region_id);
 
-                    $flyers = $this->flyer_service->get_flyers($site_store_id, $store_id, $flyer_banner);
-                    $this->shared_flyer_service->create_flyers($flyers, $store_id);
+                    if($this->loblaws_config->settings->flyers){
+                        $flyers = $this->flyer_service->get_flyers($site_store_id, $store_id, $flyer_banner);
+                        $this->shared_flyer_service->create_flyers($flyers, $store_id);
+                    }
+
                 }
 
                 $this->database_service->commit_transaction();
