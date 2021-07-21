@@ -68,12 +68,12 @@ class MonitorProducts {
         ->join('product_prices', 'product_prices.product_id', 'products.id')
         // ->where_raw(["products.site_product_id = 21359663_EA"])
         // ->where_raw(["company_id = $company_id", 'products.large_image is null'])
-        ->where_raw(['TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
+        ->where_raw(["company_id = 2", 'TIMESTAMPDIFF(HOUR, `last_checked`, NOW()) > 3'])
         // ->where_raw(["products.site_product_id = '21359663_EA'"])
         // ->group_by('products.id')
         // ->where(['products.id' => 1])
         // ->order_by('num_monitoring')
-        // ->limit(100)
+        // ->limit(1000)
         ->order_by('last_checked')
         ->get();
 
@@ -131,7 +131,8 @@ class MonitorProducts {
         $this->logger->debug("Updating Product: [$id] $name");
 
         // Only fetch images if no product image found
-        $ignore_image = !is_null($old_product->large_image);
+        // $ignore_image = !is_null($old_product->large_image);
+        $ignore_image = false;
 
         $new_product = $this->product_collection->product_details($site_product_id, $ignore_image);
 
@@ -230,6 +231,9 @@ class MonitorProducts {
     private function details_check(ProductModel $new_product, $old_product, &$update_fields){
         $check_fields = [
             'name',
+            'url',
+            'large_image',
+            'small_image',
             'description',
             'features',
             'dimensions',
