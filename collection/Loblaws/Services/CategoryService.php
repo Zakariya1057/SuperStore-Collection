@@ -244,7 +244,7 @@ class CategoryService extends Loblaws {
         $this->logger->debug(count($unique_products) . ' Total Unique Products Found');
         
         if(count($products) > 0){
-            // Query database get all products found in database, then ignore those.
+            // Query database get all products found in database (for the given category), then ignore those.
             $products_found = $this->product_model
             ->select(['site_product_id'])
             ->join('category_products', 'category_products.product_id', 'products.id')

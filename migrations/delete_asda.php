@@ -39,11 +39,11 @@ $request = new RequestService($config_service, $logger);
 $database_service = new DatabaseService($config_service, $logger);
 
 $logger->debug('------ Asda Deleting Start ------');
-$database_service->start_transaction();
+// $database_service->start_transaction();
 
-delete_stores($database_service);
-delete_grocery_lists($database_service);
-delete_featued_items($database_service);
+// delete_stores($database_service);
+// delete_grocery_lists($database_service);
+// delete_featued_items($database_service);
 delete_products($database_service);
 delete_promotions($database_service);
 delete_categories($database_service);
@@ -94,7 +94,7 @@ function delete_grocery_lists(DatabaseService $database_service){
     $grocery_list_model = new GroceryListModel($database_service);
     $grocery_list_item_model = new GroceryListItemModel($database_service);
 
-    $grocery_lists = $grocery_list_model->select(['id'])->where(['company_id' => 1])->get();
+    $grocery_lists = $grocery_list_model->select(['id'])->where(['supermarket_chain_id' => 1])->get();
 
     foreach($grocery_lists as $grocery_list){
         $grocery_list_item_model->where(['list_id' => $grocery_list->id])->delete();
@@ -119,7 +119,7 @@ function delete_products(DatabaseService $database_service){
     while(true){
 
         $product_ids = [];
-        $products = $product_model->where(['company_id' => 1])->limit(500)->get();
+        $products = $product_model->where(['company_id' => 1])->limit(1000)->get();
 
         foreach($products as $product){
             $product_ids[] = $product->id;
@@ -147,10 +147,10 @@ function delete_products(DatabaseService $database_service){
 
 function delete_promotions(DatabaseService $database_service){
     $promotion_model = new PromotionModel($database_service);
-    $promotion_model->where(['supermarket_chain_id' => 1])->delete();
+    $promotion_model->where(['region_id' => 0])->delete();
 }
 
-$database_service->commit_transaction();
+// $database_service->commit_transaction();
 $logger->debug('------ Asda Deleting Complete ------');
 
 ?>
