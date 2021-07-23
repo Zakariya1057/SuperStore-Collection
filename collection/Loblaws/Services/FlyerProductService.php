@@ -33,7 +33,7 @@ class FlyerProductService extends Loblaws {
             }
         }
 
-        $products = $this->product_model->select('id')->regex('site_product_id', $item_ids, '.+|')->get();
+        $products = $this->product_model->select('id')->regex('site_product_id', $item_ids, '.?|')->get();
 
         foreach($products as $product){
             $flyer_product = clone $this->flyer_product_model;
