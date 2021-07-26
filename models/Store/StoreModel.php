@@ -22,7 +22,7 @@ class StoreModel extends Model {
         $url, 
 
         $site_store_id, 
-        $store_type_id,
+        $supermarket_chain_id,
         
         $last_checked;
 
@@ -88,7 +88,7 @@ class StoreModel extends Model {
                 'nullable' => true,
             ],
 
-            'store_type_id' => [
+            'supermarket_chain_id' => [
                 'type' => 'int',
             ],
 

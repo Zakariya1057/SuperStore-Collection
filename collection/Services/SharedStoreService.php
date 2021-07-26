@@ -15,8 +15,8 @@ class SharedStoreService {
         $this->region_service = new SharedRegionService($database_service);
     }
 
-    public function store_exists(string $site_store_id, int $store_type_id){
-        $store_results = $this->store_model->where(['store_type_id' => $store_type_id, 'site_store_id' => $site_store_id])->first();
+    public function store_exists(string $site_store_id, int $supermarket_chain_id){
+        $store_results = $this->store_model->where(['supermarket_chain_id' => $supermarket_chain_id, 'site_store_id' => $site_store_id])->first();
 
         if(!is_null($store_results)){
             return $store_results->id;

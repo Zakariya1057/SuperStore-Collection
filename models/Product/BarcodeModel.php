@@ -7,7 +7,7 @@ use Services\DatabaseService;
 
 class BarcodeModel extends Model {
 
-    public $type, $value, $product_id, $store_type_id;
+    public $type, $value, $product_id, $company_id;
     
     function __construct(DatabaseService $database_service=null){
 
@@ -20,7 +20,7 @@ class BarcodeModel extends Model {
             'value' => [],
 
             'product_id' => ['type' => 'int'],
-            'store_type_id' => ['type' => 'int'],
+            'company_id' => ['type' => 'int'],
         ];
 
         $this->fields($fields);

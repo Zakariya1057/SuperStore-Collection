@@ -231,7 +231,7 @@ function get_input($question, $split = false){
     echo "\n" . $question;
 
     $handle = fopen('php://stdin','r');
-    $input =  trim( fgets($handle) );
+    $input = trim( fgets($handle) );
 
     return $split ? explode(' ', $input) : $input;
 }

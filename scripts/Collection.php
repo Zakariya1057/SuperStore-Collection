@@ -8,10 +8,8 @@ use Services\CLIService;
 use Services\ConfigService;
 use Services\LoggerService;
 use Services\DatabaseService;
-use Services\RememberService;
 
-use Collection\Supermarkets\Asda\Asda;
-use Collection\Supermarkets\Canadian_Superstore\CanadianSuperstore;
+use Collection\Loblaws\Loblaws;
 
 $cli = new CLIService();
 $cli->run();
@@ -24,8 +22,6 @@ $logger = $logger_service->logger_handler;
 
 $database_service = new DatabaseService($config_service, $logger);
 
-$remember_service = new RememberService($config_service, $logger, $database_service);
-
 $logger->notice("---------------------------- Collection Script Start ----------------------------");
 
 if($config_service->get('env') == 'dev'){
@@ -36,75 +32,32 @@ if($config_service->get('env') == 'dev'){
 
 try {
 
-    $asda_conf = $config_service->get('stores.asda');
+    // Run once for the company. Create shared categories for supermarket_chains. Get each product price. One script only.
 
-    if(strtolower($store_type) == 'asda'){
+    $loblaws_settings = $config_service->get('companies.loblaws.settings');
 
-        if($asda_conf->run){
+    if($loblaws_settings->run){
 
-            $remember_service->store_type_id = $asda_conf->store_type_id;
-            $remember_service->retrieve_data();
-    
-            $logger->notice("----------  Asda Scraping Start ----------");
-            
-            $asda = new Asda($config_service, $logger, $database_service, $remember_service);
-        
-            // Generate Asda Store Type
-            $asda->store_type();
-    
-            if($asda_conf->stores){
-                //Get all stores in given city
-                $asda->stores();
-            }
-        
-            if($asda_conf->groceries){
-                //Get all product sold on site
-                $asda->groceries();
-            }
-        
-            if($asda_conf->recommended){
-                //Get all similar Products.
-                $asda->recommended();
-            }
-    
-            if($asda_conf->reviews){
-                $asda->reviews();
-            }
-    
-            $logger->notice("---------- Asda Scraping Complete ---------- ");
+        $logger->notice("----------  Real Canadian Superstore Scraping Start ----------");
+
+        $canadian_superstore = new Loblaws($config_service, $logger, $database_service);
+
+        if($loblaws_settings->stores){
+            $canadian_superstore->stores();
         }
 
-    } else {
-
-        $canadian_superstore_conf = $config_service->get('stores.real_canadian_superstore');
-
-        if($canadian_superstore_conf->run){
-    
-            $remember_service->store_type_id = $canadian_superstore_conf->store_type_id;
-            $remember_service->retrieve_data();
-    
-            $logger->notice("----------  Real Canadian Superstore Scraping Start ----------");
-    
-            $canadian_superstore = new CanadianSuperstore($config_service,$logger,$database_service,$remember_service);
-    
-            $canadian_superstore->store_type();
-    
-            if($canadian_superstore_conf->stores){
-                $canadian_superstore->stores();
-            }
-    
-            if($canadian_superstore_conf->groceries){
-                $canadian_superstore->groceries();
-            }
-            
-            if($canadian_superstore_conf->recommended){
-                $canadian_superstore->recommended();
-            }
-    
-            $logger->notice("---------- Real Canadian Superstore Scraping Complete ---------- ");
+        if($loblaws_settings->groceries){
+            $canadian_superstore->groceries();
+        }
+        
+        if($loblaws_settings->recommended){
+            $canadian_superstore->recommended();
         }
 
+        $logger->notice("---------- Real Canadian Superstore Scraping Complete ---------- ");
+    
     }
+
 } catch(Exception $e){
     $error_message = $e->getMessage();
     $error_file = $e->getFile() ?? null;

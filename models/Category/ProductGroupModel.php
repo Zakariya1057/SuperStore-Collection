@@ -4,9 +4,10 @@ namespace Models\Category;
 
 use Models\Model;
 use Services\DatabaseService;
+
 class ProductGroupModel extends Model {
 
-    public $name, $child_category_id, $site_product_group_id, $store_type_id;
+    public $name, $child_category_id, $site_product_group_id, $company_id;
 
     function __construct(DatabaseService $database_service=null){
 
@@ -17,7 +18,7 @@ class ProductGroupModel extends Model {
         $fields = [
             'name' => [],
             'child_category_id' => [],
-            'store_type_id' => [],
+            'company_id' => [],
             'site_product_group_id' => []
         ];
 

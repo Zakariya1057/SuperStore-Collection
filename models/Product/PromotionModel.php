@@ -21,7 +21,7 @@ class PromotionModel extends Model {
         $region_id,
         $site_category_id,
 
-        $store_type_id,
+        $supermarket_chain_id,
 
         $site_promotion_id,
         $url,
@@ -72,7 +72,7 @@ class PromotionModel extends Model {
                 'nullable' => true
             ],
 
-            'store_type_id' => [
+            'supermarket_chain_id' => [
                 'type' => 'int'
             ],
 

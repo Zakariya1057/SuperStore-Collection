@@ -15,7 +15,11 @@ class ProductPriceModel extends Model {
         $sale_ends_at,
         $promotion_id,
 
+        $out_of_stock,
+
+        $supermarket_chain_id,
         $region_id,
+
         $product_id;
 
     function __construct(DatabaseService $database_service=null){
@@ -41,6 +45,7 @@ class ProductPriceModel extends Model {
                 'nullable' => true
             ],
 
+            'supermarket_chain_id' => [],
             'region_id' => [],
 
             'product_id' => [

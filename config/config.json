@@ -17,8 +17,15 @@
 			"database": "superstore_testing"
 		},
 
+		"docker": {
+			"host": "localhost",
+			"username": "root",
+			"password": "password",
+			"database": "superstore_database"
+		},
+
 		"prod": {
-			"host": "superstore-database.cuyqkwdewraf.eu-west-2.rds.amazonaws.com",
+			"host": "superstore-backup.cuyqkwdewraf.eu-west-2.rds.amazonaws.com",
 			"username": "superstore_user",
 			"password": "7zDPwYkz2AlviJ1tMjMCz8A49IE37dzeEshcO5Ps",
 			"database": "superstore_database"
@@ -27,7 +34,23 @@
 
 	"elasticsearch": {
 
-		"host": "https://search-superstore-elasticsearch-dc35zexhfs6al7xogt75gk6wdi.eu-west-2.es.amazonaws.com:443",
+		"hosts": {
+			"env": "dev",
+
+			"prod": {
+				"host": "https://search-superstore-elasticsearch-dc35zexhfs6al7xogt75gk6wdi.eu-west-2.es.amazonaws.com:443",
+
+				"create_index": 0,
+				"index_documents": 0
+			},
+
+			"dev": {
+				"host": "http://localhost:9200",
+
+				"create_index": 0,
+				"index_documents": 1
+			}
+		},
 
 		"settings": {
 			"number_of_shards": 3,
@@ -98,7 +121,7 @@
 				"id": {
 					"type": "integer"
 				},
-				"store_type_id": {
+				"company_id": {
 					"type": "integer"
 				},
 				"name": {
@@ -146,11 +169,11 @@
 				}
 			},
 
-			"stores": {
+			"supermarket_chains": {
 				"id": {
 					"type": "integer"
 				},
-				"store_type_id": {
+				"company_id": {
 					"type": "integer"
 				},
 				"name": {
@@ -163,7 +186,7 @@
 				"id": {
 					"type": "integer"
 				},
-				"store_type_id": {
+				"company_id": {
 					"type": "integer"
 				},
 				"name": {
@@ -179,24 +202,20 @@
 				"id": {
 					"type": "integer"
 				},
-				"store_type_id": {
-					"type": "integer"
-				},
 				"name": {
 					"type": "text",
 					"analyzer": "text_analyzer"
+				},
+				"supermarket_chain_id": {
+					"type": "integer"
 				}
 			}
 
-		},
+		}
 
-		"create_index": 0,
-		"index_documents": 1
 	},
 
 	"log_query": 1,
-
-	"city": "Birmingham",
 
 	"env": "prod",
 
@@ -234,71 +253,190 @@
 		}
 	},
 
-	"stores": {
+	"companies": {
 
-		"asda": {
+		"loblaws": {
 
-			"name": "Asda",
-			"country": "United Kingdom",
+			"name": "Loblaws",
 
-			"currency": "Pounds",
+			"id": 2,
 
-			"run": 1,
-
-			"monitor": 1,
-
-			"stores": 1,
-
-			"groceries": 0,
-			"recommended": 1,
-			"reviews": 1,
-
-			"store_type_id": 1,
-			"user_id": 1
-		},
-
-		"real_canadian_superstore": {
-
-			"name": "Real Canadian Superstore",
+			"keys": {
+				"api": "1im1hL52q9xvta16GlSdYDsTsG0dmyhF"
+			},
 
 			"currency": "Canadian Dollars",
 
-			"run": 1,
+			"user_id": 2,
 
-			"monitor": 1,
+			"settings": {
+				"run": 1,
+		
+				"monitor": 1,
+	
+				"stores": 1,
 
-			"stores": 0,
+				"flyers": 1,
+	
+				"groceries": 1,
+				"recommended": 1
+			},
 
-			"groceries": 0,
-			"recommended": 1,
+			"supermarket_chains": {
 
-			"store_type_id": 2,
-			"user_id": 2
+				"maxi": {
+					"id": 4,
+					"name": "Maxi",
+					"banner": "maxi",
+					"flyer_banner": "maxi",
+					"url": "https://www.maxi.ca",
+
+					"regions": {
+						"Quebec": {
+							"id": 18,
+							"site_store_id": "8662"
+						}
+
+					}
+
+				},
+
+				"atlantic_superstore": {
+					"id": 3,
+					"name": "Atlantic Superstore",
+					"banner": "rass",
+					"flyer_banner": "atlanticsuperstore",
+					"url": "https://www.atlanticsuperstore.ca",
+
+					"regions": {
+						"Nova Scotia": {
+							"id": 15,
+							"site_store_id": "0354"
+						},
+
+						"Prince Edward Island": {
+							"id": 16,
+							"site_store_id": "0376"
+						},
+
+						"New Brunswick": {
+							"id": 17,
+							"site_store_id": "0341"
+						}
+
+					}
+
+				},
+
+				"no_frills": {
+					"id": 2,
+					"name": "No Frills",
+					"banner": "nofrills",
+					"flyer_banner": "nofrills",
+					"url": "https://www.nofrills.ca",
+
+					"regions": {
+						"Ontario": {
+							"id": 8,
+							"site_store_id": "3643"
+						},
+						"Alberta": {
+							"id": 9,
+							"site_store_id": "3683"
+						},
+						"Manitoba": {
+							"id": 10,
+							"site_store_id": "3656"
+						},
+						"British Columbia": {
+							"id": 11,
+							"site_store_id": "3403"
+						},
+						"Saskatchewan": {
+							"id": 12,
+							"site_store_id": "3437"
+						},
+						"Newfoundland and Labrador": {
+							"id": 14,
+							"site_store_id": "2713"
+						},
+
+						"Nova Scotia": {
+							"id": 15,
+							"site_store_id": "2712"
+						},
+
+						"Prince Edward Island": {
+							"id": 16,
+							"site_store_id": "2708"
+						},
+
+						"New Brunswick": {
+							"id": 17,
+							"site_store_id": "2714"
+						}
+					}
+				},
+
+				"real_canadian_superstore": {
+					"id": 1,
+					"name": "Real Canadian Superstore",
+					"banner": "superstore",
+					"flyer_banner": "realcanadiansuperstore",
+					"url": "https://www.realcanadiansuperstore.ca",
+
+					"regions": {
+						"Ontario": {
+							"id": 8,
+							"site_store_id": "1077"
+						},
+						"Alberta": {
+							"id": 9,
+							"site_store_id": "1502"
+						},
+						"Manitoba": {
+							"id": 10,
+							"site_store_id": "1511"
+						},
+						"British Columbia": {
+							"id": 11,
+							"site_store_id": "1556"
+						},
+						"Saskatchewan": {
+							"id": 12,
+							"site_store_id": "1533"
+						},
+						"Yukon": {
+							"id": 13,
+							"site_store_id": "1530"
+						}
+					}
+				}
+
+			}
 		}
+
 	},
 
 	"endpoints": {
 
-		"asda": {
-			"groceries": "https://groceries.asda.com/api/bff/graphql",
-			"shelves": "https://groceries.asda.com/api/bff/graphql",
-			"products": "https://groceries.asda.com/api/items/catalog",
-			"reviews": "https://groceries.asda.com/review/reviews.json?requestorigin=gi&apiversion=5.4&passkey=92ffdz3h647mtzgbmu5vedbq&Filter=ProductId%3A",
-			"promotions": "https://groceries.asda.com/cmscontent/json/pages/overlays/linksave?requestorigin=gi&Nrpp=10000000&storeId=4565&promoid=",
-			"recommended": "https://groceries.asda.com/p13nservice/recommendations?storeId=4565&placement=item_page.pdp1&skuId=",
-			"stores": "https://storelocator.asda.com/directory"
-		},
+		"loblaws": {
 
-		"real_canadian_superstore": {
 			"groceries": "https://cdn.contentful.com/spaces/0dlg9rxz8nvy/environments/master/entries?content_type=navigationList&locale=en-CA&include=3",
 
 			"categories": {
-				"v2": "https://api.pcexpress.ca/marketplace/v2/banners/superstore/products?pageSize=50&sorts=relevance&filter.category=",
+				"v2": {
+					"first_part": "https://api.pcexpress.ca/marketplace/v2/banners/",
+					"last_part": "/products?pageSize=50&sorts=relevance&filter.category="
+				},
 				"v3": "https://api.pcexpress.ca/v3/products/category/listing"
 			},
 
 			"products": {
-				"v2": "https://api.pcexpress.ca/marketplace/v2/banners/superstore/products/",
+				"v2": {
+					"first_part": "https://api.pcexpress.ca/marketplace/v2/banners/",
+					"last_part": "/products/"
+				},
 				"v3": "https://api.pcexpress.ca/product-facade/v3/products/"
 			},
 
@@ -307,9 +445,10 @@
 			"stores": "https://www.realcanadiansuperstore.ca/api/pickup-locations",
 
 			"flyers": {
-				"page": "https://flyers.realcanadiansuperstore.ca/flyers/realcanadiansuperstore?type=1&store_code=",
+				"page": "https://flyers.realcanadiansuperstore.ca/flyers/",
 				"flyers": "https://flyers.realcanadiansuperstore.ca/flyer_data/"
 			}
+
 		}
 
 	},
@@ -337,7 +476,7 @@
 	},
 
 	"notification": {
-		"env": "dev",
+		"env": "prod",
 
 		"dev_url": "https://api.sandbox.push.apple.com/3/device/",
 		"prod_url": "https://api.push.apple.com/3/device/",

@@ -11,8 +11,7 @@ class FlyerModel extends Model {
         $name, 
         $week, 
 
-        $store_id, 
-        $store_type_id, 
+        $store_id,
 
         $url,
         
@@ -35,9 +34,6 @@ class FlyerModel extends Model {
             ],
 
             'store_id' => [
-                'type' => 'int'
-            ],
-            'store_type_id' => [
                 'type' => 'int'
             ],
 

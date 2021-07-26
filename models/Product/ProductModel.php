@@ -48,7 +48,7 @@ class ProductModel extends Model {
         $reviews_searched,
         $recommended_searched,
 
-        $store_type_id,
+        $company_id,
         $site_product_id,
         
         $last_checked;
@@ -153,7 +153,7 @@ class ProductModel extends Model {
                 'type' => 'int'
             ],
 
-            'store_type_id' => [
+            'company_id' => [
                 'type' => 'int'
             ],
 
