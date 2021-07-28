@@ -45,39 +45,28 @@ class Products extends Loblaws implements ProductInterface {
     
         $product_id = $this->shared_product_service->product_exists($site_product_id, $this->company_id);
 
+        $parsed_product = $this->product_details($site_product_id, false);
+
+        if(is_null($parsed_product)){
+            $this->logger->error('Product details not found. Skipping');
+            return null;
+        }
+
+        $product_group_id = $this->product_group_service->create($parsed_product, $category_details->id, $this->company_id);
+
         if(is_null($product_id)){
             // New Product Insert It
-            $parsed_product = $this->product_details($site_product_id, false);
-
-            if(is_null($parsed_product)){
-                $this->logger->error('Product details not found. Skipping');
-                return null;
-            } else if( strlen($parsed_product->name) > 255 ){
+             if( strlen($parsed_product->name) > 255 ){
                 $this->logger->error('Product name too long. Length: '. $parsed_product->name);
                 return null;
             }
             
-            $product_group_id = $this->product_group_service->create($parsed_product, $category_details->id, $this->company_id);
-
             $product_id = $this->shared_product_service->create($parsed_product);
 
             $this->category_service->create($category_details, $product_id, $product_group_id);
 
         } else {
             // Insert Ignore Category Product
-            $product_group_id = $this->product_group_service->get($product_id, $category_details->id, $this->company_id);
-
-            if(is_null( $product_group_id )){
-                $parsed_product = $this->product_details($site_product_id, false);
-
-                if(is_null($parsed_product)){
-                    $this->logger->error('Product details not found. Skipping');
-                    return null;
-                }
-
-                $product_group_id = $this->product_group_service->create($parsed_product, $category_details->id, $this->company_id);
-            }
-
             if($this->category_service->category_exists($category_details, $product_id)){
                 $this->category_service->update($category_details, $product_id, $product_group_id);
             } else {
