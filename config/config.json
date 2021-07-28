@@ -1,7 +1,7 @@
 {
 
 	"database": {
-		"env": "dev",
+		"env": "prod",
 
 		"dev": {
 			"host": "192.168.1.187",
@@ -35,19 +35,19 @@
 	"elasticsearch": {
 
 		"hosts": {
-			"env": "dev",
+			"env": "prod",
 
 			"prod": {
 				"host": "https://search-superstore-elasticsearch-dc35zexhfs6al7xogt75gk6wdi.eu-west-2.es.amazonaws.com:443",
 
-				"create_index": 0,
-				"index_documents": 0
+				"create_index": 1,
+				"index_documents": 1
 			},
 
 			"dev": {
 				"host": "http://localhost:9200",
 
-				"create_index": 0,
+				"create_index": 1,
 				"index_documents": 1
 			}
 		},
@@ -274,7 +274,7 @@
 		
 				"monitor": 1,
 	
-				"stores": 1,
+				"stores": 0,
 
 				"flyers": 1,
 	
