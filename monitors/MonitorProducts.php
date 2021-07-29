@@ -286,7 +286,6 @@ class MonitorProducts {
                 $this->logger->notice('Created All The Product Prices');
             }
 
-
             foreach($prices as $region_id => $product_prices){
                 $new_price = $product_prices->new_price ?? null;
                 $old_price = $product_prices->old_price ?? null;
@@ -313,7 +312,7 @@ class MonitorProducts {
                 $this->sale_check($new_price, $region_price_changes);
                 $this->promotion_check($new_price, $old_price, $region_price_changes);
     
-                if($old_value != $new_value){
+                if($old_value != $new_value && $new_value > 0){
                     $this->logger->debug("Price Changed: $old_value -> $new_value");
                     $region_price_changes['price'] = $new_value;
                     $region_price_changes['old_price'] = $old_value;
